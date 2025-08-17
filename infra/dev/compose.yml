@@ -1,10 +1,34 @@
 version: "3.6"
 services:
+
+  ftp:
+    image: stilliard/pure-ftpd:hardened
+    container_name: ftpd-server
+    depends_on:
+      - wordpress
+    restart: on-failure:2
+    environment:
+      PUBLICHOST: "Sunny-MSI-Stealth-GS66"
+      FTP_USER_NAME: "ftp_user"
+      FTP_USER_PASS: "ftp_password"
+      FTP_USER_HOME: "/var/www/html"
+      FTP_USER_UID: 33
+      FTP_USER_GID: 33
+    volumes:
+#      - ./data/wordpress:/var/www/html
+      - ../../wp-data/wp-content:/var/www/html/wp-content
+      - ./ftp:/etc/ssl/private
+    ports:
+      - "20-21:20-21/tcp"
+      - "30000-30009:30000-30009/tcp"
+
   wordpress:
     image: wordpress:6.8.2-php8.2-apache
     container_name: wordpress
     volumes:
-      - ../../wp-data/wp-content:/var/www/html/wp-content
+      - ../../config/dev/wp/httpd/wp-config.php:/var/www/html/wp-config.php
+      - ../../config/dev/wp/httpd/.htaccess:/var/www/html/.htaccess
+      - ../../wp-data/wp-content:/var/www/html/wp-content:rw
       - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
       # Optimize
       # - ../../wp-data:/var/www/html
@@ -14,6 +38,7 @@ services:
       - WORDPRESS_DB_HOST=db
       - WORDPRESS_DB_USER=root
       - WORDPRESS_DB_PASSWORD=password
+      - WORDPRESS_DEBUG:1
       # - WORDPRESS_DB_ADMIN_PASSWORD=dba-password
       # - WORDPRESS_ADMIN_NAME=WpAdminFirstName
       # - WORDPRESS_ADMIN_LASTNAME=WpAdminLastName
@@ -35,15 +60,15 @@ services:
     restart: always
     ports:
       - 8080:80
+      # - 8443:443
 
   db:
     image: mariadb:11.8.2-noble
     container_name: db
     volumes:
-      - db-data:/var/lib/mysql
+      - ../../blob/dev/db-data:/var/lib/mysql
       # This is optional!!!
-      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
-      # # #
+      - ./init/dump.sql:/docker-entrypoint-initdb.d/dump.sql
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=root
