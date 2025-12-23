@@ -1,0 +1,26 @@
+version: "3.6"
+
+services:
+  wpscan:
+    image: wpscanteam/wpscan:latest
+    container_name: wpscan
+    networks:
+      - dev_default
+    command: >
+      --url http://wordpress:80
+      --enumerate ap,at,u
+      --random-user-agent
+      --format cli
+      --output /reports/wpscan-latest.txt
+    volumes:
+      - ./reports:/reports
+    environment:
+      # Optional: Add your WPScan API token for enhanced scanning
+      # Get free token from https://wpscan.com/register
+      - WPSCAN_API_TOKEN=${WPSCAN_API_TOKEN:-}
+
+networks:
+  # Connect to the dev environment network to access wordpress container
+  dev_default:
+    external: true
+    name: dev_default

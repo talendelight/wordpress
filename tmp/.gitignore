@@ -1,0 +1,7 @@
+# Temporary files - NOT committed to git
+
+# Ignore sensitive product/customer data SQL files
+*.sql
+
+# Keep the README
+!README.md

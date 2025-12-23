@@ -1,0 +1,8 @@
+# Ignore WPScan reports (may contain sensitive information)
+reports/
+*.txt
+*.json
+*.log
+
+# Keep the directory structure
+!.gitkeep

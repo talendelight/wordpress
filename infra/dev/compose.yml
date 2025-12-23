@@ -1,26 +1,26 @@
-version: "3.6"
 services:
 
-  ftp:
-    image: stilliard/pure-ftpd:hardened
-    container_name: ftpd-server
-    depends_on:
-      - wordpress
-    restart: on-failure:2
-    environment:
-      PUBLICHOST: "Sunny-MSI-Stealth-GS66"
-      FTP_USER_NAME: "ftp_user"
-      FTP_USER_PASS: "ftp_password"
-      FTP_USER_HOME: "/var/www/html"
-      FTP_USER_UID: 33
-      FTP_USER_GID: 33
-    volumes:
-#      - ./data/wordpress:/var/www/html
-      - ../../wp-data/wp-content:/var/www/html/wp-content
-      - ./ftp:/etc/ssl/private
-    ports:
-      - "20-21:20-21/tcp"
-      - "30000-30009:30000-30009/tcp"
+  # FTP service disabled - WordPress uses FS_METHOD='direct' for file operations
+  # Uncomment if FTP access is needed (requires SSL certificates in ./ftp/)
+  # wp-ftp:
+  #   image: stilliard/pure-ftpd:hardened
+  #   container_name: wp-ftpd-server
+  #   depends_on:
+  #     - wordpress
+  #   restart: on-failure:2
+  #   environment:
+  #     PUBLICHOST: "localhost"
+  #     FTP_USER_NAME: "ftp_user"
+  #     FTP_USER_PASS: "ftp_password"
+  #     FTP_USER_HOME: "/var/www/html"
+  #     FTP_USER_UID: 33
+  #     FTP_USER_GID: 33
+  #   volumes:
+  #     - ../../wp-data/wp-content:/var/www/html/wp-content
+  #     - ./ftp:/etc/ssl/private
+  #   ports:
+  #     - "20-21:20-21/tcp"
+  #     - "30000-30009:30000-30009/tcp"
 
   wordpress:
     image: wordpress:6.8.2-php8.2-apache
@@ -35,10 +35,10 @@ services:
     environment:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp_
-      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_HOST=wp-db
       - WORDPRESS_DB_USER=root
       - WORDPRESS_DB_PASSWORD=password
-      - WORDPRESS_DEBUG:1
+      - WORDPRESS_DEBUG=1
       # - WORDPRESS_DB_ADMIN_PASSWORD=dba-password
       # - WORDPRESS_ADMIN_NAME=WpAdminFirstName
       # - WORDPRESS_ADMIN_LASTNAME=WpAdminLastName
@@ -55,20 +55,21 @@ services:
       # - WORDPRESS_IMAGE_TAG=bitnami/wordpress:6.6.2
     working_dir: /var/www/html
     depends_on:
-      - db
+      - wp-db
       - phpmyadmin
     restart: always
     ports:
       - 8080:80
       # - 8443:443
 
-  db:
+  wp-db:
     image: mariadb:11.8.2-noble
-    container_name: db
+    container_name: wp-db
     volumes:
-      - ../../blob/dev/db-data:/var/lib/mysql
-      # This is optional!!!
-      - ./init/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - db-data:/var/lib/mysql
+      # Imports on every fresh start (when volume is empty/destroyed)
+      # Baseline schema and all structural changes imported in alphabetical order
+      - ../shared/init:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=root
@@ -80,14 +81,14 @@ services:
 
   phpmyadmin:
     depends_on:
-      - db
+      - wp-db
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin
     restart: always
     ports:
       - 8180:80
     environment:
-      PMA_HOST: db
+      PMA_HOST: wp-db
       MYSQL_ROOT_PASSWORD: password
 
 volumes:

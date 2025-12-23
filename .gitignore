@@ -1,0 +1,3 @@
+# Blob directory - contains raw database files and other binary data
+# Use SQL files in infra/shared/init/ instead
+blob/
