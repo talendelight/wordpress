@@ -62,4 +62,4 @@ podman exec wp-db mysqldump -u root -ppassword wordpress `
 ## See Also
 
 - [infra/shared/init/README.md](../infra/shared/init/README.md) - Structural change files
-- [infra/dev/DATABASE.md](../infra/dev/DATABASE.md) - Database workflows
+- [docs/DATABASE.md](../docs/DATABASE.md) - Database workflows

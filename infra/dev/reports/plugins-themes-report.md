@@ -98,6 +98,6 @@ Summary findings and recommendations
 
 Next steps (awaiting your approval)
 ---------------------------------
-1. Inspect Docker and HTTPD/PHP config (`infra/dev/compose.yml`, `config/dev/wp/httpd/.htaccess`, `infra/dev/uploads.ini`) for PHP/Apache versions, upload limits, and security settings. (I'll run this next if you confirm.)
+1. Inspect Docker and HTTPD/PHP config (`infra/dev/compose.yml`, `config/.htaccess`, `config/uploads.ini`) for PHP/Apache versions, upload limits, and security settings. (I'll run this next if you confirm.)
 2. Plan DB datadir -> SQL migration.
 3. Propose compose changes for init SQL usage.

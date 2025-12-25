@@ -1,37 +1,13 @@
 services:
 
-  # FTP service disabled - WordPress uses FS_METHOD='direct' for file operations
-  # Uncomment if FTP access is needed (requires SSL certificates in ./ftp/)
-  # wp-ftp:
-  #   image: stilliard/pure-ftpd:hardened
-  #   container_name: wp-ftpd-server
-  #   depends_on:
-  #     - wordpress
-  #   restart: on-failure:2
-  #   environment:
-  #     PUBLICHOST: "localhost"
-  #     FTP_USER_NAME: "ftp_user"
-  #     FTP_USER_PASS: "ftp_password"
-  #     FTP_USER_HOME: "/var/www/html"
-  #     FTP_USER_UID: 33
-  #     FTP_USER_GID: 33
-  #   volumes:
-  #     - ../../wp-data/wp-content:/var/www/html/wp-content
-  #     - ./ftp:/etc/ssl/private
-  #   ports:
-  #     - "20-21:20-21/tcp"
-  #     - "30000-30009:30000-30009/tcp"
-
   wordpress:
     image: wordpress:6.8.2-php8.2-apache
     container_name: wordpress
     volumes:
-      - ../../config/dev/wp/httpd/wp-config.php:/var/www/html/wp-config.php
-      - ../../config/dev/wp/httpd/.htaccess:/var/www/html/.htaccess
-      - ../../wp-data/wp-content:/var/www/html/wp-content:rw
-      - ./uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-      # Optimize
-      # - ../../wp-data:/var/www/html
+      - ../../config/wp-config.php:/var/www/html/wp-config.php
+      - ../../config/.htaccess:/var/www/html/.htaccess
+      - ../../wp-content:/var/www/html/wp-content:rw
+      - ../../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     environment:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp_
@@ -69,7 +45,7 @@ services:
       - db-data:/var/lib/mysql
       # Imports on every fresh start (when volume is empty/destroyed)
       # Baseline schema and all structural changes imported in alphabetical order
-      - ../shared/init:/docker-entrypoint-initdb.d
+      - ../shared/db:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=root

@@ -1,0 +1,82 @@
+# =============================================================================
+# Hostinger Deployment Exclusions
+# =============================================================================
+# This file tells Hostinger Git integration which files/folders to EXCLUDE
+# from deployment to public_html/
+#
+# Reference: https://support.hostinger.com/en/articles/6857923-how-to-use-git-deployment
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Development-Only Directories (Do NOT deploy)
+# -----------------------------------------------------------------------------
+
+# Docker/Podman configuration files
+infra/
+
+# Project documentation (not needed on production server)
+docs/
+
+# GitHub Actions, templates, and CI/CD configs
+.github/
+
+# Temporary files and manual SQL imports (sensitive data)
+tmp/
+
+# Development configurations (wp-config.php, .htaccess)
+config/
+
+# -----------------------------------------------------------------------------
+# Git and Version Control Files
+# -----------------------------------------------------------------------------
+
+.git/
+.gitignore
+.gitattributes
+.gitkeep
+
+# -----------------------------------------------------------------------------
+# WordPress Generated/Large Files
+# -----------------------------------------------------------------------------
+
+# Uploads are typically huge - manage separately via FTP/backup
+# Uncomment if you want to exclude uploads from Git deployment
+# wp-content/uploads/
+
+# Cache and temporary files
+wp-content/cache/
+wp-content/backup*/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+
+# Logs
+*.log
+wp-content/debug.log
+
+# -----------------------------------------------------------------------------
+# Development Tools
+# -----------------------------------------------------------------------------
+
+# IDE configurations
+.vscode/
+.idea/
+*.sublime-*
+
+# Node modules (if using build tools)
+node_modules/
+
+# Composer vendor (if used)
+vendor/
+
+# Build artifacts
+dist/
+build/
+
+# -----------------------------------------------------------------------------
+# README and Documentation Files (Optional - exclude if not needed)
+# -----------------------------------------------------------------------------
+
+README.md
+LICENSE
+CHANGELOG.md
+

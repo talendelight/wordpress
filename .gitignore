@@ -1,3 +1,98 @@
-# Blob directory - contains raw database files and other binary data
-# Use SQL files in infra/shared/init/ instead
-blob/
+# =============================================================================
+# Git Version Control - What to Track and What to Exclude
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PRODUCTION DEPLOYMENT - Files that go to Hostinger
+# -----------------------------------------------------------------------------
+# These files/folders ARE tracked in git and will deploy to Hostinger:
+#   - wp-content/themes/your-custom-themes/
+#   - wp-content/plugins/your-custom-plugins/
+#   - wp-content/mu-plugins/ (if used)
+#
+# These are automatically excluded (not in repo, won't deploy):
+#   - WordPress core (wp-admin, wp-includes) - Hostinger provides these
+#   - wp-config.php - server-specific, configured on Hostinger directly
+
+# -----------------------------------------------------------------------------
+# DEVELOPMENT-ONLY FILES (Tracked in git, but NOT deployed to Hostinger)
+# -----------------------------------------------------------------------------
+# Note: These are tracked in git for version control but excluded from
+# Hostinger deployment via .hostingerignore file
+#
+# - infra/    - Development Docker/Podman configs (tracked in git)
+# - docs/     - Project documentation (tracked in git)
+# - .github/  - GitHub workflows and templates (tracked in git)
+# - config/   - Development configurations (tracked in git)
+
+# Temporary files and sensitive data (NOT tracked in git, NOT deployed)
+tmp/
+
+# -----------------------------------------------------------------------------
+# WORDPRESS GENERATED FILES (Do NOT track in git)
+# -----------------------------------------------------------------------------
+
+# Uploads directory - too large, managed separately
+wp-content/uploads/*
+!wp-content/uploads/.gitkeep
+
+# WordPress cache and temp files
+wp-content/cache/
+wp-content/backup*/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+
+# Language files (generated)
+wp-content/languages/
+
+# Logs
+*.log
+wp-content/debug.log
+
+# -----------------------------------------------------------------------------
+# THIRD-PARTY PLUGINS/THEMES (Installed via WordPress, not custom)
+# -----------------------------------------------------------------------------
+# Uncomment these if you want to exclude standard plugins/themes
+# and install them manually on Hostinger instead of tracking in git
+
+# Standard plugins (not custom)
+# wp-content/plugins/akismet/
+# wp-content/plugins/hello.php
+# wp-content/plugins/woocommerce/
+# wp-content/plugins/elementor/
+# wp-content/plugins/wpforms-lite/
+# wp-content/plugins/blocksy-companion/
+
+# Default themes
+# wp-content/themes/twentytwenty*/
+# wp-content/themes/blocksy/
+
+# -----------------------------------------------------------------------------
+# SYSTEM AND IDE FILES
+# -----------------------------------------------------------------------------
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# -----------------------------------------------------------------------------
+# NOTES
+# -----------------------------------------------------------------------------
+# See .hostingerignore for deployment exclusion rules
+# infra/, docs/, .github/, config/ are tracked in git but not deployed
+

@@ -7,15 +7,21 @@
 
 ## Project Overview
 
-This is a WordPress 6.8.2 (PHP 8.2) development environment managed via Podman Compose. The project separates concerns into distinct directories:
+This is a WordPress 6.8.2 (PHP 8.2) development environment managed via Podman Compose for local development, with production deployment to Hostinger via Git integration.
 
-- **[infra/](infra/)** - Podman Compose configs for dev/prod environments
-- **[wp-data/wp-content/](wp-data/wp-content/)** - WordPress content (plugins, themes, uploads) - mounted into containers
-- **[config/dev/wp/httpd/](config/dev/wp/httpd/)** - Custom WordPress config and .htaccess mounted as overlays
-- **[blob/dev/db-data/](blob/dev/db-data/)** - Persistent MariaDB data (not version-controlled, exists locally)
+**Directory Structure:**
+- **[infra/dev/](infra/dev/)** - Podman Compose config for local development environment
+- **[wp-content/](wp-content/)** - WordPress content (plugins, themes, uploads) - root level for Hostinger deployment
+- **[config/](config/)** - Dev-specific configurations (wp-config.php, .htaccess, PHP settings)
+- **[docs/](docs/)** - Project documentation (DATABASE, DEPLOYMENT, SECURITY guides)
+- **[tmp/](tmp/)** - Sensitive data and manual SQL imports (not tracked in git)
+
+**Deployment Strategy:**
+- **Development**: Docker/Podman containers on local machine
+- **Production**: Hostinger shared hosting with Git auto-deployment on push to `main` branch
 
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
-**Active themes**: Blocksy (primary), Twenty Twenty-Three/Four/Five
+**Active theme**: Blocksy (primary)
 
 ## Critical Developer Workflows
 
@@ -30,15 +36,14 @@ Services exposed:
 - WordPress: http://localhost:8080
 - phpMyAdmin: http://localhost:8180  
 - MariaDB: localhost:3306
-- FTP server: ports 20-21, 30000-30009
 
 ### Database Management
 
 - **Ephemeral database strategy**: Database resets to clean state on every fresh startup
-- [infra/shared/init/000000-init.sql](infra/shared/init/000000-init.sql) is the source of truth (version-controlled baseline)
+- [infra/shared/db/000000-init.sql](infra/shared/db/000000-init.sql) is the source of truth (version-controlled baseline)
 - Uses Podman named volume (destroyed with `podman-compose down -v`)
 - To reset database: `podman-compose down -v && podman-compose up -d`
-- See [infra/dev/DATABASE.md](infra/dev/DATABASE.md) for complete database workflow guide
+- See [docs/DATABASE.md](docs/DATABASE.md) for complete database workflow guide
 
 ### Using WP-CLI
 
@@ -52,10 +57,11 @@ podman exec -it wordpress wp user create newuser email@example.com --role=editor
 
 ### File Upload Limits
 
-PHP upload limits configured in [infra/dev/uploads.ini](infra/dev/uploads.ini):
+PHP upload limits configured in [config/uploads.ini](config/uploads.ini):
 - `upload_max_filesize = 64M`
-- `post_max_size = 64M`
+- `post_max_size = 128M`
 - `max_execution_time = 600`
+- `memory_limit = 128M`
 
 Changes require container restart: `podman-compose restart wordpress`
 
@@ -64,27 +70,29 @@ Changes require container restart: `podman-compose restart wordpress`
 ### Configuration Overlay Pattern
 
 WordPress core files stay in the container. Only specific configs are mounted from host:
-- [config/dev/wp/httpd/wp-config.php](config/dev/wp/httpd/wp-config.php) - uses `getenv_docker()` helper to read container env vars
-- [config/dev/wp/httpd/.htaccess](config/dev/wp/httpd/.htaccess) - custom rewrite rules
+- [config/wp-config.php](config/wp-config.php) - uses `getenv_docker()` helper to read container env vars
+- [config/.htaccess](config/.htaccess) - custom rewrite rules
+- [config/uploads.ini](config/uploads.ini) - PHP upload/execution limits
 - Sets `FS_METHOD = 'direct'` to allow direct plugin installation without FTP
 
 **Why**: Keeps host filesystem lean while allowing config versioning and easy environment-specific overrides.
 
 ### Volume Mount Strategy
 
-Dev compose mounts only `wp-content/` from host ([wp-data/wp-content/](wp-data/wp-content/)), not the entire WordPress installation. This means:
+Dev compose mounts `wp-content/` from repository root into container:
 - ✅ Plugin/theme changes persist and are version-controlled
-- ✅ Uploads directory is accessible from host
+- ✅ Uploads directory accessible from host (but excluded from git)
+- ✅ Direct edit in IDE, instant reflection in container
 - ❌ WordPress core files not directly editable from host (intentional)
 
-### FTP Server for Plugin Management
+### Git Deployment Strategy
 
-The [infra/dev/compose.yml](infra/dev/compose.yml#L4-L21) includes `wp-ftp` service (pure-ftpd) configured with:
-- User: `ftp_user` / Pass: `ftp_password`
-- UID/GID: 33 (www-data) - matches Apache user in WordPress container
-- Access to `/wp-content` only
-
-**Usage**: Some WordPress plugins/themes require FTP credentials for updates. Use these credentials when prompted.
+Repository root contains only `wp-content/` for production deployment:
+- Hostinger's Git integration monitors `main` branch
+- Auto-deploys `wp-content/` to `public_html/wp-content/` on push
+- Excludes dev-only files via [.hostingerignore](.hostingerignore): `infra/`, `docs/`, `config/`, `tmp/`, `.github/`
+- Hostinger manages WordPress core, `wp-config.php`, and server configuration
+- Database changes require manual import via phpMyAdmin (future automation planned)
 
 ## Integration Points & Dependencies
 
@@ -96,20 +104,24 @@ The [infra/dev/compose.yml](infra/dev/compose.yml#L4-L21) includes `wp-ftp` serv
 
 ## Database Philosophy
 
-- Development uses **ephemeral databases** - always starts fresh from [infra/shared/init/000000-init.sql](infra/shared/init/000000-init.sql)
+- Development uses **ephemeral databases** - always starts fresh from [infra/shared/db/000000-init.sql](infra/shared/db/000000-init.sql)
 - Database changes are tracked as version-controlled SQL files, not live data
 - To persist work across sessions: `podman-compose stop` (without `-v`)
 - To reset completely: `podman-compose down -v && podman-compose up -d`
-- Production will use persistent storage managed by hosting provider
+- Production uses Hostinger's managed MySQL database with manual SQL import workflow
 
 ## When Working with Plugins/Themes
 
 - Review [infra/dev/reports/plugins-themes-report.md](infra/dev/reports/plugins-themes-report.md) for compatibility notes
 - Elementor and WooCommerce have large codebases - test thoroughly after PHP/WP version changes
 - Blocksy Companion contains Freemius SDK - be aware of potential telemetry calls
+- Test all changes locally before pushing to `main` branch (triggers production deployment)
 
-## Production vs Development
+## Production Deployment
 
-- [infra/prod/compose.yml](infra/prod/compose.yml) uses latest WordPress image (no FTP, no phpMyAdmin)
-- Dev environment uses pinned versions: `wordpress:6.8.2-php8.2-apache`, `mariadb:11.8.2-noble`
-- Production config should use env-specific volume paths and secrets management
+- **Hosting**: Hostinger shared hosting (not containers)
+- **Deployment method**: Git auto-deployment via Hostinger's built-in Git integration
+- **Trigger**: Push to `main` branch
+- **What deploys**: `wp-content/` directory only (themes, plugins, mu-plugins)
+- **What doesn't deploy**: WordPress core (Hostinger provides), dev infrastructure, docs
+- See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete Hostinger Git integration guide
