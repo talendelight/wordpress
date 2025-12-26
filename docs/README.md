@@ -18,7 +18,7 @@ Welcome to the WordPress project documentation. This directory contains comprehe
 
 **Topics:**
 - Ephemeral vs persistent database strategies
-- SQL file naming conventions (`000000-init.sql`, `{yymmdd}-change.sql`)
+- SQL file naming conventions (`000000-00-init.sql`, `{yymmdd}-{HHmm}-change-{short.desc}.sql`)
 - Development workflows (starting fresh, exporting changes)
 - Production backups and restore procedures
 - Database migrations and troubleshooting
@@ -97,7 +97,7 @@ wordpress/
 │   │   └── .env.example         # Production environment template
 │   └── shared/
 │       ├── init/                # SQL initialization files
-│       │   ├── 000000-init.sql  # Baseline database schema
+│       │   ├── 000000-00-init.sql  # Baseline database schema
 │       │   └── README.md        # SQL file naming conventions
 │       └── tools/               # WPScan and vulnerability scanning
 ├── tmp/                         # Sensitive product data (gitignored)

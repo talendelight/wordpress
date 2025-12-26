@@ -11,16 +11,7 @@ import { Overlay } from 'blocksy-options'
 
 import classnames from 'classnames'
 
-import phpUnserialize from 'phpunserialize'
-
-const safePhpUnserialize = (data) => {
-	const fixed = data.replace(/s:(\d+):"(.*?)";/gs, (_, len, str) => {
-		const actualLength = Buffer.byteLength(str, 'utf8')
-		return `s:${actualLength}:"${str}";`
-	})
-
-	return phpUnserialize(fixed)
-}
+import { safePhpUnserialize } from './utils'
 
 const wipeCaches = () => {
 	return new Promise((resolve) => {
@@ -392,10 +383,13 @@ const CustomizerOptionsManager = () => {
 									body.append('strategy', isCopyingOptions)
 
 									try {
-										fetch(window.ajaxurl, {
-											method: 'POST',
-											body,
-										}).then((response) => {
+										fetch(
+											`${window.ajaxurl}?nonce=${ct_customizer_localizations.customizer_reset_none}`,
+											{
+												method: 'POST',
+												body,
+											}
+										).then((response) => {
 											if (response.status === 200) {
 												response
 													.json()
@@ -522,10 +516,13 @@ const CustomizerOptionsManager = () => {
 									body.append('wp_customize', 'on')
 
 									try {
-										fetch(window.ajaxurl, {
-											method: 'POST',
-											body,
-										}).then((response) => {
+										fetch(
+											`${window.ajaxurl}?nonce=${ct_customizer_localizations.customizer_reset_none}`,
+											{
+												method: 'POST',
+												body,
+											}
+										).then((response) => {
 											if (response.status === 200) {
 												response
 													.json()

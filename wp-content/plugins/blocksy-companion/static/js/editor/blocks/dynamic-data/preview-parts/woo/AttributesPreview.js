@@ -7,7 +7,6 @@ import useCustomFieldData from '../../hooks/use-custom-field-data'
 
 const AttributesPreview = ({
 	postId,
-	postType,
 
 	fallback,
 
@@ -17,11 +16,15 @@ const AttributesPreview = ({
 	fieldsDescriptor,
 }) => {
 	const { fieldData } = useCustomFieldData({
-		postId,
+		fieldsContext: {
+			type: 'post',
+			post_type: 'product',
+			post_id: postId,
+		},
 		fieldDescriptor: {
 			provider: 'woo',
 			id: 'attributes',
-			attribute: req_attribute,
+			attributes,
 		},
 	})
 

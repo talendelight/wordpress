@@ -213,7 +213,7 @@ class Challenge {
 			wp_enqueue_script(
 				'wpforms-challenge-core',
 				WPFORMS_PLUGIN_URL . "assets/js/admin/challenge/challenge-core{$min}.js",
-				[ 'jquery', 'tooltipster', 'wpforms-challenge-admin' ],
+				[ 'jquery', 'tooltipster', 'wpforms-challenge-admin', 'wpforms-generic-utils' ],
 				WPFORMS_VERSION,
 				true
 			);
@@ -234,7 +234,15 @@ class Challenge {
 
 			wp_enqueue_style(
 				'wpforms-font-awesome',
-				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/font-awesome.min.css',
+				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/all.min.css',
+				null,
+				'7.0.1'
+			);
+
+			// FontAwesome v4 compatibility shims.
+			wp_enqueue_style(
+				'wpforms-font-awesome-v4-shim',
+				WPFORMS_PLUGIN_URL . 'assets/lib/font-awesome/css/v4-shims.min.css',
 				null,
 				'4.7.0'
 			);

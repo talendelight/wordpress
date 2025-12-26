@@ -24,12 +24,34 @@ if (
 $value_after = blocksy_akg('after', $attributes, '');
 $value_before = blocksy_akg('before', $attributes, '');
 
-if (! empty($value_after) && ! $has_fallback) {
-	$value .= $value_after;
-}
+$has_field_link = blocksy_akg('has_field_link', $attributes, 'no');
+$link_source = blocksy_akg('link_source', $attributes, '');
 
-if (! empty($value_before) && ! $has_fallback) {
-	$value = $value_before . $value;
+$final_link = [
+	'value' => '',
+];
+
+if (
+	$has_field_link === 'yes'
+	&&
+	! empty($link_source)
+) {
+	$link_field_descriptor = explode(':', $link_source);
+	
+	if (count($link_field_descriptor) === 2) {
+		$final_link = blc_get_ext('post-types-extra')
+			->dynamic_data
+			->custom_fields_manager
+			->render_field(
+				$link_field_descriptor[1],
+				[
+					'provider' => $link_field_descriptor[0],
+					'allow_images' => true
+				]
+			);
+		}
+
+	
 }
 
 $tagName = blocksy_akg('tagName', $attributes, 'div');
@@ -60,9 +82,33 @@ wp_apply_colors_support($block_type, $attributes);
 
 $wrapper_attr = get_block_wrapper_attributes($wrapper_attr);
 
-echo blocksy_html_tag(
-	$tagName,
-	$wrapper_attr,
-	$value
-);
+if ($has_field_link === 'yes') {
+	$link_attr = [
+		'href' => $final_link['value'],
+	];
+
+	if (blocksy_akg('has_field_link_new_tab', $attributes, 'no') === 'yes') {
+		$link_attr['target'] = '_blank';
+	}
+
+	if (! empty(blocksy_akg('has_field_link_rel', $attributes, ''))) {
+		$link_attr['rel'] = blocksy_akg(
+			'has_field_link_rel',
+			$attributes,
+			''
+		);
+	}
+
+	$value = blocksy_html_tag('a', $link_attr, $value);
+}
+
+if (! empty($value_after) && ! $has_fallback) {
+	$value .= $value_after;
+}
+
+if (! empty($value_before) && ! $has_fallback) {
+	$value = $value_before . $value;
+}
+
+blocksy_html_tag_e($tagName, $wrapper_attr, $value);
 

@@ -28,6 +28,9 @@
 # Temporary files and sensitive data (NOT tracked in git, NOT deployed)
 tmp/
 
+# GitHub Actions deployment staging directory
+deploy/
+
 # -----------------------------------------------------------------------------
 # WORDPRESS GENERATED FILES (Do NOT track in git)
 # -----------------------------------------------------------------------------

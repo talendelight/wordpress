@@ -85,6 +85,7 @@ foreach ($all_post_types as $custom_post_type => $label) {
 				'sync' => [
 					'selector' => '.ct-trending-block',
 					'render' => function () {
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo blc_get_trending_block();
 					}
 				],
@@ -146,6 +147,7 @@ foreach ($all_post_types as $custom_post_type => $label) {
 					'sync' => [
 						'selector' => '.ct-trending-block',
 						'render' => function () {
+							// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 							echo blc_get_trending_block();
 						}
 					],
@@ -204,6 +206,7 @@ $options = [
 									'sync' => [
 										'selector' => '.ct-trending-block',
 										'render' => function () {
+											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 											echo blc_get_trending_block();
 										}
 									]
@@ -225,6 +228,7 @@ $options = [
 										'sync' => [
 											'selector' => '.ct-trending-block',
 											'render' => function () {
+												// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 												echo blc_get_trending_block();
 											}
 										],
@@ -260,6 +264,7 @@ $options = [
 												'sync' => [
 													'selector' => '.ct-trending-block',
 													'render' => function () {
+														// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 														echo blc_get_trending_block();
 													}
 												]
@@ -280,6 +285,7 @@ $options = [
 								'sync' => [
 									'selector' => '.ct-trending-block',
 									'render' => function () {
+										// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										echo blc_get_trending_block();
 									}
 								],
@@ -312,6 +318,7 @@ $options = [
 										'sync' => [
 											'selector' => '.ct-trending-block',
 											'render' => function () {
+												// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 												echo blc_get_trending_block();
 											}
 										],
@@ -333,6 +340,7 @@ $options = [
 								'sync' => [
 									'selector' => '.ct-trending-block',
 									'render' => function () {
+										// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										echo blc_get_trending_block();
 									}
 								],
@@ -355,13 +363,18 @@ $options = [
 											'type' => 'text',
 											'design' => 'inline',
 											'desc' => blc_safe_sprintf(
-												__('Separate posts ID by comma. How to find the %spost ID%s.', 'blocksy-companion'),
+												// translators: %1$s and %2$s are HTML tags
+												__(
+												  'Separate posts ID by comma. How to find the %1$spost ID%2$s.',
+												  'blocksy-companion'
+												),
 												'<a href="https://www.wpbeginner.com/beginners-guide/how-to-find-post-category-tag-comments-or-user-id-in-wordpress/" target="_blank">',
 												'</a>'
 											),
 											'sync' => [
 												'selector' => '.ct-trending-block',
 												'render' => function () {
+													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													echo blc_get_trending_block();
 												}
 											],
@@ -394,6 +407,7 @@ $options = [
 												'sync' => [
 													'selector' => '.ct-trending-block',
 													'render' => function () {
+														// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 														echo blc_get_trending_block();
 													}
 												],
@@ -417,6 +431,7 @@ $options = [
 											'sync' => [
 												'selector' => '.ct-trending-block',
 												'render' => function () {
+													// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 													echo blc_get_trending_block();
 												}
 											]
@@ -431,6 +446,7 @@ $options = [
 									'sync' => [
 										'selector' => '.ct-trending-block',
 										'render' => function () {
+											// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 											echo blc_get_trending_block();
 										}
 									]
@@ -460,6 +476,7 @@ $options = [
 											'selector' => '.ct-trending-block',
 											'loader_selector' => '.entry-meta',
 											'render' => function () {
+												// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 												echo blc_get_trending_block();
 											}
 										],
@@ -492,6 +509,7 @@ $options = [
 								'sync' => [
 									'selector' => '.ct-trending-block',
 									'render' => function () {
+										// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 										echo blc_get_trending_block();
 									}
 								],

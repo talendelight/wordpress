@@ -218,11 +218,11 @@ Adjust based on requirements, but keep reasonable limits to prevent abuse.
 See [infra/dev/reports/plugins-themes-report.md](../infra/dev/reports/plugins-themes-report.md) for full inventory.
 
 **Installed plugins:**
-- Akismet 5.4 (spam protection)
-- Blocksy Companion 2.1.9 (theme features)
-- Elementor 3.31.3 (page builder)
-- WooCommerce 10.1.2 (e-commerce)
-- WPForms Lite 1.9.7.3 (forms)
+- Akismet 5.6 (spam protection)
+- Blocksy Companion 2.1.23 (theme features)
+- Elementor 3.34.0 (page builder)
+- WooCommerce 10.4.3 (e-commerce)
+- WPForms Lite 1.9.8.7 (forms)
 
 **Active theme:**
 - Blocksy 2.1.9

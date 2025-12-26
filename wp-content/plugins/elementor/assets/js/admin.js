@@ -1,4 +1,3 @@
-/*! elementor - v3.31.0 - 27-08-2025 */
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -1695,19 +1694,17 @@ function _regeneratorDefine(e, r, n, t) {
     i = 0;
   }
   module.exports = _regeneratorDefine = function regeneratorDefine(e, r, n, t) {
-    if (r) i ? i(e, r, {
+    function o(r, n) {
+      _regeneratorDefine(e, r, function (e) {
+        return this._invoke(r, n, e);
+      });
+    }
+    r ? i ? i(e, r, {
       value: n,
       enumerable: !t,
       configurable: !t,
       writable: !t
-    }) : e[r] = n;else {
-      var o = function o(r, n) {
-        _regeneratorDefine(e, r, function (e) {
-          return this._invoke(r, n, e);
-        });
-      };
-      o("next", 0), o("throw", 1), o("return", 2);
-    }
+    }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2));
   }, module.exports.__esModule = true, module.exports["default"] = module.exports, _regeneratorDefine(e, r, n, t);
 }
 module.exports = _regeneratorDefine, module.exports.__esModule = true, module.exports["default"] = module.exports;
@@ -2074,8 +2071,7 @@ var _module3 = _interopRequireDefault(__webpack_require__(/*! elementor/modules/
         $settingsTabsWrapper: $('#elementor-settings-tabs-wrapper'),
         $menuGetHelpLink: $('a[href="admin.php?page=go_knowledge_base_site"]'),
         $menuGoProLink: $('a[href="admin.php?page=go_elementor_pro"]'),
-        $reMigrateGlobalsButton: $('.elementor-re-migrate-globals-button'),
-        $menuCloudHostingPlansLink: $('a[href="edit.php?post_type=elementor_library&page=go_cloud_hosting_plans"]')
+        $reMigrateGlobalsButton: $('.elementor-re-migrate-globals-button')
       };
       elements.$settingsFormPages = elements.$settingsForm.find('.elementor-settings-form-page');
       elements.$activeSettingsPage = elements.$settingsFormPages.filter('.elementor-active');
@@ -2362,7 +2358,7 @@ var _module3 = _interopRequireDefault(__webpack_require__(/*! elementor/modules/
      * @since 3.6.0
      */
     openLinksInNewTab: function openLinksInNewTab() {
-      var elements = [this.elements.$menuGetHelpLink, this.elements.$menuGoProLink, this.elements.$menuCloudHostingPlansLink];
+      var elements = [this.elements.$menuGetHelpLink, this.elements.$menuGoProLink];
       elements.forEach(function ($element) {
         // Only add the attribute if the element is found.
         if ($element.length) {

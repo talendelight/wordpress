@@ -38,7 +38,7 @@ class Plugin {
 
 	private $is_blocksy = '__NOT_SET__';
 	public $is_blocksy_data = null;
-	private $desired_blocksy_version = '2.0.96-beta1';
+	private $desired_blocksy_version = '2.1.16-dev1';
 
 	private $request_uri = '';
 
@@ -191,7 +191,12 @@ class Plugin {
 		// helper function.
 		//
 		// Mainly caused by TranslatePress Business SEO pack.
-		$this->request_uri = $_SERVER['REQUEST_URI'];
+		//
+		// Important -- should not be escaped in order to preserve the original
+		// value.
+		//
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$this->request_uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '';
 
 		add_filter(
 			'extra_theme_headers',
@@ -215,6 +220,7 @@ class Plugin {
 	}
 
 	public function check_if_blocksy_is_activated() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		add_filter(
 			'doing_it_wrong_trigger_error',
 			[$this, 'doing_it_wrong_trigger_error']
@@ -265,7 +271,13 @@ class Plugin {
 					&&
 					! empty($_REQUEST['customize_theme'])
 				) {
-					$maybe_foreign_theme = $_REQUEST['customize_theme'];
+					// It's important to not sanitize this value here. We need
+					// the exact theme slug to compare it with the current one.
+					//
+					// We will not persist this value anywhere, so it's safe.
+					//
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$maybe_foreign_theme = wp_unslash($_REQUEST['customize_theme']);
 				}
 
 				if (
@@ -273,10 +285,16 @@ class Plugin {
 					&&
 					! empty($_REQUEST['wp_theme_preview'])
 				) {
-					$maybe_foreign_theme = $_REQUEST['wp_theme_preview'];
+					// It's important to not sanitize this value here. We need
+					// the exact theme slug to compare it with the current one.
+					//
+					// We will not persist this value anywhere, so it's safe.
+					//
+					// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$maybe_foreign_theme = sanitize_text_field(wp_unslash($_REQUEST['wp_theme_preview']));
 				}
 
-				$server_uri = $_SERVER['REQUEST_URI'];
+				$server_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
 
 				// If previewing a theme in the customizer.
 				if (
@@ -284,9 +302,11 @@ class Plugin {
 					&&
 					! empty($_REQUEST['theme'])
 					&&
-					strpos($_SERVER['REQUEST_URI'], 'customize.php') !== false
+					isset($_SERVER['REQUEST_URI'])
+					&&
+					strpos(sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])), 'customize.php') !== false
 				) {
-					$maybe_foreign_theme = $_REQUEST['theme'];
+					$maybe_foreign_theme = sanitize_text_field(wp_unslash($_REQUEST['theme']));
 				}
 
 				$is_wpappninja = isset($_REQUEST['wpappninja']);
@@ -294,7 +314,7 @@ class Plugin {
 				if (
 					isset($_SERVER['HTTP_REFERER'])
 					&&
-					preg_match('#wpappninja_simul4#', $_SERVER['HTTP_REFERER'])
+					preg_match('#wpappninja_simul4#', sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER'])))
 				) {
 					$is_wpappninja = true;
 				}
@@ -367,6 +387,24 @@ class Plugin {
 				}
 			}
 
+			if (! function_exists('is_plugin_active')) {
+				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+			}
+
+			if (is_plugin_active('breakdance/plugin.php')) {
+				$is_theme_disabled = (string) json_decode(
+					get_option('breakdance_is_theme_disabled', 'false'),
+					true
+				);
+
+				$is_theme_disabled = $is_theme_disabled === 'yes' || boolval($_GET['builder_preview'] ?? false);
+
+				if ($is_theme_disabled) {
+					$is_correct_theme = false;
+					$is_correct_version = false;
+				}
+			}
+
 			$this->is_blocksy_data = [
 				'is_correct_theme' => (
 					$is_correct_theme
@@ -393,6 +431,7 @@ class Plugin {
 		);
 
 		return !!$this->is_blocksy;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	public function doing_it_wrong_trigger_error() {

@@ -6,7 +6,7 @@ This guide covers deploying WordPress to Hostinger using their built-in Git inte
 
 **Development (Local Machine):**
 - Docker/Podman containers via [infra/dev/compose.yml](../infra/dev/compose.yml)
-- WordPress 6.8.2 + PHP 8.2 + MariaDB 11.8.2
+- WordPress 6.9.0 + PHP 8.3 + MariaDB 11.8.3
 - Ephemeral database (resets on `podman-compose down -v`)
 
 **Production (Hostinger):**

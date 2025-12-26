@@ -121,29 +121,39 @@ function blc_ext_newsletter_subscribe_output_form($args = []) {
 		$fields_number = '3';
 	}
 
+	$html_args = [];
+	$html_args['class'] = trim($args['class']);
+
+	if (is_customize_preview()) {
+		$html_args['data-shortcut'] = 'border';
+
+		$prefix = blocksy_manager()->screen->get_prefix();
+		$html_args['data-shortcut-location'] = blocksy_first_level_deep_link($prefix) . ':newsletter_subscribe_single_post_enabled';
+	}
+
 	ob_start();
 
 	?>
 
-	<div class="<?php echo esc_attr(trim($args['class'])) ?>">
+	<div <?php blocksy_attr_to_html_e($html_args) ?>>
 		<?php if ($args['has_title']) { ?>
 			<h3><?php echo esc_html($args['title']) ?></h3>
 		<?php } ?>
 
 		<?php if ($args['has_description'] && ! empty($args['description'])) { ?>
 			<p>
-				<?php echo $args['description'] ?>
+				<?php echo wp_kses_post($args['description']) ?>
 			</p>
 		<?php } ?>
 
 		<form target="_blank" action="<?php echo esc_attr($form_url) ?>" method="post"
-			data-provider="<?php echo $provider_data['provider'] ?>"
+			data-provider="<?php echo esc_attr($provider_data['provider']) ?>"
 			class="ct-newsletter-subscribe-form"
-			<?php echo $skip_submit_output ?>>
+			<?php echo wp_kses_post($skip_submit_output) ?>>
 
 			<div
 				<?php
-					echo blocksy_attr_to_html(
+					blocksy_attr_to_html_e(
 						array_merge(
 							[
 								'class' => 'ct-newsletter-subscribe-form-elements',
@@ -162,12 +172,12 @@ function blc_ext_newsletter_subscribe_output_form($args = []) {
 						type="text"
 						name="FNAME"
 						placeholder="<?php echo esc_attr($args['name_label'], 'blocksy-companion') . ($args['name_required'] === 'yes' ? ' *' : ''); ?>"
-						aria-label="<?php echo __('First name', 'blocksy-companion') ?>"
+						aria-label="<?php echo esc_attr__('First name', 'blocksy-companion') ?>"
 						<?php echo ($args['name_required'] === 'yes' ? 'required' : ''); ?>
 					>
 				<?php } ?>
 
-				<input type="email" name="EMAIL" placeholder="<?php esc_attr_e($args['email_label'], 'blocksy-companion'); ?> *" aria-label="<?php echo __('Email address', 'blocksy-companion') ?>" required>
+				<input type="email" name="EMAIL" placeholder="<?php echo esc_attr($args['email_label']); ?> *" aria-label="<?php echo esc_attr__('Email address', 'blocksy-companion') ?>" required>
 
 				<button class="wp-element-button">
 					<?php echo esc_html($args['button_text']) ?>
@@ -175,6 +185,7 @@ function blc_ext_newsletter_subscribe_output_form($args = []) {
 			</div>
 
 			<?php if (function_exists('blocksy_ext_cookies_checkbox')) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo blocksy_ext_cookies_checkbox('subscribe');
 			} ?>
 

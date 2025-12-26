@@ -7,7 +7,7 @@
 
 ## Project Overview
 
-This is a WordPress 6.8.2 (PHP 8.2) development environment managed via Podman Compose for local development, with production deployment to Hostinger via Git integration.
+This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman Compose for local development, with production deployment to Hostinger via Git integration.
 
 **Directory Structure:**
 - **[infra/dev/](infra/dev/)** - Podman Compose config for local development environment
@@ -40,7 +40,7 @@ Services exposed:
 ### Database Management
 
 - **Ephemeral database strategy**: Database resets to clean state on every fresh startup
-- [infra/shared/db/000000-init.sql](infra/shared/db/000000-init.sql) is the source of truth (version-controlled baseline)
+- [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql) is the source of truth (version-controlled baseline)
 - Uses Podman named volume (destroyed with `podman-compose down -v`)
 - To reset database: `podman-compose down -v && podman-compose up -d`
 - See [docs/DATABASE.md](docs/DATABASE.md) for complete database workflow guide
@@ -104,7 +104,7 @@ Repository root contains only `wp-content/` for production deployment:
 
 ## Database Philosophy
 
-- Development uses **ephemeral databases** - always starts fresh from [infra/shared/db/000000-init.sql](infra/shared/db/000000-init.sql)
+- Development uses **ephemeral databases** - always starts fresh from [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql)
 - Database changes are tracked as version-controlled SQL files, not live data
 - To persist work across sessions: `podman-compose stop` (without `-v`)
 - To reset completely: `podman-compose down -v && podman-compose up -d`

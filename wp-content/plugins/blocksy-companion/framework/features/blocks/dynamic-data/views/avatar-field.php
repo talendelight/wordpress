@@ -27,6 +27,7 @@ $value = get_avatar(
 	$avatar_size,
 	'',
 	blocksy_safe_sprintf(
+		// translators: %s is the author's display name.
 		__('%s Avatar', 'blocksy-companion'),
 		blocksy_get_the_author_meta('display_name', $author_id)
 	),
@@ -87,5 +88,5 @@ if (empty($value)) {
 
 $wrapper_attr = get_block_wrapper_attributes($wrapper_attr);
 
-echo blocksy_html_tag('figure', $wrapper_attr, $value);
+blocksy_html_tag_e('figure', $wrapper_attr, $value);
 

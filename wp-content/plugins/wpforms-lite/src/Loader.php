@@ -284,6 +284,18 @@ class Loader {
 				'hook' => 'admin_init',
 			],
 			[
+				'name' => 'Admin\Pages\SugarCalendar',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\Duplicator',
+				'hook' => 'admin_init',
+			],
+			[
+				'name' => 'Admin\Pages\UncannyAutomator',
+				'hook' => 'admin_init',
+			],
+			[
 				'name' => 'Forms\Fields\Richtext\EntryViewContent',
 			],
 			[
@@ -445,6 +457,10 @@ class Loader {
 
 		$this->classes[] = [
 			'name' => 'Forms\Fields\Repeater\Field',
+		];
+
+		$this->classes[] = [
+			'name' => 'Forms\Fields\Camera\Field',
 			'hook' => 'init',
 		];
 

@@ -16,6 +16,15 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 	// noinspection JSUnusedGlobalSymbols
 
 	/**
+	 * Read-only class.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @type {string}
+	 */
+	const readOnlyClass = 'wpforms-field-readonly';
+
+	/**
 	 * Safely get a property from wpforms_settings with a fallback default value.
 	 *
 	 * @since 1.9.7.2
@@ -105,14 +114,21 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 			app.restoreSubmitButtonOnEventPersisted();
 
 			app.bindChoicesJS();
+			app.readOnlyFieldsInit();
 
 			// Randomize elements.
 			$( '.wpforms-randomize' ).each( function() {
 				const $list = $( this ),
-					$listItems = $list.children();
+					$listItems = $list.children().not( '.wpforms-other-choice' ).toArray(),
+					$other = $list.children( '.wpforms-other-choice' );
 
 				while ( $listItems.length ) {
 					$list.append( $listItems.splice( Math.floor( Math.random() * $listItems.length ), 1 )[ 0 ] );
+				}
+
+				// Append the "other" choice last (if exists).
+				if ( $other.length ) {
+					$list.append( $other );
 				}
 			} );
 
@@ -339,6 +355,28 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 
 				return true;
 			}, wpforms_settings.val_filesize );
+
+			// Validate method for camera fields.
+			$.validator.addMethod( 'camera-required', function( value, element ) {
+				const $field = $( element ).closest( '.wpforms-field-camera' );
+
+				if ( ! $field.length ) {
+					return true;
+				}
+
+				// Check if field has required attribute or class.
+				const isRequired = element.hasAttribute( 'required' ) || $field.hasClass( 'wpforms-field-required' );
+
+				if ( ! isRequired ) {
+					return true;
+				}
+
+				// Check if the camera field has a file or selected file.
+				const hasFile = ( element.files && element.files.length > 0 ) ||
+					$field.find( '.wpforms-camera-selected-file.wpforms-camera-selected-file-active' ).length > 0;
+
+				return hasFile;
+			}, wpforms_settings.val_required );
 
 			$.validator.addMethod( 'step', function( value, element, param ) {
 				const decimalPlaces = function( num ) {
@@ -606,7 +644,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 						errorElement: app.isModernMarkupEnabled() ? 'em' : 'label',
 						errorClass: 'wpforms-error',
 						validClass: 'wpforms-valid',
-						ignore: ':hidden:not(textarea.wp-editor-area), .wpforms-conditional-hide textarea.wp-editor-area',
+						ignore: ':hidden:not(textarea.wp-editor-area):not(.wpforms-field-camera:not(.wpforms-conditional-hide) input), .wpforms-conditional-hide textarea.wp-editor-area',
 						ignoreTitle: true,
 						errorPlacement( error, element ) { // eslint-disable-line complexity
 							if ( app.isLikertScaleField( element ) ) {
@@ -625,6 +663,8 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 								element.parent().parent().append( error );
 							} else if ( element.hasClass( 'wp-editor-area' ) ) {
 								element.parent().parent().parent().append( error );
+							} else if ( app.isClassicFileUploadWithCamera( element ) ) {
+								error.insertAfter( element.parent().find( 'p.wpforms-file-upload-capture-camera-classic' ) );
 							} else {
 								error.insertAfter( element );
 							}
@@ -843,6 +883,20 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				}
 				form.validate( properties );
 				app.loadValidationGroups( form );
+
+				// Add camera-required rule to camera fields.
+				const $cameraInputs = form.find( '.wpforms-field-camera input[ type="file" ], .wpforms-field-camera .dropzone-input' );
+
+				$cameraInputs.each( function() {
+					const $input = $( this );
+					const $field = $input.closest( '.wpforms-field-camera' );
+
+					if ( $field.hasClass( 'wpforms-field-required' ) || $input.attr( 'required' ) ) {
+						$input.rules( 'add', {
+							'camera-required': true,
+						} );
+					}
+				} );
 			} );
 		},
 
@@ -975,6 +1029,19 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 		 */
 		isLikertScaleField( element ) {
 			return element.hasClass( 'wpforms-likert-scale-option' );
+		},
+
+		/**
+		 * Is classic file upload with camera.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} element current form element.
+		 *
+		 * @return {boolean} true/false.
+		 */
+		isClassicFileUploadWithCamera( element ) {
+			return element.parent().find( 'p.wpforms-file-upload-capture-camera-classic' ).length > 0;
 		},
 
 		/**
@@ -1380,8 +1447,14 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 
 			// Mailcheck suggestion.
 			$( document ).on( 'blur', '.wpforms-field-email input', function() {
-				const $input = $( this ),
-					id = $input.attr( 'id' );
+				const $input = $( this );
+
+				// Skip if mailcheck suggestions are explicitly disabled in this field.
+				if ( $input.data( 'disable-suggestions' ) === 1 ) {
+					return;
+				}
+
+				const id = $input.attr( 'id' );
 
 				$input.mailcheck( {
 					suggested( $el, suggestion ) {
@@ -1473,7 +1546,6 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				args.searchEnabled = 'undefined' !== typeof searchEnabled ? searchEnabled : true;
 				args.removeItems = 'undefined' !== typeof removeItems ? removeItems : true;
 				args.removeItemButton = args.removeItems;
-				args.searchEnabled = 'undefined' !== typeof searchEnabled ? searchEnabled : true;
 
 				// We can safely allow HTML in the choices since they are sanitized before rendering.
 				// Allowing HTML in the choices is necessary for support allowed HTML entities, such as `&`.
@@ -1482,8 +1554,34 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				args.callbackOnInit = function() {
 					const self = this,
 						$element = $( self.passedElement.element ),
-						$input = $( self.input.element ),
-						sizeClass = $element.data( 'size-class' );
+						inputElement = self.input?.element,
+						$input = $( inputElement ),
+						sizeClass = $element.data( 'size-class' ),
+						selectId = $element.attr( 'id' ),
+						$listbox = this.dropdown.element.querySelector( '[role="listbox"]' ),
+						isMultiple = this.passedElement.element.multiple;
+
+					// Override default aria-haspopup for better screen reader support.
+					// Set aria-labelledby to the `<select>` element ID to associate it with the container.
+					if ( self.containerOuter && self.containerOuter.element && selectId && isMultiple ) {
+						self.containerOuter.element.setAttribute( 'aria-haspopup', 'listbox' );
+						self.containerOuter.element.setAttribute( 'aria-labelledby', selectId );
+					}
+
+					// Safari and FF need aria-controls and aria-owns attributes to work properly.
+					if ( inputElement && $listbox ) {
+						const listboxId = 'choices-listbox-' + this.passedElement.element.id;
+						$listbox.id = listboxId;
+						inputElement.setAttribute( 'aria-controls', listboxId );
+						inputElement.setAttribute( 'aria-owns', listboxId );
+					}
+
+					// Input element should have focus when dropdown is shown for the VoiceOver support.
+					self.passedElement.element.addEventListener( 'showDropdown', () => {
+						if ( inputElement && isMultiple ) {
+							inputElement.focus();
+						}
+					} );
 
 					// Remove the hidden attribute and hide `<select>` like a screen-reader text.
 					// It's important for field validation.
@@ -1704,6 +1802,9 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				event.preventDefault();
 			} );
 
+			// Multiple Choice field: Other option.
+			app.bindOtherOptionActions();
+
 			// IE: Click on the `image choice` image should trigger the click event on the input (checkbox or radio) field.
 			if ( window.document.documentMode ) {
 				$document.on( 'click', '.wpforms-image-choices-item img', function() {
@@ -1835,6 +1936,11 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 					$t.flatpickr( 'close' );
 				}
 
+				// If the field is File Upload prevent change page or submit form.
+				if ( $t.hasClass( 'dropzone-input' ) ) {
+					return;
+				}
+
 				e.preventDefault();
 
 				if ( $page.hasClass( 'last' ) ) {
@@ -1859,6 +1965,31 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				.one( 'wpformsRichTextContentChange', app.richTextContentChanged );
 
 			$( 'form.wpforms-form' ).on( 'wpformsBeforePageChange', app.skipEmptyPages );
+		},
+
+		/**
+		 * Binds actions related to the "Other" option in radio fields within a form.
+		 *
+		 * @since 1.9.8.3
+		 */
+		bindOtherOptionActions() {
+			const $document = $( document );
+
+			// 1) Toggle visibility on radio change and mirror "Other" value to radio.
+			$document.on( 'change', '.wpforms-field-radio input[type="radio"]', function() {
+				const $this = $( this );
+				const $field = $this.closest( '.wpforms-field' );
+				const $li = $this.closest( 'li' );
+
+				// Hide and clear the standalone "Other" input in this field by default.
+				const $otherInput = $field.find( '.wpforms-other-input' );
+				$otherInput.addClass( 'wpforms-hidden' ).prop( 'disabled', true ).prop( 'required', false );
+
+				// If the selected radio is the "Other" choice, show its text input and mirror value.
+				if ( $this.is( ':checked' ) && $li.hasClass( 'wpforms-other-choice' ) ) {
+					$otherInput.removeClass( 'wpforms-hidden' ).prop( 'disabled', false ).prop( 'required', true );
+				}
+			} );
 		},
 
 		/**
@@ -2263,7 +2394,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 				return;
 			}
 
-			const iframeWrapperHeight = $turnstile.find( '.g-recaptcha' ).height();
+			const iframeWrapperHeight = $turnstile.find( '.cf-turnstile' ).height();
 
 			parseInt( iframeWrapperHeight, 10 ) === 0
 				? $turnstile.addClass( 'wpforms-is-turnstile-invisible' )
@@ -2413,16 +2544,31 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 		 */
 		optinMonsterRecaptchaReset( optinId ) {
 			const $form = $( '#om-' + optinId ).find( '.wpforms-form' ),
-				$captchaContainer = $form.find( '.wpforms-recaptcha-container' ),
+				$captchaContainer = $form.find( '.wpforms-recaptcha-container' );
+
+			let $captcha, captchaClass, apiVar;
+
+			// Determine provider and get appropriate elements.
+			if ( $captchaContainer.hasClass( 'wpforms-is-hcaptcha' ) ) {
+				$captcha = $form.find( '.h-captcha' );
+				captchaClass = 'h-captcha';
+				apiVar = hcaptcha;
+			} else if ( $captchaContainer.hasClass( 'wpforms-is-turnstile' ) ) {
+				$captcha = $form.find( '.cf-turnstile' );
+				captchaClass = 'cf-turnstile';
+				apiVar = turnstile;
+			} else {
 				$captcha = $form.find( '.g-recaptcha' );
+				captchaClass = 'g-recaptcha';
+				apiVar = grecaptcha;
+			}
 
 			if ( $form.length && $captcha.length ) {
 				const captchaSiteKey = $captcha.attr( 'data-sitekey' ),
-					captchaID = 'recaptcha-' + Date.now(),
-					apiVar = $captchaContainer.hasClass( 'wpforms-is-hcaptcha' ) ? hcaptcha : grecaptcha;
+					captchaID = 'recaptcha-' + Date.now();
 
 				$captcha.remove();
-				$captchaContainer.prepend( '<div class="g-recaptcha" id="' + captchaID + '" data-sitekey="' + captchaSiteKey + '"></div>' );
+				$captchaContainer.prepend( '<div class="' + captchaClass + '" id="' + captchaID + '" data-sitekey="' + captchaSiteKey + '"></div>' );
 
 				apiVar.render(
 					captchaID,
@@ -3285,9 +3431,13 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 			// Check for invisible recaptcha first.
 			recaptchaID = $form.find( '.wpforms-submit' ).get( 0 ).recaptchaID;
 
-			// Check for hcaptcha/recaptcha v2 if invisible recaptcha is not found.
+			// Check for hcaptcha/recaptcha v2/turnstile if invisible recaptcha is not found.
 			if ( app.empty( recaptchaID ) && recaptchaID !== 0 ) {
-				recaptchaID = $form.find( '.g-recaptcha' ).data( 'recaptcha-id' );
+				const $captchaEl = $form.find( '.g-recaptcha, .h-captcha, .cf-turnstile' );
+
+				if ( $captchaEl.length ) {
+					recaptchaID = $captchaEl.data( 'recaptcha-id' );
+				}
 			}
 
 			// Reset captcha.
@@ -3986,6 +4136,173 @@ var wpforms = window.wpforms || ( function( document, window, $ ) { // eslint-di
 		 */
 		getTimestampSec() {
 			return Math.floor( Date.now() / 1000 );
+		},
+
+		/**
+		 * Set the field as read-only.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} $field Field container object.
+		 */
+		lockField( $field ) {
+			const type = $field.data( 'field-type' );
+			const disallowedFields = wpforms_settings.readOnlyDisallowedFields ?? [];
+
+			if ( disallowedFields.includes( type ) ) {
+				return;
+			}
+
+			$field
+				.addClass( readOnlyClass )
+				.find( 'input, textarea, select:not(.wpforms-field-select-style-modern)' )
+				.prop( 'readonly', true )
+				.attr( 'tabindex', '-1' );
+
+			if ( $field.hasClass( 'wpforms-field-select-style-modern' ) ) {
+				const $select = $field.find( 'select' );
+				$select.data( 'choicesjs' )?.disable();
+				$select.removeAttr( 'disabled' );
+
+				return;
+			}
+
+			if ( $field.hasClass( 'wpforms-field-richtext' ) ) {
+				window.WPFormsRichTextField?.lockField( $field );
+			}
+		},
+
+		/**
+		 * Remove the read-only state from the field.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @param {jQuery} $field Field object.
+		 */
+		unlockField( $field ) {
+			$field
+				.removeClass( readOnlyClass )
+				.find( 'input, textarea, select:not(.wpforms-field-select-style-modern)' )
+				.prop( 'readonly', false )
+				.attr( 'tabindex', null );
+
+			if ( $field.hasClass( 'wpforms-field-select-style-modern' ) ) {
+				$field.find( 'select' ).data( 'choicesjs' )?.enable();
+				return;
+			}
+
+			if ( $field.hasClass( 'wpforms-field-richtext' ) ) {
+				window.WPFormsRichTextField?.unlockField( $field );
+			}
+		},
+
+		/**
+		 * Initialize read-only fields.
+		 *
+		 * @since 1.9.8
+		 */
+		readOnlyFieldsInit() {
+			$( '.wpforms-field.' + readOnlyClass ).each( function() {
+				app.lockField( $( this ) );
+			} );
+		},
+
+		/**
+		 * The field object.
+		 *
+		 * @since 1.9.8
+		 *
+		 * @type {Object}
+		 */
+		field: {
+			/**
+			 * Set the field as read-only.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string} formId  Form ID.
+			 * @param {number|string} fieldId Field ID.
+			 */
+			lock( formId, fieldId ) {
+				app.lockField( $( `#wpforms-${ formId }-field_${ fieldId }-container` ) );
+			},
+
+			/**
+			 * Remove the read-only state from the field.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string} formId  Form ID.
+			 * @param {number|string} fieldId Field ID.
+			 */
+			unlock( formId, fieldId ) {
+				app.unlockField( $( `#wpforms-${ formId }-field_${ fieldId }-container` ) );
+			},
+
+			/**
+			 * Toggle the read-only state of the field.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string}  formId  Form ID.
+			 * @param {number|string}  fieldId Field ID.
+			 * @param {string|boolean} state   Set field state.
+			 */
+			toggle( formId, fieldId, state = 'auto' ) {
+				const $container = $( `#wpforms-${ formId }-field_${ fieldId }-container` );
+				const isLocked = $container.hasClass( readOnlyClass );
+				const setState = state === 'auto' ? ! isLocked : state;
+
+				if ( setState ) {
+					app.lockField( $container );
+				} else {
+					app.unlockField( $container );
+				}
+			},
+
+			/**
+			 * Check if the field is locked (read-only).
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string} formId  Form ID.
+			 * @param {number|string} fieldId Field ID.
+			 *
+			 * @return {boolean} True if the field is locked, false otherwise.
+			 */
+			isLocked( formId, fieldId ) {
+				return $( `#wpforms-${ formId }-field_${ fieldId }-container` ).hasClass( readOnlyClass );
+			},
+
+			/**
+			 * Lock all fields in the form.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string} formId Form ID.
+			 */
+			lockAll( formId ) {
+				const $fields = $( `#wpforms-${ formId } .wpforms-field` );
+
+				$fields.each( function() {
+					app.lockField( $( this ) );
+				} );
+			},
+
+			/**
+			 * Unlock all fields in the form.
+			 *
+			 * @since 1.9.8
+			 *
+			 * @param {number|string} formId Form ID.
+			 */
+			unlockAll( formId ) {
+				const $fields = $( `#wpforms-${ formId }` ).find( '.wpforms-field' );
+
+				$fields.each( function() {
+					app.unlockField( $( this ) );
+				} );
+			},
 		},
 	};
 

@@ -1,0 +1,103 @@
+name: Deploy wp-content to Hostinger
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Prepare deployment directory
+      - name: Prepare deployment (apply .hostingerignore)
+        run: |
+          # Create clean deployment directory
+          mkdir -p deploy
+          
+          # Copy wp-content to deployment staging
+          cp -r wp-content deploy/
+          
+          # Apply .hostingerignore exclusions
+          if [ -f .hostingerignore ]; then
+            echo "Applying .hostingerignore exclusions..."
+            echo "----------------------------------------"
+            
+            while IFS= read -r pattern || [ -n "$pattern" ]; do
+              # Skip empty lines and comments
+              [[ -z "$pattern" || "$pattern" =~ ^#.*$ ]] && continue
+              # Remove leading/trailing whitespace
+              pattern=$(echo "$pattern" | xargs)
+              [[ -z "$pattern" ]] && continue
+              
+              echo "Processing pattern: $pattern"
+              
+              # Handle wp-content/ prefixed patterns
+              if [[ "$pattern" == wp-content/* ]]; then
+                clean_pattern="${pattern#wp-content/}"
+                
+                # Handle wildcard patterns (e.g., backup*, *.log)
+                if [[ "$clean_pattern" == *"*"* ]]; then
+                  echo "  → Wildcard exclusion: $clean_pattern"
+                  # Use -name for simple wildcards, -path for complex patterns
+                  if [[ "$clean_pattern" == *"/"* ]]; then
+                    find deploy/wp-content -path "deploy/wp-content/$clean_pattern" -exec rm -rf {} + 2>/dev/null || true
+                  else
+                    find deploy/wp-content -name "$clean_pattern" -exec rm -rf {} + 2>/dev/null || true
+                  fi
+                else
+                  # Exact path match
+                  echo "  → Exact exclusion: $clean_pattern"
+                  if [ -e "deploy/wp-content/$clean_pattern" ]; then
+                    rm -rf "deploy/wp-content/$clean_pattern"
+                    echo "    ✓ Removed"
+                  else
+                    echo "    ○ Not found (skipped)"
+                  fi
+                fi
+              
+              # Handle root-level wildcard patterns (e.g., *.log)
+              elif [[ "$pattern" == *"*"* ]]; then
+                echo "  → Root wildcard exclusion: $pattern"
+                find deploy -name "$pattern" -exec rm -rf {} + 2>/dev/null || true
+              
+              # Handle root-level exact paths (not in wp-content)
+              else
+                echo "  → Root exclusion: $pattern (not in wp-content, skipped)"
+              fi
+              
+            done < .hostingerignore
+            
+            echo "----------------------------------------"
+            echo "Exclusions applied successfully"
+            echo ""
+          else
+            echo "Warning: .hostingerignore not found"
+          fi
+          
+          # Show deployment summary
+          echo "Deployment Summary:"
+          echo "----------------------------------------"
+          total_files=$(find deploy -type f | wc -l)
+          total_size=$(du -sh deploy | cut -f1)
+          echo "Total files: $total_files"
+          echo "Total size: $total_size"
+          echo ""
+          echo "First 20 files to be deployed:"
+          find deploy -type f | head -20
+          echo "..."
+
+      # Upload wp-content to Hostinger via SCP
+      - name: Upload to Hostinger via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          source: "deploy/wp-content/*"
+          target: "${{ secrets.HOSTINGER_PATH }}/"
+          strip_components: 1
+          overwrite: true
