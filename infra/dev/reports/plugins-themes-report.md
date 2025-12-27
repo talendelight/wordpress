@@ -61,14 +61,14 @@ Themes
 
 - Blocksy
   - Folder: `blocksy`
-  - Version: 2.1.9
+  - Version: 2.1.23
   - Requires PHP: 7.0
   - Tested up to: 6.8
   - Notes: Commercial/theme framework; companion plugin present.
 
 - Twenty Twenty-Five
   - Folder: `twentytwentyfive`
-  - Version: 1.3
+  - Version: 1.4
   - Requires PHP: 7.2
 
 - Twenty Twenty-Four

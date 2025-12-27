@@ -26,7 +26,12 @@
 # - config/   - Development configurations (tracked in git)
 
 # Temporary files and sensitive data (NOT tracked in git, NOT deployed)
+# Includes: SQL exports, SSH keys, credentials, test data
 tmp/
+tmp/hostinger-ssh-keys.md
+
+# Sensitive documentation (contains credentials, access details)
+docs/HOSTINGER.md
 
 # GitHub Actions deployment staging directory
 deploy/
@@ -99,3 +104,8 @@ Desktop.ini
 # See .hostingerignore for deployment exclusion rules
 # infra/, docs/, .github/, config/ are tracked in git but not deployed
 
+
+# LiteSpeed Cache files (environment-specific, do not sync)
+wp-content/litespeed/
+wp-content/.litespeed_conf.dat
+wp-content/object-cache.php

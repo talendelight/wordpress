@@ -2,6 +2,35 @@
 
 Welcome to the WordPress project documentation. This directory contains comprehensive guides for development, deployment, security, and maintenance.
 
+## Prerequisites
+
+### Windows PowerShell Setup
+
+**Issue:** PowerShell scripts may be blocked with error:
+```
+File cannot be loaded because running scripts is disabled on this system.
+PSSecurityException: UnauthorizedAccess
+```
+
+**Solution (One-time fix):**
+1. Press **Windows** key, type "PowerShell"
+2. Right-click → **Run as Administrator**
+3. Execute:
+   ```powershell
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+   ```
+4. Type `Y` and press **Enter**
+5. Re-run the command, type `A` and press **Enter**
+6. Close PowerShell and reopen normally
+
+**Verify fix:**
+```powershell
+Get-ExecutionPolicy -List
+```
+Should show `LocalMachine: RemoteSigned`
+
+---
+
 ## Quick Links
 
 - **[DATABASE.md](DATABASE.md)** - Database management for dev and production environments
@@ -18,7 +47,8 @@ Welcome to the WordPress project documentation. This directory contains comprehe
 
 **Topics:**
 - Ephemeral vs persistent database strategies
-- SQL file naming conventions (`000000-00-init.sql`, `{yymmdd}-{HHmm}-change-{short.desc}.sql`)
+- SQL file naming conventions (`000000-00-init.sql`, `{yymmdd}-{HHmm}-{action}-{short.desc}.sql`)
+- Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
 - Development workflows (starting fresh, exporting changes)
 - Production backups and restore procedures
 - Database migrations and troubleshooting

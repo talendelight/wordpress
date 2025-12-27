@@ -225,7 +225,7 @@ See [infra/dev/reports/plugins-themes-report.md](../infra/dev/reports/plugins-th
 - WPForms Lite 1.9.8.7 (forms)
 
 **Active theme:**
-- Blocksy 2.1.9
+- Blocksy 2.1.23
 
 ### Plugin Security Best Practices
 

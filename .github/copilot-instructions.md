@@ -5,6 +5,18 @@
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
 2. **Never make assumptions** - ask for clarification when requirements are ambiguous
 
+## Known Issues & Solutions
+
+### PowerShell Execution Policy Error
+
+If user encounters `PSSecurityException: UnauthorizedAccess` error when running PowerShell scripts, suggest this one-time fix:
+
+1. Open PowerShell as Administrator
+2. Run: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine`
+3. Confirm with `Y`, then re-run and confirm with `A`
+
+This is a Windows security restriction and requires manual Administrator access. Cannot be automated.
+
 ## Project Overview
 
 This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman Compose for local development, with production deployment to Hostinger via Git integration.
@@ -40,10 +52,25 @@ Services exposed:
 ### Database Management
 
 - **Ephemeral database strategy**: Database resets to clean state on every fresh startup
-- [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql) is the source of truth (version-controlled baseline)
+- **Source of truth**: ALL SQL files in [infra/shared/db/](infra/shared/db/) combined (not just 000000-00-init.sql alone)
+  - [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql) - Baseline WordPress schema
+  - Delta files: `{yymmdd}-{HHmm}-{action}-{short.desc}.sql` - Incremental changes applied on top of baseline
+  - Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
+  - **Combined baseline** = init file + all delta files applied sequentially
 - Uses Podman named volume (destroyed with `podman-compose down -v`)
 - To reset database: `podman-compose down -v && podman-compose up -d`
 - See [docs/DATABASE.md](docs/DATABASE.md) for complete database workflow guide
+
+**Database Comparison Rule**: When comparing current database state with "previous baseline", the baseline is the COMBINED state of ALL SQL files in `infra/shared/db/` (000000-00-init.sql + all deltas), not just the init file alone.
+
+**Delta File Creation Rules**:
+- ✅ Delta files MUST contain ONLY incremental changes, NOT full exports
+- ❌ NEVER include `DROP TABLE IF EXISTS` for existing tables in deltas
+- ❌ NEVER include `CREATE TABLE` for tables that exist in baseline
+- ✅ Use `TRUNCATE TABLE` + `INSERT` pattern for updating entire table data (e.g., wp_options)
+- ✅ Use `ALTER TABLE` for schema modifications
+- ✅ Use `INSERT INTO` for new records, `UPDATE` for modifications
+- ✅ Extract only changed data sections from mysqldump exports, not entire database
 
 ### Using WP-CLI
 
@@ -108,7 +135,10 @@ Repository root contains only `wp-content/` for production deployment:
 - Database changes are tracked as version-controlled SQL files, not live data
 - To persist work across sessions: `podman-compose stop` (without `-v`)
 - To reset completely: `podman-compose down -v && podman-compose up -d`
-- Production uses Hostinger's managed MySQL database with manual SQL import workflow
+- **Schema parity rule**: Local database schema MUST match production exactly (including Hostinger plugin tables)
+- **Content separation**: Local uses test data, production has real data - content is NEVER synced
+- Production uses Hostinger's managed MySQL database
+- See [docs/SYNC-STRATEGY.md](docs/SYNC-STRATEGY.md) for complete local/production sync approach
 
 ## When Working with Plugins/Themes
 
