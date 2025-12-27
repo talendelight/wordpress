@@ -203,6 +203,19 @@ class WooCommerceAddToCart {
 		}
 
 		$this->output_cart_action_open();
+
+		// If we will encounter an woocommerce_before_add_to_cart_button action before the actual next woocommerce_post_class,
+		// this means that the add to cart form for the current product is rendered
+		// one more time. So, we need to ignore it and finalize logic in this case.
+		//
+		// This check is needed only on single product pages. The archive pages logic is covered
+		// in finalize logic already.
+		//
+		// This happened for Free Downloads WooCommerce Pro plugin.
+		if (blocksy_manager()->screen->is_product()) {
+			$this->finalize_action_name = 'woocommerce_before_add_to_cart_button';
+			add_action($this->finalize_action_name, [$this, 'finalize_add_to_cart'], 50);
+		}
 	}
 
 	public function woocommerce_before_add_to_cart_button() {
@@ -332,6 +345,14 @@ class WooCommerceAddToCart {
 			get_option('woocommerce_cart_redirect_after_add', 'no') === 'no'
 		) {
 			$classes[] = 'ct-ajax-add-to-cart';
+		}
+
+		if (! empty($this->finalize_action_name)) {
+			remove_action(
+				$this->finalize_action_name,
+				[$this, 'finalize_add_to_cart'],
+				50
+			);
 		}
 
 		// https://github.com/woocommerce/woocommerce/blob/701d9341dde6fa8861684fb161cdca9ec94a7a4d/plugins/woocommerce/includes/wc-template-functions.php#L1784

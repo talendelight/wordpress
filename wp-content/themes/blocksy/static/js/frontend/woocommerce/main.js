@@ -25,7 +25,10 @@ export const wooEntryPoints = [
 				// the pills are very fragile and if we will do a preventDefault
 				// on them, they will not work. This is especially tricky on
 				// touch devices.
-				ignoredEls: ['.flexy-pills'],
+				//
+				// Same situation for arrows, we should not interfere with their
+				// click events.
+				ignoredEls: ['.flexy-pills', '[class*="flexy-arrow-"]'],
 			},
 		],
 	},

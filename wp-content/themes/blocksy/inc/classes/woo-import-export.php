@@ -5,7 +5,8 @@ namespace Blocksy;
 class WooImportExport {
 	private $export_type = 'product';
 	private $blocksy_column_id = 'blocksy_custom_data';
-	private $is_first_row_processed = false;
+
+	private $custom_data = [];
 
 	private static $data_cache = null;
 
@@ -35,6 +36,61 @@ class WooImportExport {
 			'woocommerce_csv_product_import_mapping_default_columns',
 			[$this, 'default_import_column_name']
 		);
+
+		add_filter('woocommerce_product_export_product_query_args', function($args) {
+			if (
+				! empty($args['page'])
+				&&
+				intval($args['page']) === 1
+			) {
+				$this->custom_data = [];
+				delete_option('blocksy_woo_export_data');
+			} else {
+				$this->custom_data = get_option('blocksy_woo_export_data', []);
+			}
+
+			return $args;
+		});
+
+		add_filter('woocommerce_product_export_rows', function ($data, $exporter) {
+			if (
+				$exporter->get_percent_complete() >= 100
+				&&
+				! empty($data)
+			) {
+				$this->custom_data = apply_filters(
+					'blocksy_woo_product_export:finalize',
+					$this->custom_data,
+					$exporter
+				);
+
+				$pos = strrpos($data, "BLOCKSY_CUSTOM_DATA_PLACEHOLDER");
+
+				if ($pos !== false) {
+					$replacement = json_encode($this->custom_data);
+					$replacement = '"' . str_replace('"', '""', $replacement) . '"';
+
+					$data = substr_replace(
+						$data,
+						$replacement,
+						$pos,
+						strlen("BLOCKSY_CUSTOM_DATA_PLACEHOLDER")
+					);
+				}
+			}
+
+			$data = str_replace("BLOCKSY_CUSTOM_DATA_PLACEHOLDER", '', $data);
+
+			return $data;
+		}, 10, 2);
+	}
+
+	public function set_custom_data($data) {
+		$this->custom_data = $data;
+	}
+
+	public function get_custom_data() {
+		return $this->custom_data;
 	}
 
 	public static function parse_data($data) {
@@ -46,32 +102,8 @@ class WooImportExport {
 		return $array;
 	}
 
-	public static function implode_values($values) {
-		$values_to_implode = [];
-
-		foreach ($values as $value) {
-			$value = (string) is_scalar($value) ? html_entity_decode($value, ENT_QUOTES) : '';
-			$values_to_implode[] = str_replace(',', '\\,', $value);
-		}
-
-		return implode(', ', $values_to_implode);
-	}
-
 	public function export_custom_data($value, $product) {
-		$current_step = isset($_POST['step']) ? $_POST['step'] : "1";
-
-		if (
-			$current_step !== '1'
-			||
-			$this->is_first_row_processed
-		) {
-			return '';
-		}
-
-		$this->is_first_row_processed = true;
-
-		$data = apply_filters('blocksy_export_custom_data', [], $product);
-		return self::implode_values([json_encode($data)]);
+		return 'BLOCKSY_CUSTOM_DATA_PLACEHOLDER';
 	}
 
 	public function export_column_name($columns) {
@@ -263,34 +295,106 @@ class WooImportExport {
 	}
 
 	public static function get_import_file_data() {
+		if (!isset($_POST['file'])) {
+			return [];
+		}
+
 		if (self::$data_cache) {
 			return self::$data_cache;
 		}
 
 		$file = wc_clean(wp_unslash($_POST['file'] ?? ''));
 
-		$params = [
-			'delimiter' => ! empty($_POST['delimiter']) ? wc_clean(wp_unslash($_POST['delimiter'])) : ',',
-			'start_pos' => 0,
-			'mapping' => isset($_POST['mapping']) ? (array) wc_clean(wp_unslash($_POST['mapping'])) : array(),
-			'update_existing' => false,
-			'character_encoding' => isset($_POST['character_encoding']) ? wc_clean(wp_unslash($_POST['character_encoding'])) : '',
-			'lines' => 1,
-			'parse' => true,
-		];
-
-		$importer = new \WC_Product_CSV_Importer($file, $params);
-
-		if (! isset($importer->get_parsed_data()[0]['blocksy_custom_data'])) {
+		if (!file_exists($file)) {
 			return [];
 		}
 
-		$parsed_data = self::parse_data($importer->get_parsed_data()[0]['blocksy_custom_data'])[0];
+		$data = self::get_header_and_last_line($file);
+
+		if (!$data || empty($data['last_line']) || empty($data['header'])) {
+			return [];
+		}
+
+		$delimiter = !empty($_POST['delimiter'])
+			? wc_clean(wp_unslash($_POST['delimiter']))
+			: ',';
+
+		$header_columns = str_getcsv($data['header'], $delimiter);
+
+		if (!$header_columns) {
+			return [];
+		}
+
+		$columns_map = array_flip($header_columns);
+
+		// find Blocksy Custom Data in $columns_map
+		$index_of_custom_data = array_search('Blocksy Custom Data', $header_columns, true);
+
+		if ($index_of_custom_data === false) {
+			return [];
+		}
+
+		$columns = str_getcsv($data['last_line'], $delimiter);
+
+		if (!isset($columns[$index_of_custom_data])) {
+			return [];
+		}
+
+		$value = $columns[$index_of_custom_data];
+
+		$parsed_data = self::parse_data($value)[0] ?? null;
+
+		if (!$parsed_data) {
+			return [];
+		}
 
 		self::$data_cache = $parsed_data;
 
 		return $parsed_data;
 	}
-}
 
+	private static function get_header_and_last_line($file) {
+		$fh = fopen($file, 'r');
+		if (!$fh) {
+			return false;
+		}
+
+		$header = fgets($fh);
+
+		$cursor = -1;
+		$line = '';
+
+		fseek($fh, $cursor, SEEK_END);
+		$char = fgetc($fh);
+
+		while ($char === "\n" || $char === "\r") {
+			fseek($fh, $cursor--, SEEK_END);
+			$char = fgetc($fh);
+		}
+
+		while ($char !== false && $char !== "\n") {
+			$line = $char . $line;
+			fseek($fh, $cursor--, SEEK_END);
+			$char = fgetc($fh);
+		}
+
+		fclose($fh);
+
+		return [
+			'header'    => $header,
+			'last_line' => $line
+		];
+	}
+
+	public static function implode_values($values) {
+		$values_to_implode = [];
+
+		foreach ($values as $value) {
+			$value = (string) is_scalar($value) ? html_entity_decode($value, ENT_QUOTES) : '';
+			$values_to_implode[] = str_replace(',', '\\,', $value);
+		}
+
+		return implode(', ', $values_to_implode);
+	}
+}
 
