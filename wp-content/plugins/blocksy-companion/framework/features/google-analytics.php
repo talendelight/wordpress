@@ -33,6 +33,7 @@ class GoogleAnalytics {
 						}
 					}
 
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					echo $this->get_ga_4_code();
 				});
 			}
@@ -46,21 +47,32 @@ class GoogleAnalytics {
 			return '';
 		}
 
+		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
+
 		ob_start(); ?>
 
 		<!-- Global site tag (gtag.js) - Google Analytics v4 -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $analytics_v4_id ?>"></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $analytics_v4_id;
+		 ?>"></script>
 		<script>
 		window.dataLayer = window.dataLayer || [];
 		function gtag(){dataLayer.push(arguments);}
 		gtag('js', new Date());
 
-		gtag('config', '<?php echo $analytics_v4_id?>');
+		gtag('config', '<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $analytics_v4_id;
+		?>');
+
 		</script>
 		<!-- End Google Analytics v4 -->
 
 		<?php
 		return ob_get_clean();
+
+		// phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
 	}
 
 	public function generate_google_analytics_opts($options) {
@@ -71,8 +83,9 @@ class GoogleAnalytics {
 				'design' => 'block',
 				'value' => '',
 				'desc' => blc_safe_sprintf(
+					// translators: %1$s and %2$s are HTML tags for a link.
 					__(
-						'Link your Google Analytics 4 tracking ID. More info and instructions can be found %shere%s.',
+						'Link your Google Analytics 4 tracking ID. More info and instructions can be found %1$shere%2$s.',
 						'blocksy-companion'
 					),
 					'<a href="https://support.google.com/analytics/answer/9744165?hl=en" target="_blank">',

@@ -15,18 +15,31 @@ This guide covers database strategies for both development and production enviro
 
 All environments use [infra/shared/db/](../infra/shared/db/) as the source of truth:
 
-- **`000000-init.sql`** - Baseline WordPress schema (complete installation)
-- **`{yymmdd}-change.sql`** - Structural changes (ALTER TABLE, CREATE INDEX, etc.)
+- **`000000-00-init.sql`** - Baseline WordPress schema (complete installation)
+- **`{yymmdd}-{HHmm}-{action}-{short.desc}.sql`** - Incremental changes (ALTER TABLE, CREATE INDEX, new plugin tables, etc.)
 - **`/tmp/{yymmdd}-data.sql`** - Sensitive product/customer data (not in git)
 
 See [infra/shared/db/README.md](../infra/shared/db/README.md) for detailed naming conventions.
+
+### Schema Parity Principle
+
+**Local database schema MUST match production exactly**, including tables for plugins that are excluded from local `wp-content/`.
+
+**Why:**
+- Enables accurate testing of database migrations
+- Prevents schema drift errors during deployment
+- Ensures SQL queries work identically in both environments
+
+**Example:** Production has `wp_hostinger_reach_*` tables from Hostinger plugin suite. Local creates these tables via delta files, but Hostinger plugin files are NOT in local `wp-content/plugins/`. Result: Schema parity maintained, plugin excluded from development.
+
+**See:** [docs/SYNC-STRATEGY.md](SYNC-STRATEGY.md) for complete local/production sync approach.
 
 ### How It Works
 
 **First deployment** (empty database volume):
 1. MariaDB container starts
 2. All `.sql` files in `/docker-entrypoint-initdb.d/` are executed alphabetically
-3. `000000-init.sql` creates baseline schema
+3. `000000-00-init.sql` creates baseline schema
 4. All `{yymmdd}-change.sql` files apply structural updates
 5. WordPress is ready
 
@@ -107,37 +120,133 @@ podman exec -it wordpress wp db export /tmp/current.sql
 
 ### Making Database Changes
 
+### Database Change Workflow
+
 When developing features that require database modifications:
 
-1. **Start from clean state**: `podman-compose down -v && up -d`
-2. **Make changes via WordPress admin**: Add products, configure settings
-3. **Export structural changes**:
+#### Step 1: Export Current State to tmp/
 
-   **For schema changes** (commit to git):
-   ```powershell
-   # Export structure only
-   podman exec -it wp-db mysqldump -u root -ppassword --no-data wordpress | `
-     Out-File -Encoding utf8 ..\shared\db\251225-add-loyalty-tables.sql
-   ```
+Always export database snapshots to the tmp/ folder for comparison:
 
-   **For product data** (manual import, not in git):
-   ```powershell
-   # Export WooCommerce products to /tmp
-   podman exec -it wp-db mysqldump -u root -ppassword wordpress `
-     --tables wp_posts wp_postmeta `
-     --where="post_type='product'" | `
-     Out-File -Encoding utf8 ..\..\tmp\251225-data.sql
-   ```
+```powershell
+cd infra/dev
 
-4. **Test the import**: `podman-compose down -v && up -d`
-5. **Commit structural changes**: `git add ../shared/db/251225-*.sql`
+# Export complete database with timestamp
+$timestamp = Get-Date -Format 'yyMMdd-HHmm'
+podman exec -it wp-db mysqldump -u root -ppassword wordpress | `
+  Out-File -Encoding utf8 ..\..\tmp\$timestamp-change.sql
+
+# Example: tmp/251226-1430-change.sql
+```
+
+#### Step 2: Decide on Change Type
+
+You'll be asked: **Replace baseline or create delta?**
+
+**Option A: Replace Baseline** (for major changes or fresh baseline)
+- Replace `infra/shared/db/000000-00-init.sql` with tmp snapshot
+- Use when: Starting fresh, major schema overhaul, or initial setup
+
+**Option B: Create Delta File** (for incremental changes)
+- Compare **combined baseline** with tmp snapshot
+- **Combined baseline** = `000000-00-init.sql` + ALL existing delta files in `infra/shared/db/`
+- Extract only the differences (new tables, altered columns, new data)
+- Save to `infra/shared/db/{yymmdd}-{HHmm}-{action}-{short.desc}.sql`
+- Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
+- Use when: Adding features, schema changes, configuration updates
+
+> ⚠️ **Important**: When comparing current database state with "previous baseline", the baseline is NOT just `000000-00-init.sql` alone. It's the combined state of ALL SQL files in `infra/shared/db/` applied sequentially (init file + all delta files).
+
+#### Step 3: Create Delta (if Option B chosen)
+
+**CRITICAL: Delta files must contain ONLY incremental changes, NOT full exports!**
+
+```powershell
+# Compare COMBINED BASELINE with tmp/{yymmdd}-{HHmm}-baseline.sql
+#   Combined baseline = 000000-00-init.sql + all existing deltas
+#   NOT just 000000-00-init.sql alone!
+
+# Extract ONLY the differences - delta must NOT include:
+#   ❌ DROP TABLE IF EXISTS statements
+#   ❌ CREATE TABLE statements for existing tables
+#   ❌ Full table data dumps
+
+# Delta SHOULD include only:
+#   ✅ ALTER TABLE (for schema changes)
+#   ✅ CREATE TABLE (for NEW tables only)
+#   ✅ TRUNCATE TABLE + INSERT (for data updates to specific tables)
+#   ✅ UPDATE statements (for specific record changes)
+#   ✅ INSERT INTO (for new records only)
+
+# Example: Extract wp_options changes for theme updates
+$newExport = Get-Content "tmp\{yymmdd}-{HHmm}-baseline.sql" -Raw
+$optionsData = [regex]::Match($newExport, 
+  "(?<=LOCK TABLES ``wp_options`` WRITE;).*?(?=UNLOCK TABLES;)",
+  [System.Text.RegularExpressions.RegexOptions]::Singleline).Value
+
+# Create delta file with header + incremental changes
+@"
+-- Delta: {short.desc}
+-- Date: {yymmdd}-{HHmm}
+-- Purpose: Brief description of what changed
+
+-- Update wp_options with new theme configuration
+TRUNCATE TABLE ``wp_options``;
+LOCK TABLES ``wp_options`` WRITE;
+$optionsData
+UNLOCK TABLES;
+"@ | Out-File "infra\shared\db\{yymmdd}-{HHmm}-{action}-{short.desc}.sql"
+
+# Save delta to infra/shared/db/{yymmdd}-{HHmm}-{action}-{short.desc}.sql
+```
+
+#### Step 4: Test Import
+
+```powershell
+# Reset and test from clean state
+podman-compose down -v
+podman-compose up -d
+
+# Verify both baseline and deltas imported
+podman exec -it wordpress wp db check
+```
+
+#### Step 5: Commit Changes
+
+```powershell
+# For delta files
+git add infra/shared/db/{yymmdd}-{HHmm}-{action}-{short.desc}.sql
+git commit -m "feat: add loyalty points feature"
+
+# For baseline replacement
+git add infra/shared/db/000000-00-init.sql
+git commit -m "chore: update database baseline"
+```
+
+### Legacy Export Methods
+
+**For schema-only exports** (commit to git):
+```powershell
+# Export structure only
+podman exec -it wp-db mysqldump -u root -ppassword --no-data wordpress | `
+  Out-File -Encoding utf8 ..\shared\db\251225-add-loyalty-tables.sql
+```
+
+**For product data** (manual import, not in git):
+```powershell
+# Export WooCommerce products to /tmp
+podman exec -it wp-db mysqldump -u root -ppassword wordpress `
+  --tables wp_posts wp_postmeta `
+  --where="post_type='product'" | `
+  Out-File -Encoding utf8 ..\..\tmp\251225-data.sql
+```
 
 ### Exporting Current Database
 
 **Method 1: Full export via mysqldump**
 ```powershell
 podman exec -it wp-db mysqldump -u root -ppassword wordpress | `
-  Out-File -Encoding utf8 ..\shared\db\000000-init.sql
+  Out-File -Encoding utf8 ..\shared\db\000000-00-init.sql
 ```
 
 **Method 2: phpMyAdmin export**
@@ -167,11 +276,11 @@ podman-compose up -d
 podman exec -it wp-db ls -la /docker-entrypoint-initdb.d/
 
 # Check SQL syntax
-podman exec -it wp-db mysql -u root -ppassword < ../shared/db/000000-init.sql
+podman exec -it wp-db mysql -u root -ppassword < ../shared/db/000000-00-init.sql
 ```
 
 **Slow startup:**
-- Keep `000000-init.sql` minimal (baseline only)
+- Keep `000000-00-init.sql` minimal (baseline only)
 - Move large product data to `/tmp/*.sql` for manual import
 
 ---
@@ -190,7 +299,7 @@ Production uses **persistent databases** - live customer data survives container
 
 ```yaml
 db:
-  image: mariadb:11.8.2-noble
+  image: mariadb:11.8.3-noble
   volumes:
     - db_data:/var/lib/mysql   # Persistent named volume
     - ../shared/db:/docker-entrypoint-initdb.d  # First-run only
@@ -219,7 +328,7 @@ db:
    ```
 
 2. **Prepare baseline SQL:**
-   - Export from dev: `podman exec -it wp-db mysqldump -u root -ppassword wordpress > ../shared/db/000000-init.sql`
+   - Export from dev: `podman exec -it wp-db mysqldump -u root -ppassword wordpress > ../shared/db/000000-00-init.sql`
    - Or use existing backup
    - Update URLs for production domain
 
@@ -418,7 +527,7 @@ Common causes: corrupted volume, disk space, port conflict
 
 ## Best Practices (All Environments)
 
-1. **Keep 000000-init.sql minimal** - Baseline schema and admin user only
+1. **Keep 000000-00-init.sql minimal** - Baseline schema and admin user only
 2. **Version control structural changes** - Commit `../shared/db/*.sql` to git
 3. **Exclude sensitive data** - Product/customer data goes in `/tmp/` (gitignored)
 4. **Use descriptive filenames** - `251222-add-loyalty-points.sql` not `update1.sql`

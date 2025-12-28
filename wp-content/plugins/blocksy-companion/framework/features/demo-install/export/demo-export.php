@@ -8,11 +8,20 @@ class DemoInstallExport {
 			wp_send_json_error();
 		}
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$demoId = isset($_REQUEST['demoId']) ? sanitize_text_field(wp_unslash($_REQUEST['demoId'])) : '';
+
+		if ($demoId === '') {
+			wp_send_json_error();
+		}
+
 		global $wp_customize;
 
-		$demoId = sanitize_text_field($_REQUEST['demoId']);
-		$builder = sanitize_text_field($_REQUEST['builder']);
-		$plugins = sanitize_text_field($_REQUEST['plugins']);
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$builder = isset($_REQUEST['builder']) ? sanitize_text_field(wp_unslash($_REQUEST['builder'])) : '';
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$plugins = isset($_REQUEST['plugins']) ? sanitize_text_field(wp_unslash($_REQUEST['plugins'])) : '';
 
 		$plugins = explode(',', preg_replace('/\s+/', '', $plugins));
 
@@ -38,13 +47,13 @@ class DemoInstallExport {
 			'content' => $content_data,
 
 			'pages_ids_options' => $options_data->export_pages_ids_options(),
-			'created_at' => date('d-m-Y'),
+			'created_at' => gmdate('d-m-Y'),
 
 			'builder' => $builder,
 			'plugins' => $plugins
 		];
 
-		update_option( 'blocksy_ext_demos_exported_demo_data', [
+		update_option('blocksy_ext_demos_exported_demo_data', [
 			'demoId' => $demoId,
 			'builder' => $builder,
 			'plugins' => $plugins

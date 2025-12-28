@@ -39,7 +39,9 @@ class Blocksy_Translations_Manager {
 				}
 
 				new PLL_Translate_Option('theme_mods_blocksy', $all_keys);
-				new PLL_Translate_Option('theme_mods_blocksy-child', $all_keys);
+				if (is_child_theme()) {
+					new PLL_Translate_Option('theme_mods_' . basename(get_stylesheet_directory()), $all_keys);
+				}
 
 				blocksy_manager()->db->wipe_cache();
 			}
@@ -266,6 +268,7 @@ class Blocksy_Translations_Manager {
 			"free_not_enought_message",
 			"free_enought_message",
 			"breadcrumb_home_text",
+			"woo_reserved_timer_message"
 		];
 
 		$prefixes = blocksy_manager()->screen->get_single_prefixes();
@@ -277,7 +280,6 @@ class Blocksy_Translations_Manager {
 			);
 
 			if ($related_label !== '__empty__') {
-				continue;
 				$keys[] = $prefix . '_related_label';
 			}
 
@@ -503,4 +505,8 @@ function blocksy_safe_sprintf($format, ...$args) {
 	}
 
 	return $result;
+}
+
+function blocksy_safe_sprintf_e($format, ...$args) {
+	echo blocksy_safe_sprintf($format, ...$args);
 }

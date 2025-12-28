@@ -1,7 +1,7 @@
 services:
 
   wordpress:
-    image: wordpress:6.8.2-php8.2-apache
+    image: wordpress:6.9.0-php8.3-apache
     container_name: wordpress
     volumes:
       - ../../config/wp-config.php:/var/www/html/wp-config.php
@@ -39,7 +39,7 @@ services:
       # - 8443:443
 
   wp-db:
-    image: mariadb:11.8.2-noble
+    image: mariadb:11.8.3-noble
     container_name: wp-db
     volumes:
       - db-data:/var/lib/mysql
@@ -58,7 +58,7 @@ services:
   phpmyadmin:
     depends_on:
       - wp-db
-    image: phpmyadmin/phpmyadmin:latest
+    image: phpmyadmin:5.2.2-apache
     container_name: phpmyadmin
     restart: always
     ports:

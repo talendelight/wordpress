@@ -203,7 +203,10 @@ class UsageTracking implements IntegrationInterface {
 			'wpforms_stats'                  => $this->get_additional_stats(),
 			'wpforms_ai'                     => AIHelpers::is_used(),
 			'wpforms_ai_killswitch'          => AIHelpers::is_disabled(),
+			'wpforms_disabled_entries_count' => count( $this->get_forms_with_disabled_entries( $forms ) ),
 		];
+
+		$data = $this->add_promotion_plugin_data( $data );
 
 		if ( ! empty( $first_form_date ) ) {
 			$data['wpforms_forms_first_created'] = $first_form_date;
@@ -211,6 +214,36 @@ class UsageTracking implements IntegrationInterface {
 
 		if ( $data['is_multisite'] ) {
 			$data['url_primary'] = network_site_url();
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Adds promotional plugin data to the provided array.
+	 *
+	 * @since 1.9.8.6
+	 *
+	 * @param array $data An array of existing data.
+	 *
+	 * @return array Modified data array with promotional plugin information added, if applicable.
+	 */
+	private function add_promotion_plugin_data( array $data ): array {
+
+		$plugins = [
+			'wpconsent',
+			'sugar-calendar',
+			'duplicator',
+			'uncannyautomator',
+		];
+
+		foreach ( $plugins as $plugin ) {
+			$source = (string) get_option( $plugin . '_source', '' );
+			$date   = (int) get_option( $plugin . '_date', 0 );
+
+			if ( $date && strpos( $source, 'WPForms' ) !== false ) {
+				$data[ 'wpforms_' . $plugin . '_date' ] = $date;
+			}
 		}
 
 		return $data;
@@ -572,6 +605,26 @@ class UsageTracking implements IntegrationInterface {
 			static function ( $form ) {
 
 				return ! empty( $form->post_content['settings']['ajax_submit'] );
+			}
+		);
+	}
+
+	/**
+	 * Retrieve forms with disabled entries.
+	 *
+	 * @since 1.9.8
+	 *
+	 * @param array $forms List of forms.
+	 *
+	 * @return array.
+	 */
+	private function get_forms_with_disabled_entries( array $forms ): array {
+
+		return array_filter(
+			$forms,
+			static function ( $form ) {
+
+				return ! empty( $form->post_content['settings']['disable_entries'] );
 			}
 		);
 	}

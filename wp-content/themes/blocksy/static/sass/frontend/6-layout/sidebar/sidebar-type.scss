@@ -1,3 +1,5 @@
+@use "../../1-helpers/functions";
+
 .ct-sidebar {
 	position: relative;
 	z-index: 1;
@@ -14,7 +16,7 @@
 	// sticky sidebar
 	&[data-sticky='sidebar'],
 	.ct-sticky-widgets {
-		@include media-breakpoint-up(lg) {
+		@include functions.media-breakpoint-up(lg) {
 			// prettier-ignore
 			position: sticky;
 			top: calc(var(--sidebar-offset, 50px) + var(--admin-bar, 0px) + var(--theme-frame-size, 0px) + var(--header-sticky-height, 0px) * (var(--sticky-shrink, 100) / 100));
@@ -22,7 +24,7 @@
 	}
 
 	&[data-sticky='widgets'] {
-		@include media-breakpoint-up(lg) {
+		@include functions.media-breakpoint-up(lg) {
 			height: 100%;
 		}
 	}
@@ -54,7 +56,7 @@ aside {
 
 	// type 4
 	&[data-type='type-4'] {
-		@include media-breakpoint-down(md) {
+		@include functions.media-breakpoint-down(md) {
 			.ct-sidebar {
 				padding: var(--sidebar-inner-spacing, 35px);
 				background: var(--sidebar-background-color, var(--theme-palette-color-8));
@@ -64,7 +66,7 @@ aside {
 }
 
 // type 3 & 4 helper
-@include media-breakpoint-up(lg) {
+@include functions.media-breakpoint-up(lg) {
 	aside[data-type='type-3'],
 	aside[data-type='type-4'] {
 		position: relative;
@@ -110,7 +112,7 @@ aside {
 }
 
 // type 3 & 4
-@include media-breakpoint-up(lg) {
+@include functions.media-breakpoint-up(lg) {
 	[data-vertical-spacing='top:bottom'] {
 		--sidebar-helper-top: calc(var(--theme-content-vertical-spacing) * -1);
 		--sidebar-helper-height: calc(100% + var(--theme-content-vertical-spacing) * 2);

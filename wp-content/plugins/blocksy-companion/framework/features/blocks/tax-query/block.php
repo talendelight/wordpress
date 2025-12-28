@@ -483,7 +483,6 @@ class TaxQuery {
 
 	private static function get_attributes($attributes) {
 		// migrate to native brands
-		
 		if ($attributes['taxonomy'] === 'product_brands') {
 			$attributes['taxonomy'] = 'product_brand';
 		}
@@ -569,6 +568,17 @@ class TaxQuery {
 			'hide_empty' => $attributes['hide_empty'] === 'yes',
 		];
 
+		// for product categories, if orderby is none, we want to let
+		// WooCommerce handle the ordering so we get the same order as
+		// set in the admin UI.
+		if (
+			$terms_query_args['orderby'] === 'none'
+			&&
+			$terms_query_args['taxonomy'] === 'product_cat'
+		) {
+			unset($terms_query_args['orderby']);
+		}
+
 		if (
 			$attributes['level'] === 'parent'
 			||
@@ -590,6 +600,7 @@ class TaxQuery {
 		}
 
 		if (! empty($filtered_exclude)) {
+			// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude
 			$terms_query_args['exclude'] = $filtered_exclude;
 		}
 
@@ -603,7 +614,13 @@ class TaxQuery {
 			10, 2
 		);
 
-		$terms = get_terms($terms_query_args);
+		$terms = get_terms(
+			apply_filters(
+				'blocksy:general:blocks:tax-query:args',
+				$terms_query_args,
+				$attributes
+			)
+		);
 
 		remove_filter(
 			'get_terms_orderby',

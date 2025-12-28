@@ -8,10 +8,6 @@ $has_fallback = false;
 
 $has_field_link = blocksy_akg('has_field_link', $attributes, 'no') === 'yes';
 
-
-
-// blocksy_print($style_attrs);
-
 if ($field === 'wp:archive_title') {
 	$archive_title_renderer = new \Blocksy\ArchiveTitleRenderer([
 		'has_label' => false
@@ -360,7 +356,7 @@ if ($field === 'wp:terms') {
 				$termClass = blocksy_akg('termClass', $attributes, '');
 
 				if (! empty($termClass)) {
-                    $classes[] = $termClass;
+					$classes[] = $termClass;
 				}
 
 				if (! empty($classes)) {
@@ -447,8 +443,4 @@ wp_apply_colors_support($block_type, $attributes);
 
 $wrapper_attr = get_block_wrapper_attributes($wrapper_attr);
 
-echo blocksy_html_tag(
-	$tagName,
-	$wrapper_attr,
-	$value
-);
+blocksy_html_tag_e($tagName, $wrapper_attr, $value);

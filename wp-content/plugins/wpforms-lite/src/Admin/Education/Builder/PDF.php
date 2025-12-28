@@ -80,7 +80,12 @@ class PDF {
 	 */
 	private function is_popup_visible(): bool {
 
-		if ( empty( $this->addon_data ) && ! wpforms()->is_pro() ) {
+		$action = $this->addon_data['action'] ?? 'install';
+
+		if (
+			empty( $this->addon_data ) ||
+			( $action === 'install' && empty( $this->addon_data['url'] ) ) // The install action requires a valid URL.
+		) {
 			return false;
 		}
 
@@ -148,7 +153,7 @@ class PDF {
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/pdf-education/pdf.svg' ),
 			__( 'NEW FEATURE', 'wpforms-lite' ),
 			__( 'PDF Addon', 'wpforms-lite' ),
-			__( 'Easily turn form entry data into beautifully designed PDFs and attach them to notifications.' ),
+			__( 'Easily turn form entry data into beautifully designed PDFs and attach them to notifications.', 'wpforms-lite' ),
 			$this->get_button_html()
 		);
 

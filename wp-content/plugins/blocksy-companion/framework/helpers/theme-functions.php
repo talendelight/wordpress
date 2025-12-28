@@ -11,7 +11,7 @@ namespace Blocksy;
 // For the blocksy_get_theme_mod() function, the special handling of the null
 // value is not necessary.
 //
-// Right now, only three functions must be protected with this proxy:
+// Right now, only five functions must be protected with this proxy:
 //
 // - blocksy_get_theme_mod()
 // - blocksy_get_variables_from_file()
@@ -30,14 +30,20 @@ class ThemeFunctions {
 		}
 
 		ob_start();
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_print_backtrace
 		debug_print_backtrace();
 		$backtrace = ob_get_clean();
 
 		blc_debug_log('ThemeFunctions->__call : missing function', [
 			'function_name' => $name,
 			'is_cli' => defined('WP_CLI') && WP_CLI ? 'yes' : 'no',
+
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			'current_script' => $_SERVER['SCRIPT_FILENAME'],
+
 			'backtrace' => $backtrace,
+
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'request' => $_REQUEST
 		]);
 

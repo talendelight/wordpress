@@ -1,3 +1,5 @@
+@use "../../../1-helpers/functions";
+
 // general styles
 .cart_totals {
 
@@ -34,7 +36,7 @@
 		td {
 			text-align: var(--theme-table-text-align, end);
 
-			@include media-breakpoint-down(sm) {
+			@include functions.media-breakpoint-down(sm) {
 				padding-inline-start: 0;
 			}
 		}

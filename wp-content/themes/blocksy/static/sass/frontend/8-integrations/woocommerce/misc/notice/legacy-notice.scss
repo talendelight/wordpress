@@ -1,3 +1,5 @@
+@use "../../../../1-helpers/functions";
+
 .woocommerce-notices-wrapper {
 	margin-inline: auto;
 	width: var(--theme-container-width);
@@ -21,13 +23,13 @@
 
 	--theme-link-initial-color: var(--theme-text-color);
 
-	@include media-breakpoint-down (xs) {
+	@include functions.media-breakpoint-down (xs) {
 		align-items: flex-start;
 		flex-direction: column;
 		padding: 15px;
 	}
 
-	@include media-breakpoint-up (sm) {
+	@include functions.media-breakpoint-up (sm) {
 		align-items: center;
 		padding-inline-start: 55px;
 	}
@@ -45,11 +47,11 @@
 		--theme-button-min-height: 40px;
 		--theme-button-padding: 5px 15px;
 
-		@include media-breakpoint-down (xs) {
+		@include functions.media-breakpoint-down (xs) {
 			margin-top: 10px !important;
 		}
 
-		@include media-breakpoint-up (sm) {
+		@include functions.media-breakpoint-up (sm) {
 			margin-inline-start: auto !important;
 		}
 	}
@@ -64,11 +66,11 @@
 		line-height: 18px;
 		opacity: 0.9;
 
-		@include media-breakpoint-down (xs) {
+		@include functions.media-breakpoint-down (xs) {
 			display: none;
 		}
 
-		@include media-breakpoint-up (sm) {
+		@include functions.media-breakpoint-up (sm) {
 			top: 21px;
 			inset-inline-start: 20px;
 		}

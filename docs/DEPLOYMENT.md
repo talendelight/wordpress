@@ -6,7 +6,7 @@ This guide covers deploying WordPress to Hostinger using their built-in Git inte
 
 **Development (Local Machine):**
 - Docker/Podman containers via [infra/dev/compose.yml](../infra/dev/compose.yml)
-- WordPress 6.8.2 + PHP 8.2 + MariaDB 11.8.2
+- WordPress 6.9.0 + PHP 8.3 + MariaDB 11.8.3
 - Ephemeral database (resets on `podman-compose down -v`)
 
 **Production (Hostinger):**
@@ -211,23 +211,9 @@ When you make database changes locally (new tables, schema modifications, config
    - Upload your SQL file
    - Execute import
 
-#### 🚧 Future Enhancement (Open Action Item)
+#### 🚧 Future Enhancement
 
-**Goal:** Automate database migrations on deployment
-
-**Proposed Approach:**
-- Create deployment script (e.g., `.hostinger-deploy.sh` or webhook)
-- Script detects new SQL files in `infra/shared/db/`
-- Connects to Hostinger database via SSH tunnel or MySQL remote access
-- Applies migrations automatically
-- Logs applied migrations to prevent re-running
-- Integration with Hostinger's deployment hooks (if available)
-
-**Prerequisites:**
-- Research Hostinger's deployment hook capabilities
-- Enable remote MySQL access or SSH tunneling
-- Create migration tracking table
-- Implement safe rollback mechanism
+See [OPEN-ACTIONS.md](OPEN-ACTIONS.md) for automated database migration tasks.
 
 **Status:** Not yet implemented - document and track as technical debt
 
@@ -542,22 +528,9 @@ git push origin main --force
 
 ---
 
-## Open Action Items
+## See Also
 
-### 🚧 Automated Database Migrations
-
-**Current State:** Database changes require manual phpMyAdmin import
-
-**Future Goal:** Automate SQL file application on deployment
-
-**Tasks:**
-- [ ] Research Hostinger deployment hook capabilities
-- [ ] Enable remote MySQL access or SSH tunneling
-- [ ] Create deployment script (`.hostinger-deploy.sh` or webhook-triggered)
-- [ ] Implement migration tracking (applied migrations table)
-- [ ] Add safe rollback mechanism
-- [ ] Test with staging environment
-- [ ] Document usage in this guide
+- [OPEN-ACTIONS.md](OPEN-ACTIONS.md) - All open action items and future enhancements
 
 **Estimated Effort:** 2-4 hours
 

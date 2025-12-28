@@ -8,6 +8,9 @@ class DemoInstallOptionsExport {
 			'blocksy_ext_mailchimp_credentials',
 			'blocksy_ext_post_types_extra_settings',
 			'blocksy_ext_woocommerce_extra_settings',
+			'blocksy_ext_custom_fonts_settings',
+			'blocksy_ext_local_google_fonts_settings',
+			'blocksy_ext_adobe_typekit_settings',
 			'blocksy_active_extensions',
 
 			// TranslatePress
@@ -15,7 +18,10 @@ class DemoInstallOptionsExport {
 			'trp_advanced_settings',
 
 			// Elementor
-			'elementor_cpt_support'
+			'elementor_cpt_support',
+
+			// Greenshift
+			'gspb_global_settings'
 		];
 	}
 
@@ -142,6 +148,26 @@ class DemoInstallOptionsExport {
 			$data['woocommerce_attribute_taxonomies'] = json_decode(json_encode(
 				array_values(wc_get_attribute_taxonomies())
 			));
+		}
+
+		if (class_exists('\FluentSnippets\App\Model\Snippet')) {
+			$snippetModel = new \FluentSnippets\App\Model\Snippet();
+			$allSnippets = $snippetModel->get();
+
+			$formattedSnippets = [];
+
+			foreach ($allSnippets as $snippet) {
+				$code = $snippet['code'];
+				$meta = $snippet['meta'];
+
+				$formattedSnippets[] = [
+					'code'      => base64_encode($code),
+					'code_hash' => md5($code),
+					'info'      => $meta,
+				];
+			}
+
+			$data['fluent_snippets'] = $formattedSnippets;
 		}
 
 		return $data;

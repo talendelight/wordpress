@@ -6,7 +6,7 @@ Generated: 2025-12-22
 Notes: this report was produced by scanning plugin main PHP headers and theme style.css files under `wp-data/wp-content`.
 
 Environment baseline (from `infra/dev/compose.yml`):
-- WordPress image: `wordpress:6.8.2-php8.2-apache` (PHP 8.2, WP 6.8.2)
+- WordPress image: `wordpress:6.9.0-php8.3-apache` (PHP 8.3, WP 6.9.0)
 
 Plugins
 -------
@@ -14,16 +14,16 @@ Plugins
 - Akismet Anti-spam: Spam Protection
   - Folder: `akismet`
   - Plugin file: `akismet.php`
-  - Version: 5.4
+  - Version: 5.6
   - Requires at least WP: 5.8
   - Requires PHP: 7.2
   - Author: Automattic
-  - Notes: Official Automattic plugin. Version header present. Compatible with WP 6.8.2 and PHP 8.2 (requires PHP 7.2+).
+  - Notes: Official Automattic plugin. Version header present. Compatible with WP 6.9.0 and PHP 8.3 (requires PHP 7.2+).
 
 - Blocksy Companion
   - Folder: `blocksy-companion`
   - Plugin file: `blocksy-companion.php`
-  - Version: 2.1.9
+  - Version: 2.1.23
   - Requires at least WP: 6.5
   - Requires PHP: 7.0
   - Author: CreativeThemes
@@ -32,16 +32,16 @@ Plugins
 - Elementor
   - Folder: `elementor`
   - Plugin file: `elementor.php`
-  - Version: 3.31.3
+  - Version: 3.34.0
   - Requires at least WP: 6.5
   - Requires PHP: 7.4
   - Author: Elementor.com
-  - Notes: Large 3rd-party builder. Requires PHP 7.4+, OK on PHP 8.2 but some older Elementor versions can have compatibility issues; test editor flows.
+  - Notes: Large 3rd-party builder. Requires PHP 7.4+, OK on PHP 8.3 but some older Elementor versions can have compatibility issues; test editor flows.
 
 - WooCommerce
   - Folder: `woocommerce`
   - Plugin file: `woocommerce.php`
-  - Version: 10.1.2
+  - Version: 10.4.3
   - Requires at least WP: 6.7
   - Requires PHP: 7.4
   - Author: Automattic
@@ -50,25 +50,25 @@ Plugins
 - WPForms Lite
   - Folder: `wpforms-lite`
   - Plugin file: `wpforms.php`
-  - Version: 1.9.7.3
+  - Version: 1.9.8.7
   - Requires at least WP: 5.5
   - Requires PHP: 7.2
   - Author: WPForms
-  - Notes: Lite version detected; ok for PHP 8.2 though some WPForms components may require testing.
+  - Notes: Lite version detected; ok for PHP 8.3 though some WPForms components may require testing.
 
 Themes
 ------
 
 - Blocksy
   - Folder: `blocksy`
-  - Version: 2.1.9
+  - Version: 2.1.23
   - Requires PHP: 7.0
   - Tested up to: 6.8
   - Notes: Commercial/theme framework; companion plugin present.
 
 - Twenty Twenty-Five
   - Folder: `twentytwentyfive`
-  - Version: 1.3
+  - Version: 1.4
   - Requires PHP: 7.2
 
 - Twenty Twenty-Four
@@ -84,7 +84,7 @@ Themes
 Summary findings and recommendations
 -----------------------------------
 
-- Compatibility: All plugins and themes declare PHP minimums <= 7.4, so they should run on PHP 8.2, but some plugins (Elementor, WooCommerce) have large codebases and can expose runtime incompatibilities on major PHP changes — recommend running full integration smoke tests (editor, checkout, form submit).
+- Compatibility: All plugins and themes declare PHP minimums <= 7.4, so they should run on PHP 8.3, but some plugins (Elementor, WooCommerce) have large codebases and can expose runtime incompatibilities on major PHP changes — recommend running full integration smoke tests (editor, checkout, form submit).
 
 - Updates: I could not check remote plugin versions. Run WP-CLI or `wp plugin list` inside the running container to see which plugins/themes have updates available.
   - Example: `podman exec -it wordpress wp plugin list --format=json`

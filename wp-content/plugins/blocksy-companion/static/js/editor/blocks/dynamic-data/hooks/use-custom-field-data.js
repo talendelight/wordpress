@@ -1,21 +1,24 @@
 import { useMemo, useState, useEffect } from '@wordpress/element'
 
-import { getStableJsonKey } from 'ct-wordpress-helpers/get-stable-json-key'
-import cachedFetch from 'ct-wordpress-helpers/cached-fetch'
+import { getStableJsonKey } from '@creative-themes/wordpress-helpers/get-stable-json-key'
+import cachedFetch from '@creative-themes/wordpress-helpers/cached-fetch'
 
 // TODO: maybe rename this hook to show that it can be used for something else
 // other than custom fields.
 //
 // Potentially, termId can also be provided to get term data.
-const useCustomFieldData = ({ postId, fieldDescriptor }) => {
+const useCustomFieldData = ({ fieldsContext, fieldDescriptor }) => {
 	const [fieldData, setFieldData] = useState({})
+
+	const { type, post_type, post_id } = fieldsContext
 	const { provider, id, attributes, ...rest } = fieldDescriptor
 
 	const requestDescriptor = useMemo(() => {
 		const url = `${wp.ajax.settings.url}?action=blocksy_dynamic_data_block_custom_field_data`
 
 		const body = {
-			post_id: postId,
+			context: { type, post_type, post_id },
+
 			field_provider: provider,
 			field_id: id,
 
@@ -28,7 +31,7 @@ const useCustomFieldData = ({ postId, fieldDescriptor }) => {
 			body,
 			cacheKey: getStableJsonKey({ ...body, url }),
 		}
-	}, [postId, provider, id, attributes])
+	}, [type, post_type, post_id, provider, id, attributes])
 
 	useEffect(() => {
 		cachedFetch(requestDescriptor.url, requestDescriptor.body)
@@ -45,10 +48,14 @@ const useCustomFieldData = ({ postId, fieldDescriptor }) => {
 			})
 	}, [requestDescriptor])
 
+	let fieldDataResult = null
+
+	if (fieldData[requestDescriptor.cacheKey]) {
+		fieldDataResult = fieldData[requestDescriptor.cacheKey]
+	}
+
 	return {
-		fieldData: fieldData[requestDescriptor.cacheKey]
-			? fieldData[requestDescriptor.cacheKey]
-			: null,
+		fieldData: fieldDataResult,
 	}
 }
 

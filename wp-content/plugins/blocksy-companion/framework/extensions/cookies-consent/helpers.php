@@ -52,7 +52,8 @@ function blocksy_ext_cookies_checkbox($prefix = '') {
 	$message = blc_theme_functions()->blocksy_get_theme_mod(
 		'forms_cookie_consent_content',
 		blc_safe_sprintf(
-			__('I accept the %sPrivacy Policy%s', 'blocksy-companion'),
+			// translators: %1$s and %2$s are HTML tags for a link.
+			__('I accept the %1$sPrivacy Policy%2$s', 'blocksy-companion'),
 			'<a href="' . get_privacy_policy_url() . '">',
 			'</a>'
 		)
@@ -62,7 +63,18 @@ function blocksy_ext_cookies_checkbox($prefix = '') {
 
 	<p class="gdpr-confirm-policy">
 		<input name="ct_has_gdprconfirm" type="hidden" value="yes">
-		<input id="gdprconfirm<?php echo $prefix ?>" class="ct-checkbox" name="gdprconfirm" type="checkbox" required><label for="gdprconfirm<?php echo $prefix ?>"><?php echo $message ?></label>
+		<?php
+			blocksy_html_tag_e(
+				'input',
+				[
+					'id' => 'gdprconfirm' . $prefix,
+					'class' => 'ct-checkbox',
+					'name' => 'gdprconfirm',
+					'type' => 'checkbox',
+					'required' => true
+				]
+			);
+		?><label for="gdprconfirm<?php echo esc_attr($prefix) ?>"><?php echo wp_kses_post($message) ?></label>
 	</p>
 
 	<?php
