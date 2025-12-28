@@ -101,3 +101,4 @@ jobs:
           target: "${{ secrets.HOSTINGER_PATH }}/"
           strip_components: 1
           overwrite: true
+          rm: true

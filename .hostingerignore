@@ -49,6 +49,11 @@ wp-content/backup*/
 wp-content/upgrade/
 wp-content/upgrade-temp-backup/
 
+# LiteSpeed Cache files (environment-specific, do not sync)
+wp-content/litespeed/
+wp-content/.litespeed_conf.dat
+wp-content/object-cache.php
+
 # Logs
 *.log
 wp-content/debug.log
