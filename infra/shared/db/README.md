@@ -203,7 +203,7 @@ mysqldiff file1.sql file2.sql --difftype=sql
 **Pros:** Scriptable, precise  
 **Cons:** Requires installation, learning curve
 
-> 📋 **Open Action Item:** See [docs/OPEN-ACTIONS.md](../../../docs/OPEN-ACTIONS.md#3-automation--cicd---mysqldiff-integration) for mysqldiff CI/CD integration tasks.
+> 📋 **Open Action Item:** See [WORDPRESS-OPEN-ACTIONS.md](../../../../Documents/WORDPRESS-OPEN-ACTIONS.md#3-automation--cicd---mysqldiff-integration) for mysqldiff CI/CD integration tasks.
 
 ### 5. WP-CLI + jq (Structured Data Comparison)
 
@@ -263,5 +263,5 @@ Before creating a new change file:
 
 ## See Also
 
-- [docs/DATABASE.md](../../../docs/DATABASE.md) - Complete database management guide (dev and prod)
-- [docs/OPEN-ACTIONS.md](../../../docs/OPEN-ACTIONS.md) - All open action items and TODO tasks
+- [WORDPRESS-DATABASE.md](../../../../Documents/WORDPRESS-DATABASE.md) - Complete database management guide (dev and prod)
+- [WORDPRESS-OPEN-ACTIONS.md](../../../../Documents/WORDPRESS-OPEN-ACTIONS.md) - All open action items and TODO tasks

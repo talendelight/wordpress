@@ -310,6 +310,6 @@ After configuring LiteSpeed:
 ## Related Documentation
 
 - [docs/SYNC-STRATEGY.md](SYNC-STRATEGY.md) - Local/production sync rules
-- [docs/DEPLOYMENT.md](DEPLOYMENT.md) - Hostinger Git deployment
-- [docs/OPEN-ACTIONS.md](OPEN-ACTIONS.md) - Current action items
+- [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) - Hostinger Git deployment
+- [WORDPRESS-OPEN-ACTIONS.md](../../Documents/WORDPRESS-OPEN-ACTIONS.md) - Current action items
 - [Official LiteSpeed Cache Wiki](https://docs.litespeedtech.com/lscache/lscwp/overview/) - Complete documentation

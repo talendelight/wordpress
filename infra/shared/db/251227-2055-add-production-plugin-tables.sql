@@ -18,7 +18,7 @@
 -- ============================================================================
 -- OPEN ACTIONS
 -- ============================================================================
--- See: docs/OPEN-ACTIONS.md for complete list of action items
+-- See: ../../../../Documents/WORDPRESS-OPEN-ACTIONS.md for complete list of action items
 --
 -- Quick Reference:
 --   [ ] Install WooCommerce plugin (Action Scheduler dependency)
@@ -33,7 +33,7 @@
 -- wp_hostinger_reach_contact_lists
 -- wp_hostinger_reach_forms
 --
--- See: docs/OPEN-ACTIONS.md for investigation details and decision criteria
+-- See: ../../../../Documents/WORDPRESS-OPEN-ACTIONS.md for investigation details and decision criteria
 -- ============================================================================
 
 

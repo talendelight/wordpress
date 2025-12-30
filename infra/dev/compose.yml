@@ -1,8 +1,11 @@
 services:
 
-  wordpress:
-    image: wordpress:6.9.0-php8.3-apache
-    container_name: wordpress
+  wp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: wordpress-wpcli:6.9.0-php8.3-apache
+    container_name: wp
     volumes:
       - ../../config/wp-config.php:/var/www/html/wp-config.php
       - ../../config/.htaccess:/var/www/html/.htaccess

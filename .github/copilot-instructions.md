@@ -59,7 +59,7 @@ Services exposed:
   - **Combined baseline** = init file + all delta files applied sequentially
 - Uses Podman named volume (destroyed with `podman-compose down -v`)
 - To reset database: `podman-compose down -v && podman-compose up -d`
-- See [docs/DATABASE.md](docs/DATABASE.md) for complete database workflow guide
+- See [WORDPRESS-DATABASE.md](../../Documents/WORDPRESS-DATABASE.md) for complete database workflow guide
 
 **Database Comparison Rule**: When comparing current database state with "previous baseline", the baseline is the COMBINED state of ALL SQL files in `infra/shared/db/` (000000-00-init.sql + all deltas), not just the init file alone.
 
@@ -154,4 +154,4 @@ Repository root contains only `wp-content/` for production deployment:
 - **Trigger**: Push to `main` branch
 - **What deploys**: `wp-content/` directory only (themes, plugins, mu-plugins)
 - **What doesn't deploy**: WordPress core (Hostinger provides), dev infrastructure, docs
-- See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete Hostinger Git integration guide
+- See [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) for complete Hostinger Git integration guide
