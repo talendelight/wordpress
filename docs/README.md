@@ -73,7 +73,7 @@ Should show `LocalMachine: RemoteSigned`
 
 **Topics:**
 - Ephemeral vs persistent database strategies
-- SQL file naming conventions (`000000-00-init.sql`, `{yymmdd}-{HHmm}-{action}-{short.desc}.sql`)
+- SQL file naming conventions (`000000-0000-init-db.sql`, `{yymmdd}-{HHmm}-{action}-{short.desc}.sql`)
 - Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
 - Development workflows (starting fresh, exporting changes)
 - Production backups and restore procedures
@@ -153,7 +153,7 @@ wordpress/
 │   │   └── .env.example         # Production environment template
 │   └── shared/
 │       ├── init/                # SQL initialization files
-│       │   ├── 000000-00-init.sql  # Baseline database schema
+│       │   ├── 000000-0000-init-db.sql  # Baseline database schema
 │       │   └── README.md        # SQL file naming conventions
 │       └── tools/               # WPScan and vulnerability scanning
 ├── tmp/                         # Sensitive product data (gitignored)

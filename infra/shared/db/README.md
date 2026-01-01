@@ -6,7 +6,7 @@ This directory contains shared SQL initialization files used across all environm
 
 ## File Naming Convention
 
-### `000000-00-init.sql` 
+### `000000-0000-init-db.sql` 
 **First deployment / environment setup only**
 - Complete baseline database schema and initial configuration
 - Includes all WordPress core tables, plugin tables, and essential settings
@@ -45,7 +45,7 @@ This directory contains shared SQL initialization files used across all environm
 Examples:
 - `251222-1430-add-loyalty-points.sql` - adds loyalty_points column to users table (Dec 22, 2:30 PM)
 - `251225-0915-create-orders-index.sql` - adds index for faster order queries (Dec 25, 9:15 AM)
-- `251227-1149-update-theme.versions.sql` - updates wp_options with theme configs (TRUNCATE + INSERT pattern)
+- `251227-1149-update-theme-versions.sql` - updates wp_options with theme configs (TRUNCATE + INSERT pattern)
 - `260101-1200-enable-woocommerce-features.sql` - activates specific WooCommerce options (Jan 1, 12:00 PM)
 
 ### Product Data (NOT in this directory)
@@ -67,7 +67,7 @@ podman-compose up -d
 ```
 
 Docker automatically imports files from `/docker-entrypoint-initdb.d/` in alphabetical order:
-1. `000000-00-init.sql` (baseline)
+1. `000000-0000-init-db.sql` (baseline)
 2. `251222-1430-add-feature.sql` (if exists)
 3. `251225-0915-update-config.sql` (if exists)
 ...and so on
@@ -162,7 +162,7 @@ podman exec wp-db mariadb-dump -u root -ppassword wordpress > ..\..\tmp\current-
 **Best for:** Finding changed lines quickly
 
 ```powershell
-$baseline = Get-Content "infra\shared\db\000000-00-init.sql"
+$baseline = Get-Content "infra\shared\db\000000-0000-init-db.sql"
 $current = Get-Content "tmp\251227-1149-baseline.sql"
 
 Compare-Object $baseline $current | 
