@@ -1,7 +1,7 @@
 # TalenDelight User Navigation Flow
 
-**Last Updated:** December 31, 2025  
-**Status:** MVP - Homepage Complete, Other Pages Planned
+**Last Updated:** January 2, 2026  
+**Status:** MVP - Homepage Complete with Smart CTA Routing, Other Pages Planned
 
 ---
 
@@ -14,9 +14,17 @@ graph TD
     
     Start --> Home
     
-    %% Hero Section CTAs
-    Home -->|Click: I'm an Employer| Employers[Employers Page]
-    Home -->|Click: I'm a Candidate| Candidates[Candidates Page]
+    %% Hero Section CTA - Get Started Button
+    Home -->|Click: Get Started - Not Logged In| Login[Login Page]
+    Login -->|Logged in as Employer| Employers[Employers Page]
+    Login -->|Logged in as Candidate| Candidates[Candidates Page]
+    Login -->|Logged in as Scout| ScoutSubmit[Scout Submission Page]
+    Login -->|Logged in as Operator/Admin| AdminDash[Admin Dashboard]
+    
+    Home -->|Click: Get Started - Already Logged In Employer| Employers
+    Home -->|Click: Get Started - Already Logged In Candidate| Candidates
+    Home -->|Click: Get Started - Already Logged In Scout| ScoutSubmit
+    Home -->|Click: Get Started - Already Logged In Operator/Admin| AdminDash
     
     %% Specialties Section
     Home -->|Click: Cloud Backend| CloudBackend[Cloud Backend Detail Page]
@@ -24,9 +32,8 @@ graph TD
     Home -->|Click: DevOps & Infra| DevOps[DevOps & Infra Detail Page]
     Home -->|Click: Something else in mind?| Contact[Contact / Inquiry Form]
     
-    %% Final CTA Section (bottom)
-    Home -->|Click: I'm an Employer bottom CTA| Employers
-    Home -->|Click: I'm a Candidate bottom CTA| Candidates
+    %% Final CTA Section (bottom) - Same Get Started logic
+    Home -->|Click: Get Started bottom CTA| Login
     
     %% Employers Flow
     Employers -->|View How It Works| EmployersHowItWorks[How It Works for Employers]

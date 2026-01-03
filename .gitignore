@@ -33,6 +33,10 @@ tmp/hostinger-ssh-keys.md
 # Sensitive documentation (contains credentials, access details)
 docs/HOSTINGER.md
 
+# Test user credentials and session summaries (local dev only)
+docs/TEST-USERS.md
+docs/SESSION-SUMMARY*.md
+
 # GitHub Actions deployment staging directory
 deploy/
 

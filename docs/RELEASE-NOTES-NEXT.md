@@ -6,6 +6,11 @@ This document tracks all manual deployment steps required for the **next product
 
 **Purpose:** Ensure consistent, error-free deployments by documenting every manual step needed after Git push to main branch.
 
+**Git Commit Summary:**
+```
+Remove WooCommerce, add Login/Logout Menu and WP User Manager plugins, restructure header navigation, create Help page, hide e-commerce pages, add employer flow documentation and wireframe template
+```
+
 **📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
 
 ---
@@ -22,6 +27,9 @@ This document tracks all manual deployment steps required for the **next product
 - [ ] User registration and email verification setup (foundation for employer flow)
 - [ ] New Help page added
 - [ ] WooCommerce pages hidden from navigation
+- [x] Homepage CTA update: Single "Get Started" button with role-based smart routing (links to /log-in/)
+- [x] Role rename: "Partner" → "Scout" (external talent referrer)
+- [x] Test users created for all roles (local dev only)
 
 ---
 
@@ -37,6 +45,8 @@ This document tracks all manual deployment steps required for the **next product
 - [ ] WP User Manager plugin added to production
 - [ ] Login/Logout Menu plugin added to production
 - [ ] WooCommerce confirmed not in use (safe to remove)
+- [ ] Homepage "Get Started" button updated with smart routing logic
+- [ ] Role-based redirect logic tested locally for all user roles
 
 ---
 
@@ -122,13 +132,21 @@ git push origin main
    - Check Plugins page - WooCommerce should not be listed
    - No e-commerce functionality visible
    - No cart icon or shop pages in navigation
+   - Pages → All Pages: Only 8 pages remain (Welcome, About us, Help, + 5 WPUM pages)
+   - WooCommerce pages deleted (My account, Shop, Cart, Checkout, etc.)
 
 5. **Test new plugins:**
    - Plugins → Installed Plugins
    - Verify active: Login/Logout Menu, WP User Manager
    - No PHP errors/warnings in admin
 
-6. **Browser console:** Verify no JavaScript errors
+6. **Test "Get Started" button:**
+   - As logged-out user: Click "Get Started" → Should redirect to login page
+   - As logged-in user: Click "Get Started" → Should redirect to My Account
+   - Verify button text is "Get Started" (not "For Employers"/"For Candidates")
+   - Test both Hero section button and Final CTA button
+
+7. **Browser console:** Verify no JavaScript errors
 
 7. **Mobile responsive:** Test header menu on mobile devices
 
@@ -143,34 +161,65 @@ wp post create --post_type=page --post_title='Help' --post_status=publish --user
 
 ---
 
-#### Step 4: Hide WooCommerce Pages
+#### Step 4: Delete WooCommerce Leftover Pages
 
-Set the following pages to "Draft" status (hide from navigation):
+**⚠️ IMPORTANT: Delete these pages permanently - they conflict with WP User Manager pages**
+
+Delete the following pages created by WooCommerce (no longer needed):
 
 1. Navigate to: **Pages → All Pages**
-2. Quick Edit each page and set Status = Draft:
+2. Find and permanently delete:
+   - **My account** (WooCommerce version - conflicts with WPUM "Account" page)
    - Shop
    - Cart
    - Checkout
-   - Sample Page (if exists)
+   - Refund and Returns Policy
+   - Sample Page
+3. Hover over each page → Click **Trash** → Go to **Trash** → Click **Delete Permanently**
+
+**⚠️ DO NOT DELETE these WP User Manager pages:**
+- Log In ✅
+- Register ✅
+- Account ✅
+- Profile ✅
+- Password Reset ✅
 
 **Alternative (faster via WP-CLI):**
 ```bash
-# Via SSH on Hostinger
-wp post update 59 --post_status=draft  # Shop
-wp post update 60 --post_status=draft  # Cart
-wp post update 61 --post_status=draft  # Checkout
-wp post update 2 --post_status=draft   # Sample Page
+# Via SSH on Hostinger - Find page IDs first
+wp post list --post_type=page --fields=ID,post_title,post_status
+
+# Delete WooCommerce pages (adjust IDs based on production)
+wp post delete [MY_ACCOUNT_ID] [SHOP_ID] [CART_ID] [CHECKOUT_ID] [REFUND_ID] [SAMPLE_ID] --force
+
+# Example (use actual IDs from your production):
+# wp post delete 62 59 60 61 63 2 --force
 ```
 
-**Note:** Page IDs may differ on production. Find IDs first:
-```bash
-wp post list --post_type=page --fields=ID,post_title
-```
+**Why delete instead of draft?**
+- WooCommerce "My account" page conflicts with WPUM "Account" page
+- Clean up reduces confusion and potential routing conflicts
+- These pages serve no purpose without WooCommerce
 
 ---
 
-#### Step 5: Configure Header Menu
+#### Step 5: Verify Page Cleanup
+
+1. Navigate to: **Pages → All Pages**
+2. Verify only these pages exist:
+   - Welcome (Home) ✅
+   - About us ✅
+   - Help ✅
+   - Log In (WPUM) ✅
+   - Register (WPUM) ✅
+   - Account (WPUM) ✅
+   - Profile (WPUM) ✅
+   - Password Reset (WPUM) ✅
+3. Check **Trash** - should be empty or contain only deleted pages
+
+---
+
+#### Step 6: Configure Header Menu
 
 1. Navigate to: **Appearance → Menus**
 2. Create new menu: "Header Menu" (if not exists)
@@ -208,7 +257,7 @@ Must be added via WordPress Admin UI:
 
 ---
 
-#### Step 6: Configure WP User Manager (Basic Setup)
+#### Step 7: Configure WP User Manager (Basic Setup)
 
 1. Navigate to: **WPUM → Settings**
 2. **General Tab:**
@@ -219,6 +268,60 @@ Must be added via WordPress Admin UI:
 4. Save settings
 
 **Note:** Full configuration for Employer registration flow will come in a future release (WP-01.2 implementation).
+
+---
+
+#### Step 8: Update Homepage "Get Started" Button (WP-01.9)
+
+**Change:** Replace dual CTAs ("For Employers" / "For Candidates") with single "Get Started" button that routes based on authentication and role.
+
+**Implementation Options:**
+
+**Option A: Export/Import Elementor Template (Recommended)**
+1. Local: Open Home page in Elementor
+2. Update both Hero and Final CTA buttons to "Get Started"
+3. Export template: Elementor → Templates → Export
+4. Production: Elementor → Templates → Import Template
+5. Apply imported template to Home page
+6. Publish changes
+
+**Option B: Manual Edit in Production**
+1. Login to WordPress Admin: `https://talendelight.com/wp-admin/`
+2. Navigate to: **Pages → Home → Edit with Elementor**
+3. **Hero Section:**
+   - Select Button widget(s)
+   - Change text to "Get Started"
+   - Update button URL/link (see logic below)
+4. **Final CTA Section:**
+   - Select Button widget
+   - Change text to "Get Started"
+   - Update button URL/link (see logic below)
+5. Click **Update** to publish
+
+**Smart Routing Logic Implementation:**
+
+*Initial MVP approach - Manual role detection:*
+- For now: Set button to link to `/wp-login.php` with redirect parameter
+- Button URL: `/wp-login.php?redirect_to=/my-account/`
+- My Account page can then route users based on their role
+
+*Future enhancement (Phase 2 - requires custom code):*
+- Add JavaScript to detect logged-in status
+- Query user role via AJAX
+- Dynamically set button href:
+  - Not logged in: `/wp-login.php`
+  - Employer: `/employers/`
+  - Candidate: `/candidates/`
+  - Partner: `/partner/submit-candidate/`
+  - Operator/Admin: `/wp-admin/`
+
+**For MVP (this release):**
+- Set button URL to: `/log-in/` (WP User Manager login page)
+- User logs in and is redirected to `/account/` page
+- Future iterations will add dynamic role-based routing to appropriate pages
+- ✅ **COMPLETE**: Local implementation done, button links to `/log-in/`
+
+**Time:** 5-10 minutes (manual edit) or 3-5 minutes (template import)
 
 ---
 
@@ -258,7 +361,7 @@ Must be added via WordPress Admin UI:
 
 ## Time Estimate
 
-**Total deployment time:** ~40 minutes
+**Total deployment time:** ~45-50 minutes
 
 | Step | Estimated Time |
 |------|----------------|
@@ -266,11 +369,13 @@ Must be added via WordPress Admin UI:
 | Remove WooCommerce | 3 min |
 | Install plugins (2) | 5 min |
 | Create Help page | 2 min |
-| Hide WooCommerce pages | 3 min |
+| Delete WooCommerce pages | 3 min |
+| Verify page cleanup | 1 min |
 | Configure header menu | 7 min |
 | Configure WP User Manager | 5 min |
+| Update "Get Started" button | 5-10 min |
 | Verification | 10 min |
-| **Total** | **~40 min** |
+| **Total** | **~46-51 min** |
 
 ---
 
