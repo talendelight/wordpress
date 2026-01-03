@@ -89,6 +89,43 @@ jobs:
           find deploy -type f | head -20
           echo "..."
 
+      # Debug: Check Hostinger directory structure
+      - name: Debug - Inspect Hostinger directories
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            echo "=========================================="
+            echo "Current working directory:"
+            pwd
+            echo ""
+            echo "Home directory contents:"
+            ls -lah ~/
+            echo ""
+            echo "Target path (HOSTINGER_PATH):"
+            echo "${{ secrets.HOSTINGER_PATH }}"
+            echo ""
+            echo "Checking if target path exists:"
+            if [ -d "${{ secrets.HOSTINGER_PATH }}" ]; then
+              echo "✓ Target path exists"
+              echo ""
+              echo "Contents of target path:"
+              ls -lah "${{ secrets.HOSTINGER_PATH }}/"
+              echo ""
+              echo "Contents of wp-content (if exists):"
+              if [ -d "${{ secrets.HOSTINGER_PATH }}/wp-content" ]; then
+                ls -lah "${{ secrets.HOSTINGER_PATH }}/wp-content/"
+              else
+                echo "wp-content directory does not exist yet"
+              fi
+            else
+              echo "✗ Target path does NOT exist!"
+            fi
+            echo "=========================================="
+
       # Upload wp-content to Hostinger via SCP
       - name: Upload to Hostinger via SCP
         uses: appleboy/scp-action@v0.1.7

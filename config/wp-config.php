@@ -1,5 +1,6 @@
 <?php
-define( 'WP_CACHE', true );
+
+
 
 /**
  * The base configuration for WordPress
@@ -43,6 +44,10 @@ if (!function_exists('getenv_docker')) {
 
 /* Make WordPress install plugins directly */
 define('FS_METHOD', 'direct');
+
+/* WordPress Memory Limit */
+define('WP_MEMORY_LIMIT', '500M');
+define('WP_MAX_MEMORY_LIMIT', '500M');
 
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
@@ -119,6 +124,8 @@ $table_prefix = getenv_docker('WORDPRESS_TABLE_PREFIX', 'wp_');
  * @link https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/
  */
 define( 'WP_DEBUG', !!getenv_docker('WORDPRESS_DEBUG', '') );
+define( 'WP_DEBUG_DISPLAY', false ); // Hide notices on screen
+define( 'WP_DEBUG_LOG', true );      // Log errors to debug.log
 
 /* Add any custom values between this line and the "stop editing" line. */
 

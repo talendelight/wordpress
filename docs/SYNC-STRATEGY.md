@@ -250,14 +250,14 @@ Based on findings:
 ## File Reference
 
 ### Documentation
-- [docs/DATABASE.md](DATABASE.md) - Database management workflows
-- [docs/DEPLOYMENT.md](DEPLOYMENT.md) - Hostinger Git deployment
+- [WORDPRESS-DATABASE.md](../../Documents/WORDPRESS-DATABASE.md) - Database management workflows
+- [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) - Hostinger Git deployment
 - [docs/HOSTINGER.md](HOSTINGER.md) - Production credentials
-- [docs/OPEN-ACTIONS.md](OPEN-ACTIONS.md) - Current TODO items
+- [WORDPRESS-OPEN-ACTIONS.md](../../Documents/WORDPRESS-OPEN-ACTIONS.md) - Current TODO items
 
 ### Database Files
-- [infra/shared/db/000000-00-init.sql](../infra/shared/db/000000-00-init.sql) - Baseline schema
-- [infra/shared/db/251227-1149-update-theme.versions.sql](../infra/shared/db/251227-1149-update-theme.versions.sql) - Theme config delta
+- [infra/shared/db/000000-0000-init-db.sql](../infra/shared/db/000000-0000-init-db.sql) - Baseline schema
+- [infra/shared/db/251227-1149-update-theme-versions.sql](../infra/shared/db/251227-1149-update-theme-versions.sql) - Theme config delta
 - [infra/shared/db/251227-2055-add-production-plugin-tables.sql](../infra/shared/db/251227-2055-add-production-plugin-tables.sql) - Production plugin tables delta
 - [infra/shared/db/README.md](../infra/shared/db/README.md) - Delta file naming conventions
 

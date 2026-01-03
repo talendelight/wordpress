@@ -1,0 +1,10 @@
+wp.local {
+  reverse_proxy wp:80 {
+    header_up X-Real-IP {remote_host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    header_up Host {host}
+  }
+  tls /etc/caddy/certs/wp.local.pem /etc/caddy/certs/wp.local-key.pem
+}
+

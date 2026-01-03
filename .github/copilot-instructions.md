@@ -52,16 +52,16 @@ Services exposed:
 ### Database Management
 
 - **Ephemeral database strategy**: Database resets to clean state on every fresh startup
-- **Source of truth**: ALL SQL files in [infra/shared/db/](infra/shared/db/) combined (not just 000000-00-init.sql alone)
-  - [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql) - Baseline WordPress schema
+- **Source of truth**: ALL SQL files in [infra/shared/db/](infra/shared/db/) combined (not just 000000-0000-init-db.sql alone)
+  - [infra/shared/db/000000-0000-init-db.sql](infra/shared/db/000000-0000-init-db.sql) - Baseline WordPress schema
   - Delta files: `{yymmdd}-{HHmm}-{action}-{short.desc}.sql` - Incremental changes applied on top of baseline
   - Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
   - **Combined baseline** = init file + all delta files applied sequentially
 - Uses Podman named volume (destroyed with `podman-compose down -v`)
 - To reset database: `podman-compose down -v && podman-compose up -d`
-- See [docs/DATABASE.md](docs/DATABASE.md) for complete database workflow guide
+- See [WORDPRESS-DATABASE.md](../../Documents/WORDPRESS-DATABASE.md) for complete database workflow guide
 
-**Database Comparison Rule**: When comparing current database state with "previous baseline", the baseline is the COMBINED state of ALL SQL files in `infra/shared/db/` (000000-00-init.sql + all deltas), not just the init file alone.
+**Database Comparison Rule**: When comparing current database state with "previous baseline", the baseline is the COMBINED state of ALL SQL files in `infra/shared/db/` (000000-0000-init-db.sql + all deltas), not just the init file alone.
 
 **Delta File Creation Rules**:
 - ✅ Delta files MUST contain ONLY incremental changes, NOT full exports
@@ -131,7 +131,7 @@ Repository root contains only `wp-content/` for production deployment:
 
 ## Database Philosophy
 
-- Development uses **ephemeral databases** - always starts fresh from [infra/shared/db/000000-00-init.sql](infra/shared/db/000000-00-init.sql)
+- Development uses **ephemeral databases** - always starts fresh from [infra/shared/db/000000-0000-init-db.sql](infra/shared/db/000000-0000-init-db.sql)
 - Database changes are tracked as version-controlled SQL files, not live data
 - To persist work across sessions: `podman-compose stop` (without `-v`)
 - To reset completely: `podman-compose down -v && podman-compose up -d`
@@ -154,4 +154,4 @@ Repository root contains only `wp-content/` for production deployment:
 - **Trigger**: Push to `main` branch
 - **What deploys**: `wp-content/` directory only (themes, plugins, mu-plugins)
 - **What doesn't deploy**: WordPress core (Hostinger provides), dev infrastructure, docs
-- See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete Hostinger Git integration guide
+- See [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) for complete Hostinger Git integration guide

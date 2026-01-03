@@ -1,5 +1,31 @@
 # Documentation Index
 
+## System Overview
+
+This repository documents the **WordPress Primary Application** (Hostinger) used for marketing and candidate/employer intake while support applications are being built.
+
+- **WordPress (Primary):** public pages + candidate CV intake (no mandatory login) + partner/employee-assisted submissions + role-based access.
+- **Excel (Interim Ops):** operational tracking for candidate/employer/job pipelines (expected ~100 candidates/month; cycles up to ~9 months).
+- **Person App (Future):** Angular + Java 25 + MySQL system of record for structured candidate profiles (work history, qualifications, search, dedupe).
+- **CV Storage (Pattern 1):** CVs are staged on Hostinger initially, offloaded weekly to OneDrive/SharePoint, and cleaned up after a buffer window.
+
+## Key Documents (WordPress)
+
+### Business and UI
+- [WORDPRESS-BUSINESS-FUNCTIONALITY.md](WORDPRESS-BUSINESS-FUNCTIONALITY.md) — business scope, roles, workflows, acceptance criteria
+- [WORDPRESS-UI-DESIGN.md](WORDPRESS-UI-DESIGN.md) — UI specification + Figma production checklist
+- [COMMON-UI-DESIGN.md](COMMON-UI-DESIGN.md) — shared design primitives + responsive breakpoints (placeholders)
+
+### Technical and Operations
+- [WORDPRESS-TECHNICAL-DESIGN.md](WORDPRESS-TECHNICAL-DESIGN.md) — architecture, custom plugin responsibilities, file handling, exports
+- [WORDPRESS-DEPLOYMENT.md](WORDPRESS-DEPLOYMENT.md) — local/prod deployment + CV staging/offload/cleanup operational notes
+- [WORDPRESS-SECURITY.md](WORDPRESS-SECURITY.md) — security hardening with CV/PII-specific controls
+- [WORDPRESS-DATABASE.md](WORDPRESS-DATABASE.md) — DB management + PII-safe export policy
+- [WORDPRESS-OPEN-ACTIONS.md](WORDPRESS-OPEN-ACTIONS.md) — open items split into Business and Technical
+
+### Excel Templates
+- [WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv](WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv) — semicolon-delimited EU CSV template
+
 Welcome to the WordPress project documentation. This directory contains comprehensive guides for development, deployment, security, and maintenance.
 
 ## Prerequisites
@@ -33,21 +59,21 @@ Should show `LocalMachine: RemoteSigned`
 
 ## Quick Links
 
-- **[DATABASE.md](DATABASE.md)** - Database management for dev and production environments
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deploy to Hostinger, VPS, or cloud platforms
-- **[SECURITY.md](SECURITY.md)** - Vulnerability scanning, hardening, and best practices
+- **[WORDPRESS-DATABASE.md](WORDPRESS-WORDPRESS-DATABASE.md)** - Database management for dev and production environments
+- **[WORDPRESS-DEPLOYMENT.md](WORDPRESS-WORDPRESS-DEPLOYMENT.md)** - Deploy to Hostinger, VPS, or cloud platforms
+- **[WORDPRESS-SECURITY.md](WORDPRESS-WORDPRESS-SECURITY.md)** - Vulnerability scanning, hardening, and best practices
 
 ---
 
 ## Document Summaries
 
-### [DATABASE.md](DATABASE.md)
+### [WORDPRESS-DATABASE.md](WORDPRESS-WORDPRESS-DATABASE.md)
 
 **Database Management Guide** - Covers SQL-based version control strategy for both ephemeral (dev) and persistent (prod) databases.
 
 **Topics:**
 - Ephemeral vs persistent database strategies
-- SQL file naming conventions (`000000-00-init.sql`, `{yymmdd}-{HHmm}-{action}-{short.desc}.sql`)
+- SQL file naming conventions (`000000-0000-init-db.sql`, `{yymmdd}-{HHmm}-{action}-{short.desc}.sql`)
 - Action verbs: add, update, remove, alter, insert, migrate, fix, enable, disable
 - Development workflows (starting fresh, exporting changes)
 - Production backups and restore procedures
@@ -62,7 +88,7 @@ Should show `LocalMachine: RemoteSigned`
 
 ---
 
-### [DEPLOYMENT.md](DEPLOYMENT.md)
+### [WORDPRESS-DEPLOYMENT.md](WORDPRESS-WORDPRESS-DEPLOYMENT.md)
 
 **Deployment Guide** - Instructions for deploying WordPress to various hosting platforms.
 
@@ -83,7 +109,7 @@ Should show `LocalMachine: RemoteSigned`
 
 ---
 
-### [SECURITY.md](SECURITY.md)
+### [WORDPRESS-SECURITY.md](WORDPRESS-WORDPRESS-SECURITY.md)
 
 **Security Guide** - Comprehensive security practices including vulnerability scanning and hardening.
 
@@ -116,9 +142,9 @@ wordpress/
 │   └── dev/wp/httpd/            # Dev-specific WordPress configs
 ├── docs/                        # This directory
 │   ├── README.md
-│   ├── DATABASE.md
-│   ├── DEPLOYMENT.md
-│   └── SECURITY.md
+│   ├── WORDPRESS-DATABASE.md
+│   ├── WORDPRESS-DEPLOYMENT.md
+│   └── WORDPRESS-SECURITY.md
 ├── infra/
 │   ├── dev/
 │   │   └── compose.yml          # Development Podman Compose config
@@ -127,7 +153,7 @@ wordpress/
 │   │   └── .env.example         # Production environment template
 │   └── shared/
 │       ├── init/                # SQL initialization files
-│       │   ├── 000000-00-init.sql  # Baseline database schema
+│       │   ├── 000000-0000-init-db.sql  # Baseline database schema
 │       │   └── README.md        # SQL file naming conventions
 │       └── tools/               # WPScan and vulnerability scanning
 ├── tmp/                         # Sensitive product data (gitignored)
@@ -205,7 +231,7 @@ podman exec -it wordpress wp theme update --all
 
 ## Getting Help
 
-1. **Check relevant guide** - Start with DATABASE.md, DEPLOYMENT.md, or SECURITY.md
+1. **Check relevant guide** - Start with WORDPRESS-DATABASE.md, WORDPRESS-DEPLOYMENT.md, or WORDPRESS-SECURITY.md
 2. **Search project files** - Use file_search or grep_search tools
 3. **Review logs** - `podman logs wordpress` or `podman logs wp-db`
 4. **Consult external docs** - Links provided in each guide
