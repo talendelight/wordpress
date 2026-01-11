@@ -1,0 +1,238 @@
+# WordPress Version History
+
+**Purpose:** Track all production releases with semantic versioning, descriptions, and deployment dates.
+
+**Versioning Convention:** `MAJOR.MINOR.PATCH`
+- **MAJOR (x.0.0):** Breaking changes, major architectural shifts, significant feature overhauls
+- **MINOR (x.x.0):** New features, backward-compatible additions, new pages/functionality
+- **PATCH (x.x.x):** Bug fixes, small corrections, performance optimizations without new features
+
+---
+
+## Version 3.x.x - Custom Roles & RBAC Era
+
+**Theme:** Authentication, authorization, role-based access control, landing pages for all roles
+
+---
+
+### v3.0.0 - Custom Roles & RBAC Foundation
+
+**Deployed:** January 9, 2026 at 00:58  
+**Status:** ✅ Production  
+**Branch:** develop → main
+
+**Description:** Major architectural change introducing custom WordPress roles with role-based access control, login redirects, and access restrictions for non-allowed roles.
+
+**Major Features:**
+- Custom WordPress roles: Employer, Candidate, Scout, Operator, Manager
+- TalenDelight Custom Roles plugin (v1.0.0)
+- Role-based login redirect (users redirect to role-specific pages after login)
+- 403 Forbidden page with business-friendly messaging
+- Access control: Block non-TalenDelight roles from accessing platform
+- Employers landing page (/employers/)
+- Performance optimizations (OPcache enabled, debug mode configured)
+- Menu structure with Login/Logout Menu plugin
+- Test users created for all roles
+
+**Technical Changes:**
+- Plugin: `talendelight-roles/` with role definitions and RBAC logic
+- Page: `/403-forbidden/` with error handling
+- Page: `/employers/` with 5 sections (Hero, How It Works, Specialties, Why TalenDelight, Final CTA)
+- Redirect hooks: `login_redirect`, `wpum_login_redirect`, `wpum_after_login`
+- Template redirect: Catch `/account/` page loads and redirect based on role
+
+**Git Commit:**
+```
+Implement TalenDelight custom roles (v1.0.0), role-based login redirect, 403 forbidden page, performance optimizations (OPcache), menu structure with Login/Logout plugin
+```
+
+---
+
+### v3.1.0 - Candidate & Scout Landing Pages (Planned)
+
+**Target Deployment:** TBD  
+**Status:** 🔄 In Progress  
+**Branch:** TBD
+
+**Description:** Complete role landing pages set by adding Candidates and Scout pages, enabling all user types to access role-specific information and CTAs.
+
+**Minor Features:**
+- Candidates landing page (/candidates/)
+  - Hero: "Launch Your Career with Confidence"
+  - How It Works (3 steps for candidates)
+  - What We Look For (4 qualities)
+  - Why Choose TalenDelight (4 benefits - candidate-focused)
+  - Final CTA: "Land Your Next Great Role" → "Share Your Profile" button
+  - Button links to `/candidates/identify/` (form to be created separately)
+- Scout landing page (/scouts/) - planned
+  - Explain scout role (talent referrers)
+  - Commission structure and benefits
+  - Scout submission process
+  - CTA: "Refer a Candidate"
+- Operator/Manager landing pages (/operators/, /managers/) - planned
+  - Internal role explanations
+  - Links to admin dashboard
+  - Or simple redirect to `/wp-admin/`
+
+**Bug Fixes:**
+- Hostinger Git auto-deployment investigation (if resolved)
+
+**Completed:**
+- ✅ Candidates page published (January 10, 2026)
+- ✅ Role-based redirect tested and working for candidates
+- ✅ Content changed from employer-focused to candidate-focused
+- ✅ Final CTA updated with appropriate messaging
+- ✅ Scout landing page published (January 11, 2026)
+- ✅ Consent/Legal section design pattern documented
+- ✅ Compliance footer sections added to ALL pages (January 11, 2026):
+  - Scouts, Employers, Candidates, Homepage, Access Restricted
+  - 4 trust badges: GDPR, Secure & Encrypted, Equal Opportunity, Serving Markets
+  - Grey background (#ECECEC), inline layout
+- ✅ Login page custom CSS styling (January 11, 2026)
+  - Button matches Elementor page styles
+  - CSS file: config/custom-css/login.css
+- ✅ Access Restricted page footer compliance section (January 11, 2026)
+
+**Deferred to v3.2.0:**
+- [ ] Operator landing page (/operators/)
+- [ ] Manager landing page (/managers/)
+- [ ] Test all role redirects (Employer ✅, Candidate ✅, Scout pending)
+- [ ] Cross-page responsive design testing
+
+**Git Commit (planned):**
+```
+Add Candidates, Scout, Operator, and Manager landing pages (v3.1.0), complete role-based navigation set
+```
+
+---
+
+### v3.0.1 - Hotfixes (If Needed)
+
+**Status:** Not Created  
+**Use Case:** Critical bug fixes for v3.0.0 without adding new features
+
+**Reserved for:**
+- Production-breaking bugs
+- Security patches
+- Critical performance issues
+- Deployment fixes
+
+---
+
+## Version 2.x.x - Navigation & Authentication Era
+
+**Theme:** Public marketing site, navigation restructure, WooCommerce removal, authentication setup
+
+---
+
+### v2.0.0 - Navigation Restructure & Authentication Plugins
+
+**Deployed:** ~January 1-2, 2026  
+**Status:** ✅ Production (superseded by v3.0.0)
+
+**Description:** Major navigation overhaul, removed WooCommerce e-commerce functionality, added authentication plugins (WP User Manager, Login/Logout Menu).
+
+**Major Features:**
+- Removed WooCommerce entirely (plugins + pages)
+- Added Login/Logout Menu plugin (v1.5.2)
+- Added WP User Manager plugin (v2.9.13)
+- Navigation restructure: Welcome, About us, My account, Help, Login/Logout
+- Help page created
+- Hidden e-commerce pages (Shop, Cart, Checkout)
+- Local HTTPS setup with Caddy reverse proxy
+
+**Technical Changes:**
+- Plugin cleanup: Removed WooCommerce, Hello Dolly
+- Config: `wp-config.php` debug settings
+- Local: Caddy reverse proxy with SSL certificates
+- Database: Updated URLs to https://wp.local/
+
+---
+
+## Version 1.x.x - Homepage Launch Era
+
+**Theme:** Initial public website launch
+
+---
+
+### v1.0.0 - Homepage Launch
+
+**Deployed:** December 31, 2025  
+**Status:** ✅ Production (superseded by v2.0.0)
+
+**Description:** Initial homepage launch with public marketing website.
+
+**Major Features:**
+- Home page with value proposition
+- Hero section with dual CTAs
+- Specialties grid (Java, Fullstack, DevOps, Cloud)
+- How It Works section (4 steps)
+- Final CTA section
+- Blocksy theme configured
+- Elementor page builder
+
+---
+
+## Future Major Versions (Planning)
+
+### v4.0.0 - Forms & Data Capture (Planned)
+
+**Target:** Q1 2026  
+**Theme:** Candidate submission forms, employer request forms, data persistence
+
+**Planned Features:**
+- Candidate submission form (`/candidates/identify/`)
+- Employer request form integration
+- CV upload functionality
+- Custom Post Type: `td_employer_request`
+- Custom Post Type: `td_candidate_submission`
+- Email notifications
+- CandidateID generation (`TD-YYYY-NNNN`)
+
+---
+
+### v5.0.0 - Portal Dashboards (Planned)
+
+**Target:** Q2 2026  
+**Theme:** User portals with dashboards, submission history, status tracking
+
+**Planned Features:**
+- Employer portal: "My Requests" dashboard
+- Candidate portal: Submission status tracking
+- Scout portal: Referral tracking and commission
+- Operator dashboard: Internal submission management
+
+---
+
+## Version Query Reference
+
+**To determine next version:**
+1. Read this file (`VERSION-HISTORY.md`)
+2. Find current MAJOR version group (currently v3.x.x)
+3. Find highest deployed version in that group
+4. Apply logic:
+   - **New features/pages:** Increment MINOR (x.1.0 → x.2.0)
+   - **Bug fixes only:** Increment PATCH (x.1.0 → x.1.1)
+   - **Breaking changes:** Increment MAJOR (3.x.x → 4.0.0)
+
+**Current Production Version:** v3.0.0  
+**Next Planned Version:** v3.1.0 (Candidates + Scout pages)
+
+---
+
+## Notes for AI Assistant
+
+When asked "What is the next production release version?":
+1. Read this file first
+2. Identify current production version
+3. Check what's in progress (✅ completed vs 🔄 in progress vs ❌ not started)
+4. Determine if changes are MAJOR/MINOR/PATCH
+5. Suggest appropriate version number
+6. Ask user if confused about scope of changes
+
+When updating this file:
+1. Mark versions as ✅ Production when deployed
+2. Update deployment dates
+3. Add actual Git commit messages
+4. Move planned items to new version section if not deployed
+5. Keep version groups organized (v3.x.x together, v4.x.x together)

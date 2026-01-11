@@ -25,8 +25,19 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 - **[infra/dev/](infra/dev/)** - Podman Compose config for local development environment
 - **[wp-content/](wp-content/)** - WordPress content (plugins, themes, uploads) - root level for Hostinger deployment
 - **[config/](config/)** - Dev-specific configurations (wp-config.php, .htaccess, PHP settings)
-- **[docs/](docs/)** - Project documentation (DATABASE, DEPLOYMENT, SECURITY guides)
+- **[docs/](docs/)** - Project documentation (DATABASE, DEPLOYMENT, SECURITY, VERSION-HISTORY guides)
 - **[tmp/](tmp/)** - Sensitive data and manual SQL imports (not tracked in git)
+
+**Version Management:**
+- See [docs/VERSION-HISTORY.md](docs/VERSION-HISTORY.md) for complete version history and semantic versioning approach
+- Current production version: v3.0.0 (deployed January 9, 2026)
+- When asked about next release version, always read VERSION-HISTORY.md first
+
+**Session Continuity:**
+- Always check [docs/SESSION-SUMMARY-*.md](docs/) files for recent work context
+- Current active session: [docs/SESSION-SUMMARY-JAN-11.md](docs/SESSION-SUMMARY-JAN-11.md)
+- If user mentions laptop restart or lost context, read latest session summary first
+- Progress tracking in [docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md](docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md)
 
 **Deployment Strategy:**
 - **Development**: Docker/Podman containers on local machine
