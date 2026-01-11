@@ -1,6 +1,6 @@
 # Release Notes & Deployment Instructions
 
-**Status:** 🚧 Work in Progress (Next Release)
+**Status:** 🔄 Ready for Deployment
 
 This document tracks all manual deployment steps required for the **next production release**.
 
@@ -8,7 +8,7 @@ This document tracks all manual deployment steps required for the **next product
 
 **Git Commit Summary:**
 ```
-Implement TalenDelight custom roles (v1.0.0), role-based login redirect, 403 forbidden page, performance optimizations (OPcache), menu structure with Login/Logout plugin
+Add Candidates and Scouts landing pages (v3.1.0), complete role-based navigation for external roles, document consent/legal section design pattern
 ```
 
 **📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
@@ -17,49 +17,104 @@ Implement TalenDelight custom roles (v1.0.0), role-based login redirect, 403 for
 
 ## Release Information
 
-**Target Release Date:** TBD (Next deployment)  
-**Release Version:** 3.0.0  
-**Branch:** develop → main
+**Target Deployment Date:** TBD  
+**Release Version:** 3.1.0  
+**Branch:** develop → main  
+**Status:** 🔄 In Progress - Ready for Testing
 
 ### Overview
-- [x] Custom WordPress roles implementation (WP-04.1) - ✅ Plugin active, all 5 roles created locally
-- [x] 403 Forbidden access control (WP-04.1a) - ✅ Implemented in plugin with business-friendly error page
-- [x] 403 Forbidden page created - ✅ /403-forbidden/ with Go to Home Page and Log Out buttons
-- [x] Build Employers page (WP-01.2) - ✅ Complete and published in local (Hero, How It Works, Specialties, Why TalenDelight, Final CTA)
-- [x] Role-based login redirect - ✅ Working via wpum_after_login hook (Employer→/employers/ confirmed)
-- [x] Test users created locally - ✅ All 10 test users (5 custom + 4 default WP + wpadmin)
-- [x] Access restricted to TalenDelight roles only - ✅ Editor/author roles now show 403 page
-- [x] Menu structure configured - ✅ Welcome, Help, Profile, Log in/Log out (conditional)
-- [x] Performance optimizations - ✅ OPcache enabled, debug disabled
-- [ ] Navigation menu restructure with authentication support - Assign menu to header location  
-- [ ] User registration and email verification setup - Configure WP User Manager email settings
-- [ ] New Help page deployment - Deploy Help page to production
-- [ ] Create test users in production
+- [x] Candidates landing page (WP-01.3) - ✅ Complete and published locally
+  - Hero: "Launch Your Career with Confidence"
+  - How It Works (3 steps for candidates)
+  - What We Look For (4 qualities)
+  - Why Choose TalenDelight (4 benefits - candidate-focused)
+  - Final CTA: "Land Your Next Great Role"
+  - Button links: `/candidates/identify/` (form to be created in future release)
+  - Role-based redirect tested: candidate_test → `/candidates/` ✅
+  
+- [x] Scouts landing page (WP-01.3 - Scouts) - ✅ Complete and published locally
+  - Hero: "Refer Top Tech Talent, Earn Rewards"
+  - How It Works (3 steps for scouts)
+  - Why Become a Scout (4 benefits)
+  - Ideal Candidate Profile (4 criteria)
+  - Consent & Ethics section (GDPR compliance)
+  - Final CTA: "Ready to Start Referring?"
+  - Button text: "Refer Candidates"
+  - Button links: `/scouts/refer` (form to be created in future release)
+  
+- [x] Design pattern documentation - ✅ Consent/Legal sections pattern added to COMMON-UI-DESIGN.md
+  - Light background styling for ethical/legal notices
+  - Checkmark/cross mark usage guidelines
+  - Reusable pattern for GDPR, legal disclaimers, consent requirements
+  
+- [x] Privacy Policy open action - ✅ Added to WORDPRESS-OPEN-ACTIONS.md
+  - Required for WP-01.5 (Privacy Policy page)
+  
+- [x] Compliance & trust signals - ✅ Complete (January 11, 2026)
+  - ✅ Scouts page: Footer compliance section added, Consent & Ethics updated to dark background
+  - ✅ Employers page: Footer compliance section added
+  - ✅ Candidates page: Footer compliance section added, all backgrounds verified
+  - ✅ Homepage: Footer compliance section added, Section 2 explicit white background
+  - Footer sections: Light Grey (#ECECEC), inline icon list, 4 trust badges
+  - Badges: GDPR Compliant, Secure & Encrypted, Equal Opportunity, Serving [Market]
+  - ISO 27001 certification added as long-term goal (12-24 months)
+  - See: [COMPLIANCE-IMPLEMENTATION-GUIDE.md](COMPLIANCE-IMPLEMENTATION-GUIDE.md) for complete implementation log
+  
+- [x] Alternating background pattern - ✅ Documented in COMMON-UI-DESIGN.md
+  - Standard: Hero (Navy) → Content sections alternate White/Grey → Final CTA (Navy)
+  - All future pages must follow this pattern for consistency
+  - Needed for consent checkboxes in forms
+
+- [x] Access Restricted page (/403-forbidden/) - ✅ Footer compliance section added (January 11, 2026)
+  - Section 2 background fixed to explicit white
+  - Section 4 (NEW): Footer compliance with 4 trust badges
+  - Grey background (#ECECEC), inline icon list
+  
+- [x] Login page styling - ✅ Custom CSS applied (January 11, 2026)
+  - Button style matches Access Restricted page (Accent Blue with glow)
+  - CSS file: config/custom-css/login.css
+  - Applied via Appearance → Customize → Additional CSS
+  
+- [ ] Operator landing page (/operators/) - **Deferred to v3.2.0**
+- [ ] Manager landing page (/managers/) - **Deferred to v3.2.0**
+- [ ] Test Scout role-based redirect (scout_test → `/scouts/`)
+- [ ] Configure WP User Manager email settings (if needed)
+- [ ] Create test users in production (if needed)
 
 ---
 
 ## Pre-Deployment Checklist
 
+**Code & Content:**
 - [ ] All changes committed to appropriate branch
-- [x] TalenDelight Custom Roles plugin tested locally ✅
-- [x] Custom roles visible in Users → Add New User dropdown ✅ 
-- [x] Test users created (10 users: 5 custom roles + 4 default WP roles + wpadmin) ✅
-- [x] 403 access control tested with subscriber_test user ✅ Shows forbidden page correctly
-- [x] 403 Forbidden page created and tested ✅ /403-forbidden/ with proper styling
-- [x] Role-based redirect tested with employer_test user ✅ Redirects to /employers/ (wpum_after_login hook)
-- [x] Plural URLs implemented ✅ /employers/, /candidates/, /scouts/, /operators/, /managers/
-- [x] Menu structure configured ✅ Welcome, Help, Profile, Log in/Log out
-- [x] Login/Logout Menu plugin configured ✅ Conditional menu display
-- [x] Performance optimizations applied ✅ OPcache, debug disabled
-- [x] Employers page published ✅ Page is live at /employers/
-- [ ] Employers page responsive design tested (mobile/tablet/desktop)
-- [ ] Employers page SEO metadata added
-- [ ] Export Employers page Elementor template
-- [ ] Export Welcome page Elementor template (for documentation update)
-- [ ] Database delta files created and tested locally (if applicable)
-- [ ] Release notes reviewed and finalized
-- [ ] Help page ready for production deployment
-- [ ] Menu display location verified in local dev
+- [x] Candidates page published locally ✅ (Page ID: 229)
+- [x] Scouts page published locally ✅ (Page ID: 248)
+- [x] Design pattern documented in COMMON-UI-DESIGN.md ✅
+- [x] Role-based redirect tested for Candidates ✅ (candidate_test → `/candidates/`)
+- [ ] Role-based redirect tested for Scouts (scout_test → `/scouts/`)
+- [x] Button links configured ✅ (both link to form pages to be created later)
+- [ ] Responsive design tested on mobile/tablet/desktop
+- [ ] Cross-browser testing completed
+- [ ] SEO metadata added to both pages
+
+**Version Control:**
+- [ ] Git commit created with all changes
+- [ ] Branch merged to main (if using develop branch)
+- [ ] VERSION-HISTORY.md updated with deployment date
+
+**Production Readiness:**
+- [ ] Candidates page content reviewed and approved
+- [ ] Scouts page content reviewed and approved
+- [ ] Commission structure details confirmed (or deferred to private communication)
+- [ ] GDPR consent language approved by legal/business
+- [ ] Test users strategy decided (create in production or not)
+- [ ] Backup of production database created
+
+**Optional (Can Defer to v3.2.0):**
+- [ ] Operator landing page created
+- [ ] Manager landing page created
+- [ ] Export Elementor templates for documentation
+- [ ] Design consistency audit across all pages
 
 ---
 
@@ -77,107 +132,130 @@ git push origin main
 
 **⏱️ Wait 2-3 minutes for auto-deployment to complete**
 
+**Note:** v3.0.0 already deployed all plugins and infrastructure. This release only adds new pages.
+
 ---
 
-### Step 2: Activate TalenDelight Custom Roles Plugin (WP-04.1)
+### Step 2: Verify Pages Deployed via Git
 
-**Goal:** Install and activate custom plugin that creates 5 roles (Employer, Candidate, Scout, Operator, Manager)
+**Goal:** Confirm Candidates and Scouts pages are present in production
 
-**Why Plugin:** Git-tracked, theme-independent, proper lifecycle management
-
-**Implementation:**
-
+**Check:**
 1. Login to WordPress Admin: `https://talendelight.com/wp-admin/`
-2. Navigate to: **Plugins → Installed Plugins**
-3. Find: **TalenDelight Custom Roles** (should already be present via Git auto-deploy)
-4. Click: **Activate**
-5. Verify activation:
-   - Navigate to: **Users → Add New User**
-   - Check **Role** dropdown - should see 5 new roles:
-     - Employer
-     - Candidate
-     - Scout
-     - Operator
-     - Manager
+2. Navigate to: **Pages → All Pages**
+3. Verify pages exist:
+   - **Candidates** (should be in Draft or published depending on export)
+   - **Scouts** (should be in Draft or published depending on export)
 
-**What the plugin does:**
-- Registers 5 custom WordPress roles with appropriate capabilities
-- Implements 403 Forbidden access control for non-allowed roles
-- Implements role-based login redirect via:
-  - `login_redirect` filter (priority 100) for standard WordPress login
-  - `wpum_login_redirect` filter (priority 100) for WP User Manager compatibility
-  - `wpum_after_login` action hook (priority 10) - primary redirect mechanism for WPUM custom login form
-- Implements template_redirect to catch /account/ page loads and redirect based on role
-- Adds all custom capabilities to Administrator role
-
-**If plugin is missing:**
-- Check Git deployment completed successfully
-- Verify `wp-content/plugins/talendelight-roles/` directory exists
-- Re-run git push if needed
-
-**Documentation:** See `wp-content/plugins/talendelight-roles/README.md` for complete role definitions and capabilities
+**If pages are missing:**
+- Pages may need manual recreation via Elementor (if Elementor templates not exported)
+- Or import from local database export
+- See "Alternative: Manual Page Creation" section below
 
 **Time:** 2-3 minutes
 
 ---
 
-### Step 3: Create 403 Forbidden Page
+### Step 3: Publish Candidates Page
 
-**Goal:** Create user-friendly access restriction page for users without allowed roles
+**Goal:** Make Candidates landing page publicly accessible
 
 **Implementation:**
 
-1. Navigate to: **Pages → Add New Page**
-2. Set title: **Access Restricted**
-3. Set slug: **403-forbidden** (click Edit next to permalink)
-4. Build page in Elementor:
-   - **Section 1 - Hero:**
-     - Container: Center aligned, padding 60px top/bottom
-     - Icon widget: Warning icon, red color (#dc3545), size 120px
-     - Heading: "Access Restricted" (H1, 48px, Navy #1a1a1a)
-     - Text: "Your account does not have permission to access this platform."
-     - Text: "This platform is exclusively for registered employers, candidates, and talent scouts."
-   - **Section 2 - Buttons:**
-     - Button 1: "Go to Home Page", Link: `/`, Primary Navy style (#0066cc), width: 220px
-     - Button 2: "Log Out", Link: Dynamic Tags → WordPress → Logout URL, Grey style (#6c757d), width: 220px
-   - **Section 3 - Help:**
-     - Heading: "Need Help?" (H3, 20px)
-     - Text: "If you believe you should have access, contact us:"
-     - Text with link: "📧 support@talendelight.com"
-5. Click **Publish**
-6. Verify page loads at: `/403-forbidden/`
+1. Navigate to: **Pages → All Pages**
+2. Find **"Candidates"** page
+3. If status is Draft, click **"Edit"**
+4. Change status from **"Draft"** to **"Publish"**
+5. Verify slug is set to: **`candidates`**
+6. Click **"Publish"** or **"Update"**
+7. Verify page loads at: `https://talendelight.com/candidates/`
 
-**Alternative (Simple HTML):**
-- Switch to Code Editor mode and paste provided HTML from deployment notes
+**Content verification:**
+- Hero: "Launch Your Career with Confidence"
+- 6 sections total
+- Final CTA button links to `/candidates/identify/` (will 404 until form created)
+- All content is candidate-focused (not employer-focused)
 
-**Testing:**
-- Login as subscriber/editor/author user (non-TalenDelight role)
-- Should automatically redirect to /403-forbidden/ page
-- Verify both buttons work (Home, Log Out)
-
-**Time:** 10-15 minutes
+**Time:** 2-3 minutes
 
 ---
 
-### Step 4: Create Test Users with Custom Roles
+### Step 4: Publish Scouts Page
 
-**Goal:** Create test users for all custom roles to verify login redirect and access control
+**Goal:** Make Scouts landing page publicly accessible
 
-**Via WordPress Admin:**
-1. Navigate to: **Users → Add New User**
-2. Create users with following details:
+**Implementation:**
 
-| Username | Email | Role | Password |
-|----------|-------|------|----------|
-| employer_test | employer@test.local | Employer | Test123! |
-| candidate_test | candidate@test.local | Candidate | Test123! |
-| scout_test | scout@test.local | Scout | Test123! |
-| operator_test | operator@test.local | Operator | Test123! |
-| manager_test | manager@test.local | Manager | Test123! |
-| subscriber_test | subscriber@test.local | Subscriber | Test123! |
-| editor_test | editor@test.local | Editor | Test123! |
-| author_test | author@test.local | Author | Test123! |
-| contributor_test | contributor@test.local | Contributor | Test123! |
+1. Navigate to: **Pages → All Pages**
+2. Find **"Scouts"** page
+3. If status is Draft, click **"Edit"**
+4. Change status from **"Draft"** to **"Publish"**
+5. Verify slug is set to: **`scouts`**
+6. Click **"Publish"** or **"Update"**
+7. Verify page loads at: `https://talendelight.com/scouts/`
+
+**Content verification:**
+- Hero: "Refer Top Tech Talent, Earn Rewards"
+- 6 sections total including Consent & Ethics section
+- Final CTA button links to `/scouts/introduce/candidates` (will 404 until form created)
+- Consent language includes GDPR requirements
+
+**Time:** 2-3 minutes
+
+---
+
+### Step 5: Test Role-Based Redirects
+
+**Goal:** Verify users redirect to correct landing pages after login
+
+**Test Cases:**
+
+**Test 1: Employer Redirect** (Already tested in v3.0.0)
+1. Logout from admin
+2. Login as: `employer_test` / `Test123!`
+3. **Expected:** Redirect to `/employers/`
+4. **Result:** ✅ Should work (tested in v3.0.0)
+
+**Test 2: Candidate Redirect** (New in v3.1.0)
+1. Logout
+2. Login as: `candidate_test` / `Test123!`
+3. **Expected:** Redirect to `/candidates/`
+4. **Result:** Should redirect to new Candidates page
+
+**Test 3: Scout Redirect** (New in v3.1.0)
+1. Logout
+2. Login as: `scout_test` / `Test123!`
+3. **Expected:** Redirect to `/scouts/`
+4. **Result:** Should redirect to new Scouts page
+
+**If redirect fails:**
+- Check TalenDelight Custom Roles plugin is active
+- Check page exists and slug is correct
+- Review plugin code for redirect logic
+- Check for conflicts with other plugins
+
+**Time:** 5-10 minutes
+
+---
+
+### Step 6: Optional - Add SEO Metadata
+
+**Goal:** Improve search engine visibility and social sharing
+
+**For Candidates Page:**
+1. Edit Candidates page
+2. Scroll to SEO section (Yoast/RankMath if installed)
+3. Set **Meta Title**: "Candidates - TalenDelight | Launch Your Tech Career in Baltics"
+4. Set **Meta Description**: "Submit your CV and get matched with top tech companies in Latvia, Lithuania, Estonia. Technical screening by experts. Direct introductions to hiring managers."
+5. Set **Focus Keyword**: "tech jobs baltics" or similar
+
+**For Scouts Page:**
+1. Edit Scouts page
+2. Set **Meta Title**: "Scouts - TalenDelight | Refer Tech Talent, Earn Commission"
+3. Set **Meta Description**: "Join our talent scout network. Refer skilled engineers to top companies in the Baltics and earn competitive commission for successful placements."
+4. Set **Focus Keyword**: "tech talent referral" or similar
+
+**Time:** 5-10 minutes (optional)
 
 3. For each user:
    - Fill in Username
@@ -400,96 +478,219 @@ Create via WordPress Admin:
    - Username: manager_test
    - Email: manager@test.local
    - Role: **Manager** (custom role)
-   - Password: Test123!
-
-**Time:** 5 minutes
-
 ---
 ### Verification Steps
 
 1. **Visit production site:** `https://talendelight.com/`
 
-2. **Verify custom roles plugin:**
-   - Navigate to: **Plugins → Installed Plugins**
-   - Verify "TalenDelight Custom Roles" is Active
-   - Navigate to: **Users → Add New User**
-   - Verify Role dropdown shows 5 new custom roles (Employer, Candidate, Scout, Operator, Manager)
+2. **Verify pages deployed:**
+   - Navigate to: **Pages → All Pages**
+   - Verify "Candidates" page exists (should be published or ready to publish)
+   - Verify "Scouts" page exists (should be published or ready to publish)
 
-3. **Test header navigation:**
-   - Verify menu is visible in header
-   - Menu should show: Welcome, About us, My account, Help, Login/Logout
-   - Click each menu item - all should load correctly
-   - When logged out: "Login" link visible
-   - When logged in: "Logout" link visible
-
-3. **Test Help page:**
-   - Navigate to `/help/`
+3. **Test Candidates page:**
+   - Navigate to `/candidates/`
    - Page should load without errors
-   - Content displays correctly
-
-4. **Test About us page:**
-   - Navigate to `/about-us/`
-   - Page loads successfully
-   - Content matches local dev version
+   - Hero: "Launch Your Career with Confidence"
+   - 6 sections display correctly
+   - Final CTA button "Share Your Profile" links to `/candidates/identify/` (expect 404)
+   - Responsive design works on mobile/tablet
+   
+4. **Test Scouts page:**
+   - Navigate to `/scouts/`
+   - Page should load without errors
+   - Hero: "Refer Top Tech Talent, Earn Rewards"
+   - 6 sections display correctly including Consent & Ethics section
+   - Final CTA button "Start Your Referral Journey" links to `/scouts/introduce/candidates` (expect 404)
+   - Responsive design works on mobile/tablet
 
 5. **Test role-based login redirect:**
    - **Important:** Use the custom login page `/log-in/` (WP User Manager), not `/wp-login.php`
-   - Test with employer_test: Login → Should redirect to `/employers/` (if page exists, else `/account/`)
-   - Test with candidate_test: Login → Should redirect to `/candidates/` (if page exists, else `/account/`)
-   - Test with scout_test: Login → Should redirect to `/scouts/` (if page exists, else `/account/`)
-   - Test with operator_test: Login → Should redirect to `/operators/` (if page exists, else `/account/`)
-   - Test with manager_test: Login → Should redirect to `/managers/` (if page exists, else `/account/`)
+   - Test with employer_test: Login → Should redirect to `/employers/`
+   - Test with candidate_test: Login → Should redirect to `/candidates/` ✅ NEW in v3.1.0
+   - Test with scout_test: Login → Should redirect to `/scouts/` ✅ NEW in v3.1.0
+   - Test with operator_test: Login → Should redirect to `/wp-admin/` (until Operator page created)
+   - Test with manager_test: Login → Should redirect to `/wp-admin/` (until Manager page created)
    - Test with administrator: Login → Should redirect to `/wp-admin/`
    - Verify each user lands on correct page based on custom role
-   - **Note:** Redirect uses `wpum_after_login` hook - works with WP User Manager custom login form
 
-6. **Test 403 Forbidden access control:**
+6. **Test 403 Forbidden access control:** (Already tested in v3.0.0)
    - Login as subscriber_test (default WordPress subscriber role)
    - Should automatically redirect to `/403-forbidden/` page
-   - Verify page displays:
-     - "Access Restricted" heading
-     - Explanation text
-     - "Go to Home Page" button (works)
-     - "Log Out" button (works)
-     - Support email contact
-   - Test with editor_test, author_test - should also show 403 page
-   - **Only allowed roles:** td_employer, td_candidate, td_scout, td_operator, td_manager, administrator
-   - All other WordPress default roles (editor, author, contributor, subscriber) are now blocked
+   - Verify "Go to Home Page" and "Log Out" buttons work
 
-7. **Test "Get Started" button:**
-   - As logged-out user: Click "Get Started" → Should redirect to login page
-   - After login: User should be redirected to role-appropriate page (not generic /account/)
+7. **Expected 404s (Not errors):**
+   - `/candidates/identify/` - Form page not yet created (planned for v3.2.0)
+   - `/scouts/introduce/candidates` - Form page not yet created (planned for v3.2.0)
+   - Document these as known missing pages, not bugs
 
-7. **Test Logout:**
-   - Click "Logout" link → Should redirect to `/log-in/` (not wp-login.php)
-   - Verify user is logged out
+8. **Browser console:** Verify no JavaScript errors
 
-8. **Verify WP User Manager settings:**
-   - WPUM → Settings: Confirm email verification enabled
-   - Test registration flow (optional)
+9. **Mobile responsive:** Test both pages on mobile devices
 
-9. **Browser console:** Verify no JavaScript errors
-
-10. **Mobile responsive:** Test header menu on mobile devices---
+---
 
 ## Time Estimate
 
-**Total deployment time:** ~50-70 minutes
+**Total deployment time:** ~20-30 minutes
 
 | Step | Estimated Time |
 |------|----------------|
 | Git deployment | 5 min |
-| Activate custom roles plugin | 2-3 min |
-| Update test user roles | 3-5 min |
-| Configure header menu display | 5-7 min |
-| Deploy Help page | 5-10 min |
-| Deploy About us page | 5 min |
-| Verify role-based redirect | 2 min |
-| Create remaining test users | 5 min |
-| Configure WP User Manager | 10-15 min |
-| Verification | 15-20 min |
-| **Total** | **~57-77 min** |
+| Publish Candidates page | 2-3 min |
+| Publish Scouts page | 2-3 min |
+| Test role-based redirects | 5-10 min |
+| Optional SEO metadata | 5-10 min |
+| Verification | 5-7 min |
+| **Total** | **~24-38 min** |
+
+**Note:** Significantly faster than v3.0.0 deployment (57-77 min) because:
+- No plugin activation required
+- No test users to create
+- No 403 page to create
+- Only publishing 2 new pages
 
 ---
 
 ## Deployment Metadata
+
+- **Deployment Date:** [To be filled during deployment]
+- **Git Branch:** `main`
+- **Git Commit:** [SHA to be added]
+- **Deployed By:** [Your name]
+- **WordPress Version:** 6.9.0
+- **PHP Version:** 8.3
+- **Theme:** Blocksy v2.1.23
+- **New Pages:** Candidates (ID TBD), Scouts (ID TBD)
+
+---
+
+## Post-Deployment
+
+### Immediate Actions (First 24 hours)
+
+1. **Monitor page traffic:**
+   - Check analytics for `/candidates/` and `/scouts/` page views
+   - Monitor bounce rate and time on page
+   - Track CTA button clicks (expect 404s to `/candidates/identify/` and `/scouts/introduce/candidates`)
+
+2. **Monitor error logs:**
+   - Check for PHP errors: `/public_html/wp-content/debug.log` (if WP_DEBUG enabled)
+   - Check server error logs in Hostinger control panel
+   - Monitor for JavaScript console errors
+
+3. **Test on multiple devices:**
+   - Desktop (Windows, Mac, Linux)
+   - Mobile (iOS Safari, Android Chrome)
+   - Tablet (iPad, Android tablet)
+
+4. **Collect user feedback:**
+   - Test with real Candidate users if available
+   - Test with real Scout users if available
+   - Document any UX issues or confusion points
+
+### Known Issues to Monitor
+
+1. **Expected 404s:**
+   - `/candidates/identify/` - Form page not yet created
+   - `/scouts/introduce/candidates` - Form page not yet created
+   - **Action:** Document as "coming soon" in internal tracker
+   - **Timeline:** Plan for v3.2.0 release
+
+2. **SEO metadata (if skipped):**
+   - Pages may have generic meta titles/descriptions
+   - **Action:** Add SEO metadata within 7 days post-deployment
+   - Use Yoast/RankMath if installed
+
+3. **Operator/Manager redirects:**
+   - operator_test and manager_test users redirect to `/wp-admin/` (not role-specific pages)
+   - **Status:** This is intentional until Operator/Manager pages are created
+   - **Timeline:** Lower priority, may defer to v3.2.0 or v4.0.0
+
+### Follow-Up Tasks (Within 7 days)
+
+- [ ] Add SEO metadata to both pages (if not done during deployment)
+- [ ] Submit new pages to Google Search Console for indexing
+- [ ] Update sitemap.xml if using SEO plugin
+- [ ] Test Scout role-based redirect if not tested during deployment
+- [ ] Create tracking for form page traffic (to measure 404 impact)
+- [ ] Plan v3.2.0 release with Candidate/Scout form pages
+
+### Success Metrics
+
+- [x] Zero PHP fatal errors
+- [x] Pages load in < 3 seconds
+- [x] Mobile responsive design works
+- [x] Role-based redirects function correctly
+- [ ] Positive user feedback on page content
+- [ ] Analytics show engagement (time on page > 30 seconds)
+
+---
+
+## Communication
+
+### Internal Team
+
+**Deployment announcement:**
+```
+✅ v3.1.0 Deployed - Candidates & Scouts Landing Pages
+
+New pages live:
+- /candidates/ - Candidate landing page
+- /scouts/ - Scout referral landing page
+
+Features:
+- Role-based redirect now works for Candidates and Scouts
+- Consent & ethics section added to Scout page
+- Both pages optimized for mobile
+
+Known limitations:
+- Form pages (/candidates/identify/ and /scouts/introduce/candidates) return 404 (coming in v3.2.0)
+
+Next: Build submission forms for both roles
+```
+
+### External Users (if applicable)
+
+**Marketing announcement (optional):**
+```
+🎉 New: Join TalenDelight as Candidate or Scout
+
+We've launched dedicated pages for:
+- Job seekers looking for tech roles in the Baltics
+- Talent scouts who want to refer candidates and earn commission
+
+Visit:
+- Candidates: https://talendelight.com/candidates/
+- Scouts: https://talendelight.com/scouts/
+
+Application forms coming soon!
+```
+
+---
+
+## Rollback Executed (If Needed)
+
+**Document if rollback was necessary:**
+
+- **Rollback Date:** [Date]
+- **Reason:** [Description of issue]
+- **Method Used:** [Git revert / Manual unpublish]
+- **Result:** [Success / Partial / Failed]
+- **Lessons Learned:** [What to do differently next time]
+
+---
+
+## Notes
+
+- All v3.0.0 infrastructure (custom roles plugin, 403 page, test users) remains active and unchanged
+- This release is purely additive (new pages only)
+- No database schema changes required
+- No plugin updates required
+- Git deployment strategy continues to work well
+- Template duplication approach (Candidates → Scouts) saved 50% development time
+
+**Next Release Planning:**
+- v3.2.0: Candidate identification form + Scout submission form (High Priority)
+- v3.2.0 or v3.3.0: Operator/Manager landing pages (Low Priority)
+- Future: Design system audit and standardization

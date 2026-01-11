@@ -397,11 +397,51 @@ Any observations, lessons learned, or future improvements.
 
 ---
 
+## Common Mistakes to Avoid
+
+### ❌ DO NOT Create Ad-Hoc Deployment Summary Files
+
+**Wrong:**
+```bash
+# Creating standalone deployment summary files outside the established workflow
+docs/DEPLOYMENT-SUMMARY-JAN-3-2026.md
+docs/DEPLOYMENT-NOTES.md
+docs/RELEASE-SUMMARY.md
+```
+
+**Why Wrong:**
+- Violates established three-file system
+- Creates confusion about source of truth
+- Requires manual cleanup
+- Breaks historical archive pattern
+
+**Correct Approach:**
+```bash
+# ALWAYS follow the three-file system:
+1. Work in: docs/RELEASE-NOTES-NEXT.md (during development/deployment)
+2. Archive to: docs/releases/RELEASE-NOTES-{yyyymmdd-HHmm}.md (after deployment)
+3. Reference: docs/RELEASE-NOTES-PROCESS.md (this file)
+```
+
+**Lesson Learned (2026-01-03):**
+- AI assistant created `DEPLOYMENT-SUMMARY-JAN-3-2026.md` in docs/ instead of following release notes process
+- Required manual deletion and recreation in proper location
+- **Remember:** The workflow exists for consistency - follow it even when it seems easier to create a quick summary file
+
+### ✅ Always Use the Established Workflow
+
+1. **During deployment:** Update RELEASE-NOTES-NEXT.md with actual steps
+2. **After deployment:** Copy to releases/ with timestamp
+3. **Never:** Create standalone summary/notes files in docs/ root
+
+---
+
 ## Version History
 
 | Date | Change | Author |
 |------|--------|--------|
 | 2025-12-30 | Initial process documentation | System |
+| 2026-01-03 | Added "Common Mistakes to Avoid" section | System |
 
 ---
 
