@@ -1,8 +1,14 @@
-name: Deploy wp-content to Hostinger
+name: Deploy to Hostinger
 
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version to deploy (e.g., 3.1.0)'
+        required: false
+        type: string
 
 jobs:
   deploy:
@@ -11,9 +17,92 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Prepare deployment directory
-      - name: Prepare deployment (apply .hostingerignore)
+      - name: Find Latest Release Instructions
+        id: release
         run: |
+          # Find latest release file or use specified version
+          if [ -n "${{ github.event.inputs.release_version }}" ]; then
+            RELEASE_FILE=".github/releases/v${{ github.event.inputs.release_version }}.json"
+          else
+            # Find latest release excluding archive folder
+            RELEASE_FILE=$(find .github/releases -maxdepth 1 -name "*.json" -type f | sort -V | tail -n1)
+          fi
+          
+          if [ ! -f "$RELEASE_FILE" ]; then
+            echo "ERROR: No release instructions found"
+            exit 1
+          fi
+          
+          echo "release_file=$RELEASE_FILE" >> $GITHUB_OUTPUT
+          
+          # Extract version and description
+          VERSION=$(jq -r '.version' "$RELEASE_FILE")
+          DESCRIPTION=$(jq -r '.description' "$RELEASE_FILE")
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+          
+          echo "=========================================="
+          echo "Release: v$VERSION"
+          echo "Description: $DESCRIPTION"
+          echo "Instructions: $RELEASE_FILE"
+          echo "=========================================="
+          
+      - name: Validate Release Instructions
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          
+          # Validate JSON format
+          if ! jq empty "$RELEASE_FILE" 2>/dev/null; then
+            echo "ERROR: Invalid JSON in $RELEASE_FILE"
+            exit 1
+          fi
+          
+          # Check required fields
+          if ! jq -e '.version' "$RELEASE_FILE" > /dev/null; then
+            echo "ERROR: Missing 'version' field"
+            exit 1
+          fi
+          
+          if ! jq -e '.steps' "$RELEASE_FILE" > /dev/null; then
+            echo "ERROR: Missing 'steps' field"
+            exit 1
+          fi
+          
+          echo "✓ Release instructions are valid"
+
+      - name: Check for Elementor Deployment
+        id: check_elementor
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          HAS_ELEMENTOR=$(jq '[.steps[] | select(.type == "deploy_elementor")] | length > 0' "$RELEASE_FILE")
+          echo "has_elementor=$HAS_ELEMENTOR" >> $GITHUB_OUTPUT
+          
+          if [ "$HAS_ELEMENTOR" = "true" ]; then
+            echo "⚠️  This release includes Elementor page deployment"
+            echo "⚠️  Ensure Elementor exports are committed to repository"
+          fi
+
+          if [ "$HAS_ELEMENTOR" = "true" ]; then
+            echo "⚠️  This release includes Elementor page deployment"
+            echo "⚠️  Ensure Elementor exports are committed to repository"
+          fi
+
+      - name: Deploy Code (wp-content)
+        id: deploy_code
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          
+          # Check if release has deploy_code step
+          HAS_CODE=$(jq '[.steps[] | select(.type == "deploy_code")] | length > 0' "$RELEASE_FILE")
+          
+          if [ "$HAS_CODE" = "false" ]; then
+            echo "No code deployment in this release"
+            exit 0
+          fi
+          
+          echo "Preparing code deployment..."
+          
           # Create clean deployment directory
           mkdir -p deploy
           
@@ -23,58 +112,29 @@ jobs:
           # Apply .hostingerignore exclusions
           if [ -f .hostingerignore ]; then
             echo "Applying .hostingerignore exclusions..."
-            echo "----------------------------------------"
             
             while IFS= read -r pattern || [ -n "$pattern" ]; do
-              # Skip empty lines and comments
               [[ -z "$pattern" || "$pattern" =~ ^#.*$ ]] && continue
-              # Remove leading/trailing whitespace
               pattern=$(echo "$pattern" | xargs)
               [[ -z "$pattern" ]] && continue
               
-              echo "Processing pattern: $pattern"
-              
-              # Handle wp-content/ prefixed patterns
               if [[ "$pattern" == wp-content/* ]]; then
                 clean_pattern="${pattern#wp-content/}"
-                
-                # Handle wildcard patterns (e.g., backup*, *.log)
                 if [[ "$clean_pattern" == *"*"* ]]; then
-                  echo "  → Wildcard exclusion: $clean_pattern"
-                  # Use -name for simple wildcards, -path for complex patterns
                   if [[ "$clean_pattern" == *"/"* ]]; then
                     find deploy/wp-content -path "deploy/wp-content/$clean_pattern" -exec rm -rf {} + 2>/dev/null || true
                   else
                     find deploy/wp-content -name "$clean_pattern" -exec rm -rf {} + 2>/dev/null || true
                   fi
                 else
-                  # Exact path match
-                  echo "  → Exact exclusion: $clean_pattern"
                   if [ -e "deploy/wp-content/$clean_pattern" ]; then
                     rm -rf "deploy/wp-content/$clean_pattern"
-                    echo "    ✓ Removed"
-                  else
-                    echo "    ○ Not found (skipped)"
                   fi
                 fi
-              
-              # Handle root-level wildcard patterns (e.g., *.log)
               elif [[ "$pattern" == *"*"* ]]; then
-                echo "  → Root wildcard exclusion: $pattern"
                 find deploy -name "$pattern" -exec rm -rf {} + 2>/dev/null || true
-              
-              # Handle root-level exact paths (not in wp-content)
-              else
-                echo "  → Root exclusion: $pattern (not in wp-content, skipped)"
               fi
-              
             done < .hostingerignore
-            
-            echo "----------------------------------------"
-            echo "Exclusions applied successfully"
-            echo ""
-          else
-            echo "Warning: .hostingerignore not found"
           fi
           
           # Show deployment summary
@@ -84,50 +144,10 @@ jobs:
           total_size=$(du -sh deploy | cut -f1)
           echo "Total files: $total_files"
           echo "Total size: $total_size"
-          echo ""
-          echo "First 20 files to be deployed:"
-          find deploy -type f | head -20
-          echo "..."
+          echo "code_deployed=true" >> $GITHUB_OUTPUT
 
-      # Debug: Check Hostinger directory structure
-      - name: Debug - Inspect Hostinger directories
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          port: ${{ secrets.HOSTINGER_PORT }}
-          script: |
-            echo "=========================================="
-            echo "Current working directory:"
-            pwd
-            echo ""
-            echo "Home directory contents:"
-            ls -lah ~/
-            echo ""
-            echo "Target path (HOSTINGER_PATH):"
-            echo "${{ secrets.HOSTINGER_PATH }}"
-            echo ""
-            echo "Checking if target path exists:"
-            if [ -d "${{ secrets.HOSTINGER_PATH }}" ]; then
-              echo "✓ Target path exists"
-              echo ""
-              echo "Contents of target path:"
-              ls -lah "${{ secrets.HOSTINGER_PATH }}/"
-              echo ""
-              echo "Contents of wp-content (if exists):"
-              if [ -d "${{ secrets.HOSTINGER_PATH }}/wp-content" ]; then
-                ls -lah "${{ secrets.HOSTINGER_PATH }}/wp-content/"
-              else
-                echo "wp-content directory does not exist yet"
-              fi
-            else
-              echo "✗ Target path does NOT exist!"
-            fi
-            echo "=========================================="
-
-      # Upload wp-content to Hostinger via SCP
-      - name: Upload to Hostinger via SCP
+      - name: Upload Code to Hostinger
+        if: steps.deploy_code.outputs.code_deployed == 'true'
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOSTINGER_HOST }}
@@ -138,4 +158,80 @@ jobs:
           target: "${{ secrets.HOSTINGER_PATH }}/"
           strip_components: 1
           overwrite: true
-          rm: true
+
+      - name: Deploy Elementor Pages
+        if: steps.check_elementor.outputs.has_elementor == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            # Create elementor-exports directory if not exists
+            mkdir -p ~/elementor-exports
+            
+            echo "Elementor deployment requires manual steps:"
+            echo "1. Upload exports: scp -r tmp/elementor-exports/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/"
+            echo "2. Upload script: scp infra/shared/scripts/import-elementor-pages.php ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/elementor-exports/"
+            echo "3. Execute import: ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} 'cd ${{ secrets.HOSTINGER_WP_ROOT }} && wp eval-file ~/elementor-exports/import-elementor-pages.php'"
+            echo ""
+            echo "Or use the automated export script locally:"
+            echo "  pwsh infra/shared/scripts/export-elementor-pages.ps1"
+            echo ""
+            echo "Note: Elementor page deployment via CI/CD is not fully automated due to:"
+            echo "  - Exports require local WordPress container running"
+            echo "  - Binary data handling requires special care"
+            echo "  - PowerShell encoding issues in Windows development environment"
+
+      - name: Clear Caches
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Clearing caches..."
+            
+            # Clear Elementor cache
+            if wp elementor flush_css 2>/dev/null; then
+              echo "✓ Elementor cache cleared"
+            else
+              echo "⚠ Elementor cache clear failed or plugin not active"
+            fi
+            
+            # Clear LiteSpeed cache (if available)
+            if command -v litespeed 2>/dev/null; then
+              wp litespeed-purge all 2>/dev/null && echo "✓ LiteSpeed cache cleared" || echo "⚠ LiteSpeed cache clear failed"
+            fi
+            
+            # Clear WordPress transients
+            wp transient delete --all 2>/dev/null && echo "✓ WordPress transients cleared" || true
+            
+            echo "Cache clearing complete"
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          VERSION="${{ steps.release.outputs.version }}"
+          
+          echo ""
+          echo "=========================================="
+          echo "Deployment Summary"
+          echo "=========================================="
+          echo "Release: v$VERSION"
+          echo "Description: ${{ steps.release.outputs.description }}"
+          echo "Code deployed: ${{ steps.deploy_code.outputs.code_deployed || 'false' }}"
+          echo "Elementor pages: ${{ steps.check_elementor.outputs.has_elementor }}"
+          echo "=========================================="
+          echo ""
+          echo "Manual Verification Steps:"
+          jq -r '.steps[] | select(.type == "manual") | .config.instructions[]' "$RELEASE_FILE" 2>/dev/null || echo "  None specified"
+          echo ""
+          echo "Deployment complete!"

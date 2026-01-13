@@ -30,12 +30,14 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Version Management:**
 - See [docs/VERSION-HISTORY.md](docs/VERSION-HISTORY.md) for complete version history and semantic versioning approach
-- Current production version: v3.0.0 (deployed January 9, 2026)
+- Current production version: v3.1.0 (deployed January 9, 2026)
+- Current development version: v3.2.0 (Operators Dashboard Phase 1 - January 13-14, 2026)
 - When asked about next release version, always read VERSION-HISTORY.md first
 
 **Session Continuity:**
 - Always check [docs/SESSION-SUMMARY-*.md](docs/) files for recent work context
-- Current active session: [docs/SESSION-SUMMARY-JAN-11.md](docs/SESSION-SUMMARY-JAN-11.md)
+- Current active session: [docs/SESSION-SUMMARY-JAN-13-14.md](docs/SESSION-SUMMARY-JAN-13-14.md)
+- Previous session: [docs/SESSION-SUMMARY-JAN-11.md](docs/SESSION-SUMMARY-JAN-11.md)
 - If user mentions laptop restart or lost context, read latest session summary first
 - Progress tracking in [docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md](docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md)
 
@@ -166,3 +168,147 @@ Repository root contains only `wp-content/` for production deployment:
 - **What deploys**: `wp-content/` directory only (themes, plugins, mu-plugins)
 - **What doesn't deploy**: WordPress core (Hostinger provides), dev infrastructure, docs
 - See [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) for complete Hostinger Git integration guide
+
+## Release Management & Deployment Workflows
+
+**⚠️ CRITICAL: Always follow established workflows. Do not deviate from defined processes.**
+
+### Required Reference Files (Read These Before Any Release Work)
+
+**Master Workflows:**
+- **[docs/DEPLOYMENT-WORKFLOW.md](docs/DEPLOYMENT-WORKFLOW.md)** - Complete deployment journey including v3.1.0 implementation details, what changed, solutions implemented, and success metrics
+- **[docs/RELEASE-NOTES-PROCESS.md](docs/RELEASE-NOTES-PROCESS.md)** - Release lifecycle workflow (development → pre-release → deployment → post-deployment archiving)
+
+**Quick References:**
+- **[docs/QUICK-REFERENCE-DEPLOYMENT.md](docs/QUICK-REFERENCE-DEPLOYMENT.md)** - One-page cheat sheet with copy-paste commands for exports, deployment, verification, rollback, and archiving
+- **[docs/RELEASE-INSTRUCTIONS-FORMAT.md](docs/RELEASE-INSTRUCTIONS-FORMAT.md)** - JSON schema for machine-readable release files (.github/releases/*.json)
+
+**Templates:**
+- **[docs/templates/TEMPLATE-ELEMENTOR-DEPLOYMENT.md](docs/templates/TEMPLATE-ELEMENTOR-DEPLOYMENT.md)** - Step-by-step template for Elementor page deployments
+
+**Active Working Files:**
+- **[docs/RELEASE-NOTES-NEXT.md](docs/RELEASE-NOTES-NEXT.md)** - Living document for next planned release (human-readable manual steps)
+- **[.github/releases/vX.Y.Z.json](.github/releases/)** - Machine-readable release instructions for GitHub Actions (find latest with `find -maxdepth 1`)
+- **[infra/shared/elementor-manifest.json](infra/shared/elementor-manifest.json)** - Page ID mappings (local → production), version metadata
+
+**Lessons Learned:**
+- **[docs/lessons/](docs/lessons/)** - All lesson files (elementor-cli-deployment.md, powershell-encoding-corruption.md, etc.)
+  - Review when encountering similar challenges
+  - Reference patterns and anti-patterns documented from real issues
+
+**Project Documentation (Documents workspace):**
+- **[WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md)** - Hostinger deployment configuration, SSH keys, Git integration
+- **[WORDPRESS-DATABASE.md](../../Documents/WORDPRESS-DATABASE.md)** - Database schema, migration strategy, backup/restore procedures
+- **[WORDPRESS-TECHNICAL-DESIGN.md](../../Documents/WORDPRESS-TECHNICAL-DESIGN.md)** - Architecture, plugin choices, technical decisions
+- **[WORDPRESS-BUSINESS-FUNCTIONALITY.md](../../Documents/WORDPRESS-BUSINESS-FUNCTIONALITY.md)** - Business requirements, user flows, feature specifications
+- **[WORDPRESS-UI-DESIGN.md](../../Documents/WORDPRESS-UI-DESIGN.md)** - Design system, component library, styling guidelines
+- **[COMMON-UI-DESIGN.md](../../Documents/COMMON-UI-DESIGN.md)** - Shared UI patterns across all applications
+- **[WORDPRESS-SECURITY.md](../../Documents/WORDPRESS-SECURITY.md)** - Security policies, compliance requirements, access control
+- **[WORDPRESS-PAGE-SYNC-MANIFEST.md](../../Documents/WORDPRESS-PAGE-SYNC-MANIFEST.md)** - Page synchronization strategy, ID mappings
+- **[WORDPRESS-OPEN-ACTIONS.md](../../Documents/WORDPRESS-OPEN-ACTIONS.md)** - Active tasks, blockers, pending decisions
+- **[WORDPRESS-BACKLOG.md](../../Documents/WORDPRESS-BACKLOG.md)** - Feature backlog, prioritization, roadmap
+- **[WORDPRESS-WIREFRAMES-WORKFLOW.md](../../Documents/WORDPRESS-WIREFRAMES-WORKFLOW.md)** - Design-to-development workflow
+- **[PERSON-APP-BACKLOG.md](../../Documents/PERSON-APP-BACKLOG.md)** - Related person app features and integration points
+
+**When to Reference These Files:**
+- **Before development:** Check BACKLOG, BUSINESS-FUNCTIONALITY, TECHNICAL-DESIGN, UI-DESIGN
+- **During development:** Reference UI-DESIGN, COMMON-UI-DESIGN, lessons/ for patterns
+- **Before deployment:** Review DEPLOYMENT, PAGE-SYNC-MANIFEST, SECURITY
+- **After issues:** Consult lessons/, OPEN-ACTIONS, TECHNICAL-DESIGN
+- **Database changes:** Always check DATABASE for schema and migration strategy
+
+### Deployment Workflow Summary
+
+**1. Export Elementor Pages (Local):**
+```powershell
+pwsh infra/shared/scripts/export-elementor-pages.ps1
+```
+- Uses `podman cp` to avoid PowerShell encoding corruption
+- Reads mappings from `infra/shared/elementor-manifest.json`
+- Outputs to `tmp/elementor-exports/*.json`
+
+**2. Deploy Code (Automated via GitHub Actions):**
+```bash
+git push origin main  # Triggers .github/workflows/deploy.yml
+```
+- GitHub Actions reads latest `.github/releases/vX.Y.Z.json`
+- Deploys wp-content/ to production
+- Shows manual Elementor deployment instructions
+
+**3. Deploy Elementor Pages (Manual):**
+```bash
+# Follow instructions from GitHub Actions output
+scp -r tmp/elementor-exports/ production:~/
+ssh production "cd public_html && wp eval-file ~/elementor-exports/import-elementor-pages.php"
+```
+- Import script: `infra/shared/scripts/import-elementor-pages.php`
+- Direct database operations (bypasses WordPress API limitations)
+- Supports dry-run: `ELEMENTOR_DRY_RUN=true wp eval-file ...`
+
+**4. Post-Deployment Archiving (CRITICAL - Do Immediately):**
+```powershell
+# Archive human-readable MD
+$timestamp = Get-Date -Format "yyyyMMdd-HHmm"
+Copy-Item docs/RELEASE-NOTES-NEXT.md ".github/releases/archive/RELEASE-NOTES-$timestamp.md"
+
+# Archive machine-readable JSON (e.g., v3.1.0 → v3.2.0)
+Move-Item .github/releases/v3.1.0.json .github/releases/archive/v3.1.0.json
+
+# Create next version
+Copy-Item .github/releases/archive/v3.1.0.json .github/releases/v3.2.0.json
+Copy-Item docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
+
+# Update manifest version
+# Edit infra/shared/elementor-manifest.json - change "version": "3.2.0"
+
+# Commit archive
+git add .github/releases/archive/ .github/releases/v3.2.0.json docs/RELEASE-NOTES-NEXT.md infra/shared/elementor-manifest.json
+git commit -m "Archive v3.1.0, prepare v3.2.0"
+git push origin main
+```
+
+### Key Patterns to Remember
+
+**✅ Always Do:**
+- Read DEPLOYMENT-WORKFLOW.md before any release work
+- Use `podman cp` for Elementor exports (never pipe through PowerShell)
+- Follow RELEASE-NOTES-PROCESS.md workflow phases
+- Archive BOTH JSON and MD files after deployment
+- Use dry-run mode before production imports
+- Update manifest version for each release
+
+**❌ Never Do:**
+- Pipe Elementor JSON through PowerShell (`wp ... > file.json` corrupts data)
+- Skip post-deployment archiving
+- Modify archived release files (they're historical records)
+- Forget to increment manifest version
+- Deviate from established workflows without documenting why
+
+### File Organization
+
+```
+.github/releases/
+├── v3.2.0.json                 # Active next release (machine-readable)
+├── README.md                   # Archive documentation
+└── archive/
+    ├── v3.1.0.json             # Archived releases (machine-readable)
+    └── RELEASE-NOTES-20260113-1500.md  # Archived releases (human-readable)
+
+docs/
+├── RELEASE-NOTES-NEXT.md       # Active next release (human-readable)
+├── DEPLOYMENT-WORKFLOW.md      # Master workflow guide
+├── RELEASE-NOTES-PROCESS.md    # Release lifecycle process
+├── QUICK-REFERENCE-DEPLOYMENT.md   # Quick reference commands
+├── RELEASE-INSTRUCTIONS-FORMAT.md  # JSON schema docs
+├── lessons/                    # Permanent lessons learned
+│   ├── elementor-cli-deployment.md
+│   └── powershell-encoding-corruption.md
+└── templates/
+    └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
+
+infra/shared/
+├── elementor-manifest.json     # Page mappings, version metadata
+└── scripts/
+    ├── export-elementor-pages.ps1      # Export script (PowerShell)
+    └── import-elementor-pages.php      # Import script (PHP)
+```

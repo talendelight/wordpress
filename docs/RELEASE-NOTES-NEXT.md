@@ -18,84 +18,52 @@ Add Candidates and Scouts landing pages (v3.1.0), complete role-based navigation
 ## Release Information
 
 **Target Deployment Date:** TBD  
-**Release Version:** 3.1.0  
+**Release Version:** 3.2.0  
 **Branch:** develop → main  
-**Status:** 🔄 In Progress - Ready for Testing
+**Status:** 🔄 In Progress - Operator Dashboard Phase 1 Complete
 
 ### Overview
-- [x] Candidates landing page (WP-01.3) - ✅ Complete and published locally
-  - Hero: "Launch Your Career with Confidence"
-  - How It Works (3 steps for candidates)
-  - What We Look For (4 qualities)
-  - Why Choose TalenDelight (4 benefits - candidate-focused)
-  - Final CTA: "Land Your Next Great Role"
-  - Button links: `/candidates/identify/` (form to be created in future release)
-  - Role-based redirect tested: candidate_test → `/candidates/` ✅
+- [x] **Operator landing page (/operators/) - ✅ Phase 1 Complete (January 13-14, 2026)**
+  - ✅ Page created and published (ID: 299, slug: operators)
+  - ✅ Hero: "Operators Dashboard" with introduction
+  - ✅ Needs Action section (placeholder for dynamic content from external app)
+  - ✅ 5 navigation tiles: Needs Action (info), Candidates, Employers, Scouts, Reports
+  - ✅ CTA: "Need Help?" with documentation link
+  - ✅ Footer section with compliance badges
+  - ✅ Role-based access control implemented (Operators, Managers, Admins only)
+  - ✅ Login redirect: Operator users auto-redirect to `/operators/`
+  - ✅ 403 Forbidden page for unauthorized access
+  - ✅ Test user verified: operator_test → `/operators/` redirect working
+  - ✅ Plugin updated: talendelight-roles v1.0.0 with page-specific access control
+  - 📄 Feature spec: [WP-01.4-operator-landing-page.md](features/WP-01.4-operator-landing-page.md)
+  - 📄 Build guide: [OPERATOR-PAGE-BUILD-GUIDE.md](OPERATOR-PAGE-BUILD-GUIDE.md)
+  - ⏳ Phase 2: Dynamic "Needs Action" content (external app integration)
+  - ⏳ Phase 3: Management pages (Candidates, Employers, Scouts, Reports)
   
-- [x] Scouts landing page (WP-01.3 - Scouts) - ✅ Complete and published locally
-  - Hero: "Refer Top Tech Talent, Earn Rewards"
-  - How It Works (3 steps for scouts)
-  - Why Become a Scout (4 benefits)
-  - Ideal Candidate Profile (4 criteria)
-  - Consent & Ethics section (GDPR compliance)
-  - Final CTA: "Ready to Start Referring?"
-  - Button text: "Refer Candidates"
-  - Button links: `/scouts/refer` (form to be created in future release)
+- [ ] **Manager landing page (/managers/) - ⏳ Planned for v3.2.0**
+  - Access control already implemented in talendelight-roles plugin
+  - Awaiting page content creation
+  - 📄 Feature spec: [WP-01.5-manager-landing-page.md](features/WP-01.5-manager-landing-page.md)
   
-- [x] Design pattern documentation - ✅ Consent/Legal sections pattern added to COMMON-UI-DESIGN.md
-  - Light background styling for ethical/legal notices
-  - Checkmark/cross mark usage guidelines
-  - Reusable pattern for GDPR, legal disclaimers, consent requirements
-  
-- [x] Privacy Policy open action - ✅ Added to WORDPRESS-OPEN-ACTIONS.md
-  - Required for WP-01.5 (Privacy Policy page)
-  
-- [x] Compliance & trust signals - ✅ Complete (January 11, 2026)
-  - ✅ Scouts page: Footer compliance section added, Consent & Ethics updated to dark background
-  - ✅ Employers page: Footer compliance section added
-  - ✅ Candidates page: Footer compliance section added, all backgrounds verified
-  - ✅ Homepage: Footer compliance section added, Section 2 explicit white background
-  - Footer sections: Light Grey (#ECECEC), inline icon list, 4 trust badges
-  - Badges: GDPR Compliant, Secure & Encrypted, Equal Opportunity, Serving [Market]
-  - ISO 27001 certification added as long-term goal (12-24 months)
-  - See: [COMPLIANCE-IMPLEMENTATION-GUIDE.md](COMPLIANCE-IMPLEMENTATION-GUIDE.md) for complete implementation log
-  
-- [x] Alternating background pattern - ✅ Documented in COMMON-UI-DESIGN.md
-  - Standard: Hero (Navy) → Content sections alternate White/Grey → Final CTA (Navy)
-  - All future pages must follow this pattern for consistency
-  - Needed for consent checkboxes in forms
-
-- [x] Access Restricted page (/403-forbidden/) - ✅ Footer compliance section added (January 11, 2026)
-  - Section 2 background fixed to explicit white
-  - Section 4 (NEW): Footer compliance with 4 trust badges
-  - Grey background (#ECECEC), inline icon list
-  
-- [x] Login page styling - ✅ Custom CSS applied (January 11, 2026)
-  - Button style matches Access Restricted page (Accent Blue with glow)
-  - CSS file: config/custom-css/login.css
-  - Applied via Appearance → Customize → Additional CSS
-  
-- [ ] Operator landing page (/operators/) - **Deferred to v3.2.0**
-- [ ] Manager landing page (/managers/) - **Deferred to v3.2.0**
-- [ ] Test Scout role-based redirect (scout_test → `/scouts/`)
-- [ ] Configure WP User Manager email settings (if needed)
-- [ ] Create test users in production (if needed)
+- [x] **Previous v3.1.0 features - ✅ Deployed (January 9, 2026)**
+  - Candidates landing page (WP-01.3) - ✅ Complete
+  - Scouts landing page (WP-01.3 - Scouts) - ✅ Complete
+  - Design pattern documentation - ✅ Complete
+  - Compliance & trust signals - ✅ Complete
 
 ---
 
 ## Pre-Deployment Checklist
 
 **Code & Content:**
-- [ ] All changes committed to appropriate branch
-- [x] Candidates page published locally ✅ (Page ID: 229)
-- [x] Scouts page published locally ✅ (Page ID: 248)
-- [x] Design pattern documented in COMMON-UI-DESIGN.md ✅
-- [x] Role-based redirect tested for Candidates ✅ (candidate_test → `/candidates/`)
-- [ ] Role-based redirect tested for Scouts (scout_test → `/scouts/`)
-- [x] Button links configured ✅ (both link to form pages to be created later)
+- [x] Operators page published locally ✅ (Page ID: 299)
+- [x] Access control implemented and tested ✅
+- [x] Login redirect configured ✅
+- [x] Feature documentation updated ✅
+- [x] Build guide created ✅
 - [ ] Responsive design tested on mobile/tablet/desktop
-- [ ] Cross-browser testing completed
-- [ ] SEO metadata added to both pages
+- [ ] Test operator user created in production
+- [ ] Manager page content (deferred to later in v3.2.0)
 
 **Version Control:**
 - [ ] Git commit created with all changes
@@ -279,6 +247,125 @@ wp user create editor_test editor@test.local --role=editor --user_pass=Test123!
 wp user create author_test author@test.local --role=author --user_pass=Test123!
 wp user create contributor_test contributor@test.local --role=contributor --user_pass=Test123!
 ```
+
+**Note:** `operator_test` user required for v3.2.0 to test Operators Dashboard
+
+---
+
+## v3.2.0 Specific Deployment Steps
+
+### Step 7: Publish Operators Page
+
+**Goal:** Make Operators Dashboard accessible to Operator users
+
+**Implementation:**
+
+1. Navigate to: **Pages → All Pages**
+2. Find **"Operators Dashboard"** page
+3. If status is Draft, click **"Edit"**
+4. Change status from **"Draft"** to **"Publish"**
+5. Verify slug is set to: **`operators`**
+6. Verify template is: **Elementor Canvas** (full width)
+7. Click **"Publish"** or **"Update"**
+8. Verify page loads at: `https://talendelight.com/operators/`
+
+**Content verification:**
+- Hero: "Operators Dashboard"
+- "Needs Action" section with placeholder text
+- 5 navigation tiles: Needs Action, Candidates, Employers, Scouts, Reports
+- CTA: "Need Help?"
+- Footer with compliance badges
+
+**Access control verification:**
+- ✅ Operator users can access
+- ✅ Manager users can access
+- ✅ Administrator users can access
+- ❌ Employer/Candidate/Scout users see 403 Forbidden
+- ❌ Non-logged-in users redirected to login
+
+**Time:** 3-5 minutes
+
+---
+
+### Step 8: Verify Access Control & Redirects
+
+**Goal:** Confirm role-based access control and login redirects work correctly
+
+**Test Operator Login Redirect:**
+1. Logout from admin
+2. Navigate to: `https://talendelight.com/wp-login.php`
+3. Login as: `operator_test` / Test123!
+4. ✅ Should auto-redirect to: `https://talendelight.com/operators/`
+5. ✅ Should see Operators Dashboard page
+
+**Test Unauthorized Access (403 Forbidden):**
+1. Logout
+2. Login as: `employer_test` / Test123! (or any non-operator role)
+3. Manually navigate to: `https://talendelight.com/operators/`
+4. ✅ Should see 403 Forbidden page with message:
+   - "Access Denied"
+   - "You do not have permission to access the Operators Dashboard"
+   - Buttons: "Go to Home Page" and "Go to My Account"
+
+**Test Unauthenticated Access:**
+1. Logout completely (open incognito/private browser)
+2. Navigate to: `https://talendelight.com/operators/`
+3. ✅ Should redirect to login page
+
+**Plugin verification:**
+- Navigate to: **Plugins → Installed Plugins**
+- Verify: **TalenDelight Custom Roles** plugin is **Active**
+- Version: 1.0.0
+
+**Time:** 5-10 minutes
+
+---
+
+### Step 9: Verify Plugin Code Deployment
+
+**Goal:** Confirm talendelight-roles plugin updates deployed correctly
+
+**Check via FTP/File Manager:**
+1. Navigate to: `public_html/wp-content/plugins/talendelight-roles/`
+2. Open: `talendelight-roles.php`
+3. Search for function: `talendelight_restrict_operators_page`
+4. ✅ Should exist (added in v3.2.0)
+5. Search for function: `talendelight_restrict_managers_page`
+6. ✅ Should exist (added in v3.2.0, future-ready)
+
+**Check via WordPress Admin:**
+1. Navigate to: **Plugins → Plugin Editor**
+2. Select: **TalenDelight Custom Roles**
+3. Verify file contains access control functions
+
+**If functions missing:**
+- Plugin file not deployed via Git
+- Manually upload updated `talendelight-roles.php` via FTP
+- Or re-deploy via Git (check .hostingerignore exclusions)
+
+**Time:** 2-3 minutes
+
+---
+
+### Step 10: Optional - Test Manager Page Access Control (Future)
+
+**Goal:** Verify Manager page access control is ready (when page is created)
+
+**Current Status:** 
+- ⏳ Manager page (`/managers/`) not yet created
+- ✅ Access control code already in plugin (future-ready)
+
+**When Manager page is created:**
+1. Create page with slug: `managers`
+2. Publish page
+3. Login as `manager_test` user
+4. ✅ Should auto-redirect to `/managers/`
+5. ✅ Manager page should be accessible
+6. Test unauthorized access (non-manager users should see 403)
+
+**Time:** N/A (deferred to future release)
+
+---
 
 **Verification:**
 - Navigate to: **Users → All Users**
