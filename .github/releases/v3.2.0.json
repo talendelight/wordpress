@@ -1,0 +1,73 @@
+{
+  "version": "3.2.0",
+  "release_date": "2026-01-14",
+  "description": "Operators Dashboard Phase 1 - Landing page with role-based access control",
+  "requires_db_backup": false,
+  "requires_manual_verification": true,
+  "changelog": [
+    "Add Operators Dashboard landing page (/operators/)",
+    "Implement role-based access control for Operators page",
+    "Add login redirect for Operator users to /operators/",
+    "Update talendelight-roles plugin with page-specific access functions",
+    "Add Manager page access control (future-ready for /managers/)",
+    "Update documentation: WP-01.4, RELEASE-NOTES-NEXT.md, SESSION-SUMMARY-JAN-13-14.md"
+  ],
+  "steps": [
+    {
+      "type": "deploy_code",
+      "description": "Deploy wp-content (plugins, themes) to production",
+      "config": {
+        "source": "wp-content/",
+        "destination": "/domains/talendelight.com/public_html/wp-content/",
+        "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
+        "rsync_flags": "-avz --delete --exclude-from=.hostingerignore",
+        "critical_files": [
+          "wp-content/plugins/talendelight-roles/talendelight-roles.php"
+        ]
+      }
+    },
+    {
+      "type": "deploy_elementor",
+      "description": "Deploy Operators Dashboard page via Elementor template import",
+      "config": {
+        "pages": [
+          {
+            "page_id": 299,
+            "page_slug": "operators",
+            "page_title": "Operators Dashboard",
+            "template_file": "tmp/elementor-exports/operators-299.json",
+            "export_command": "podman exec -it wp wp elementor library export-template 299 --path=/var/www/html --allow-root",
+            "import_command": "wp elementor library import-template ~/elementor-exports/operators-299.json --title='Operators Dashboard' --template_type='page'"
+          }
+        ],
+        "manifest_file": "infra/shared/elementor-manifest.json"
+      }
+    },
+    {
+      "type": "clear_cache",
+      "description": "Clear LiteSpeed and Elementor caches",
+      "config": {
+        "cache_types": ["litespeed", "elementor"]
+      }
+    },
+    {
+      "type": "manual",
+      "description": "Verify deployment and test access control",
+      "config": {
+        "instructions": [
+          "1. Verify Operators Dashboard page published at https://talendelight.com/operators/",
+          "2. Verify talendelight-roles plugin active with updated functions",
+          "3. Create operator_test user in production (if not exists): wp user create operator_test operator@test.local --role=td_operator --user_pass=Test123!",
+          "4. Test Operator login redirect: Login as operator_test → should redirect to /operators/",
+          "5. Test unauthorized access: Login as employer_test → navigate to /operators/ → should see 403 Forbidden",
+          "6. Test unauthenticated access: Logout → navigate to /operators/ → should redirect to login page",
+          "7. Verify page content: Hero, Needs Action section, 5 tiles, CTA, Footer",
+          "8. Test responsive design on mobile/tablet",
+          "9. Verify plugin functions exist: Search talendelight-roles.php for 'talendelight_restrict_operators_page'",
+          "10. Monitor error logs for any access control issues"
+        ],
+        "approve_before_continue": false
+      }
+    }
+  ]
+}

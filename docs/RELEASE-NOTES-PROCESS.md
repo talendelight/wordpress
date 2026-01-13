@@ -9,11 +9,15 @@
 ```
 docs/
 ├── RELEASE-NOTES-NEXT.md           # Active: Next planned release
-├── RELEASE-NOTES-PROCESS.md        # This file: Process documentation
-└── releases/
-    ├── README.md                   # Archive index
-    ├── RELEASE-NOTES-20251230-1500.md  # Historical: Dec 30, 2025
-    └── RELEASE-NOTES-20260115-0930.md  # Historical: Jan 15, 2026
+└── RELEASE-NOTES-PROCESS.md        # This file: Process documentation
+
+.github/releases/
+├── README.md                       # Archive index
+├── v3.2.0.json                     # Active: Machine-readable next release
+└── archive/
+    ├── v3.1.0.json                 # Historical: Archived JSON
+    ├── RELEASE-NOTES-20251230-1500.md
+    └── RELEASE-NOTES-20260115-0930.md
 ```
 
 ---
@@ -152,16 +156,18 @@ docs/
 
 ### Phase 4: Post-Deployment (Immediately After)
 
-**Documents:** Create archive, reset template
+**Documents:** Archive both JSON and MD files, create next version
 
-**⚠️ IMPORTANT:** Archive file is created ONLY after production deployment completes.
+**⚠️ IMPORTANT:** Archive files are created ONLY after production deployment completes.
+
+#### Step 1: Archive Human-Readable Release Notes
 
 ```bash
 # Archive this release (DO THIS AFTER DEPLOYMENT, NOT BEFORE)
-cp docs/RELEASE-NOTES-NEXT.md docs/releases/RELEASE-NOTES-$(date +%Y%m%d-%H%M).md
+cp docs/RELEASE-NOTES-NEXT.md .github/releases/archive/RELEASE-NOTES-$(date +%Y%m%d-%H%M).md
 
 # Example: 
-cp docs/RELEASE-NOTES-NEXT.md docs/releases/RELEASE-NOTES-20251230-1500.md
+cp docs/RELEASE-NOTES-NEXT.md .github/releases/archive/RELEASE-NOTES-20251230-1500.md
 ```
 
 **Update Archived Copy:**
@@ -179,18 +185,58 @@ cp docs/RELEASE-NOTES-NEXT.md docs/releases/RELEASE-NOTES-20251230-1500.md
 
 3. Add post-deployment observations
 
-4. Update `docs/releases/README.md` index
+#### Step 2: Archive Machine-Readable Release JSON
 
-**Reset RELEASE-NOTES-NEXT.md:**
 ```bash
-# Copy template (or create from scratch)
-cp docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
+# Move JSON to archive (e.g., for v3.1.0)
+mv .github/releases/v3.1.0.json .github/releases/archive/v3.1.0.json
+
+# Or on Windows PowerShell:
+Move-Item .github/releases/v3.1.0.json .github/releases/archive/v3.1.0.json
 ```
 
-**Update target date:**
-```markdown
-**Target Release Date:** TBD
-**Release Version:** TBD
+**Why move instead of copy?**
+- Prevents GitHub Actions from reading archived releases
+- Keeps active releases/ folder clean
+- GitHub Actions uses `find -maxdepth 1` to exclude archive/
+
+#### Step 3: Create Next Version Files
+
+```bash
+# Create next version JSON (e.g., v3.2.0)
+cp .github/releases/archive/v3.1.0.json .github/releases/v3.2.0.json
+
+# Edit v3.2.0.json:
+# - Update version number
+# - Clear description and changelog
+# - Reset steps to placeholders
+# - Update elementor_manifest_version if needed
+```
+
+```bash
+# Reset RELEASE-NOTES-NEXT.md
+cp docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
+
+# Update target version:
+# - Release Version: v3.2.0
+# - Target Release Date: TBD
+```
+
+#### Step 4: Update Related References
+
+**Update manifest version:**
+- Edit `infra/shared/elementor-manifest.json`
+- Change `version` field to match next release (e.g., "3.2.0")
+
+**Commit archive:**
+```bash
+git add .github/releases/archive/v3.1.0.json
+git add .github/releases/archive/RELEASE-NOTES-20251230-1500.md
+git add .github/releases/v3.2.0.json
+git add docs/RELEASE-NOTES-NEXT.md
+git add infra/shared/elementor-manifest.json
+git commit -m "Archive v3.1.0 release, prepare v3.2.0"
+git push origin main
 ```
 
 ---
@@ -419,7 +465,7 @@ docs/RELEASE-SUMMARY.md
 ```bash
 # ALWAYS follow the three-file system:
 1. Work in: docs/RELEASE-NOTES-NEXT.md (during development/deployment)
-2. Archive to: docs/releases/RELEASE-NOTES-{yyyymmdd-HHmm}.md (after deployment)
+2. Archive to: .github/releases/archive/RELEASE-NOTES-{yyyymmdd-HHmm}.md (after deployment)
 3. Reference: docs/RELEASE-NOTES-PROCESS.md (this file)
 ```
 

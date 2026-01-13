@@ -1,0 +1,52 @@
+{
+  "version": "3.2.0",
+  "exported_at": "TBD",
+  "description": "Next release - update description when exporting",
+  "pages": [
+    {
+      "name": "homepage",
+      "local_id": 20,
+      "prod_id": 14,
+      "file": "homepage.json",
+      "title": "Homepage (Welcome)",
+      "url_local": "http://localhost:8080/",
+      "url_prod": "https://talendelight.com/"
+    },
+    {
+      "name": "employers",
+      "local_id": 93,
+      "prod_id": 64,
+      "file": "employers.json",
+      "title": "Employers",
+      "url_local": "http://localhost:8080/employers/",
+      "url_prod": "https://talendelight.com/employers/"
+    },
+    {
+      "name": "candidates",
+      "local_id": 229,
+      "prod_id": 75,
+      "file": "candidates.json",
+      "title": "Candidates",
+      "url_local": "http://localhost:8080/candidates/",
+      "url_prod": "https://talendelight.com/candidates/"
+    },
+    {
+      "name": "scouts",
+      "local_id": 248,
+      "prod_id": 76,
+      "file": "scouts.json",
+      "title": "Scouts",
+      "url_local": "http://localhost:8080/scouts/",
+      "url_prod": "https://talendelight.com/scouts/"
+    },
+    {
+      "name": "access-restricted",
+      "local_id": 152,
+      "prod_id": 44,
+      "file": "access-restricted.json",
+      "title": "Access Restricted",
+      "url_local": "http://localhost:8080/403-forbidden/",
+      "url_prod": "https://talendelight.com/403-forbidden/"
+    }
+  ]
+}

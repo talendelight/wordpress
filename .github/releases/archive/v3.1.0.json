@@ -1,0 +1,65 @@
+{
+  "version": "3.1.0",
+  "release_date": "2026-01-13T00:00:00Z",
+  "description": "Added GDPR compliance footer to all pages and updated login styling",
+  "requires_db_backup": false,
+  "requires_manual_verification": true,
+  "changelog": [
+    "Added compliance footer with 4 trust badges to all pages",
+    "Updated login form styling with accent blue color and glow effect",
+    "Created Candidates and Scouts pages on production",
+    "Fixed Unicode character rendering in Elementor exports"
+  ],
+  "steps": [
+    {
+      "type": "deploy_code",
+      "description": "Deploy themes and plugins to production",
+      "config": {
+        "source": "wp-content/",
+        "destination": "/domains/talendelight.com/public_html/wp-content/",
+        "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
+        "rsync_flags": "-avz --delete --exclude-from=.hostingerignore"
+      }
+    },
+    {
+      "type": "deploy_elementor",
+      "description": "Import updated pages with compliance footer",
+      "config": {
+        "manifest": "infra/shared/elementor-manifest.json",
+        "export_dir": "tmp/elementor-exports/",
+        "import_script": "infra/shared/scripts/import-elementor-pages.php",
+        "pages": [
+          {"name": "homepage", "prod_id": 14},
+          {"name": "employers", "prod_id": 64},
+          {"name": "candidates", "prod_id": 75},
+          {"name": "scouts", "prod_id": 76},
+          {"name": "access-restricted", "prod_id": 44}
+        ]
+      }
+    },
+    {
+      "type": "clear_cache",
+      "description": "Clear LiteSpeed and Elementor caches",
+      "config": {
+        "cache_types": ["litespeed", "elementor"]
+      }
+    },
+    {
+      "type": "manual",
+      "description": "Verify pages display correctly",
+      "config": {
+        "instructions": [
+          "Open https://talendelight.com/ and verify compliance footer (4 trust badges)",
+          "Open https://talendelight.com/employers/ and verify compliance footer",
+          "Open https://talendelight.com/candidates/ and verify compliance footer",
+          "Open https://talendelight.com/scouts/ and verify compliance footer",
+          "Open https://talendelight.com/403-forbidden/ and verify restricted access message",
+          "Test login form styling at any login page - verify blue glow effect on button",
+          "Verify checkmarks (✅) and crosses (❌) render correctly (not as u2705/u274c)",
+          "Test mobile responsive layout on at least one page"
+        ],
+        "approve_before_continue": false
+      }
+    }
+  ]
+}
