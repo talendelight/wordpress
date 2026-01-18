@@ -1,0 +1,102 @@
+{
+  "version": "3.3.0",
+  "release_date": "2026-01-18",
+  "description": "User Registration & Role Selection Flow - Custom theme, pages, database table",
+  "requires_db_backup": true,
+  "requires_manual_verification": true,
+  "changelog": [
+    "Add Blocksy Child theme with custom page templates",
+    "Add Select Role page (/select-role/) with custom template",
+    "Add Register Profile page (/register-profile/)",
+    "Create td_user_data_change_requests database table",
+    "Implement registration flow with role selection",
+    "Add redirect logic from /register to /select-role",
+    "Update documentation: RELEASE-NOTES-NEXT.md, OPEN-ACTIONS.md"
+  ],
+  "steps": [
+    {
+      "type": "deploy_code",
+      "description": "Deploy wp-content (themes, plugins) to production",
+      "config": {
+        "source": "wp-content/",
+        "destination": "/domains/talendelight.com/public_html/wp-content/",
+        "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
+        "rsync_flags": "-avz --delete --exclude-from=.hostingerignore",
+        "critical_files": [
+          "wp-content/themes/blocksy-child/functions.php",
+          "wp-content/themes/blocksy-child/page-role-selection.php",
+          "wp-content/themes/blocksy-child/style.css"
+        ]
+      }
+    },
+    {
+      "type": "deploy_database",
+      "description": "Create td_user_data_change_requests table",
+      "config": {
+        "sql_files": [
+          "infra/shared/db/20260117-impl-add-td_user_data_change_requests.sql"
+        ],
+        "import_method": "wp-cli"
+      }
+    },
+    {
+      "type": "deploy_elementor",
+      "description": "Deploy Select Role and Register Profile pages via Elementor",
+      "config": {
+        "pages": [
+          {
+            "page_id": 379,
+            "page_slug": "select-role",
+            "page_title": "Select Role",
+            "template_file": "tmp/elementor-exports/select-role-379.json",
+            "export_command": "podman exec wp wp post meta get 379 _elementor_data --allow-root > tmp/elementor-exports/select-role-379.json",
+            "import_command": "wp post meta update SELECT_ROLE_PAGE_ID _elementor_data \"$(cat ~/elementor-exports/select-role-379.json)\""
+          },
+          {
+            "page_id": 365,
+            "page_slug": "register-profile",
+            "page_title": "Register Profile",
+            "template_file": "tmp/elementor-exports/register-profile-365.json",
+            "export_command": "podman exec wp wp post meta get 365 _elementor_data --allow-root > tmp/elementor-exports/register-profile-365.json",
+            "import_command": "wp post meta update REGISTER_PROFILE_PAGE_ID _elementor_data \"$(cat ~/elementor-exports/register-profile-365.json)\""
+          }
+        ],
+        "manifest_file": "infra/shared/elementor-manifest.json"
+      }
+    },
+    {
+      "type": "activate_theme",
+      "description": "Activate blocksy-child theme in production",
+      "config": {
+        "theme": "blocksy-child",
+        "command": "wp theme activate blocksy-child"
+      }
+    },
+    {
+      "type": "clear_cache",
+      "description": "Clear LiteSpeed and Elementor caches",
+      "config": {
+        "cache_types": ["litespeed", "elementor"]
+      }
+    },
+    {
+      "type": "manual",
+      "description": "Verify deployment and test registration flow",
+      "config": {
+        "instructions": [
+          "1. Verify blocksy-child theme is active: wp theme list",
+          "2. Verify Select Role page exists: https://talendelight.com/select-role/",
+          "3. Verify Register Profile page exists: https://talendelight.com/register-profile/",
+          "4. Test redirect: Navigate to /register → should redirect to /select-role",
+          "5. Verify td_user_data_change_requests table: wp db query 'DESCRIBE wp_td_user_data_change_requests'",
+          "6. Test registration flow: Select role → Fill form → Submit",
+          "7. Verify responsive design on mobile/tablet",
+          "8. Check page templates are applied correctly",
+          "9. Test all three role options: Candidate, Employer, Scout",
+          "10. Monitor error logs for any registration issues"
+        ],
+        "approve_before_continue": false
+      }
+    }
+  ]
+}

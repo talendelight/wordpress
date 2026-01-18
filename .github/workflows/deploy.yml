@@ -159,6 +159,103 @@ jobs:
           strip_components: 1
           overwrite: true
 
+      - name: Deploy Database Changes
+        id: deploy_database
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          
+          # Check if release has database deployment
+          HAS_DATABASE=$(jq '[.steps[] | select(.type == "deploy_database")] | length > 0' "$RELEASE_FILE")
+          
+          if [ "$HAS_DATABASE" = "false" ]; then
+            echo "No database deployment in this release"
+            exit 0
+          fi
+          
+          echo "Preparing database deployment..."
+          echo "database_deployed=true" >> $GITHUB_OUTPUT
+          
+          # Extract SQL files from release config
+          jq -r '.steps[] | select(.type == "deploy_database") | .config.sql_files[]' "$RELEASE_FILE" > db_files.txt
+          
+          echo "SQL files to deploy:"
+          cat db_files.txt
+
+      - name: Upload and Execute Database Changes
+        if: steps.deploy_database.outputs.database_deployed == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          source: "infra/shared/db/*.sql"
+          target: "~/db-deploy/"
+          strip_components: 3
+
+      - name: Execute Database SQL Files
+        if: steps.deploy_database.outputs.database_deployed == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Executing database migrations..."
+            
+            for sql_file in ~/db-deploy/*.sql; do
+              if [ -f "$sql_file" ]; then
+                echo "Executing: $(basename $sql_file)"
+                wp db query < "$sql_file" && echo "✓ Success" || echo "✗ Failed: $sql_file"
+              fi
+            done
+            
+            # Cleanup
+            rm -rf ~/db-deploy
+            
+            echo "Database deployment complete"
+
+      - name: Activate Theme
+        id: activate_theme
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          
+          # Check if release has theme activation
+          HAS_THEME=$(jq '[.steps[] | select(.type == "activate_theme")] | length > 0' "$RELEASE_FILE")
+          
+          if [ "$HAS_THEME" = "false" ]; then
+            echo "No theme activation in this release"
+            exit 0
+          fi
+          
+          THEME=$(jq -r '.steps[] | select(.type == "activate_theme") | .config.theme' "$RELEASE_FILE")
+          echo "theme_name=$THEME" >> $GITHUB_OUTPUT
+          echo "theme_activated=true" >> $GITHUB_OUTPUT
+
+      - name: Execute Theme Activation
+        if: steps.activate_theme.outputs.theme_activated == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            THEME="${{ steps.activate_theme.outputs.theme_name }}"
+            echo "Activating theme: $THEME"
+            
+            if wp theme activate "$THEME"; then
+              echo "✓ Theme activated: $THEME"
+            else
+              echo "✗ Theme activation failed: $THEME"
+              exit 1
+            fi
+
       - name: Deploy Elementor Pages
         if: steps.check_elementor.outputs.has_elementor == 'true'
         uses: appleboy/ssh-action@v1.0.3
@@ -173,18 +270,31 @@ jobs:
             # Create elementor-exports directory if not exists
             mkdir -p ~/elementor-exports
             
-            echo "Elementor deployment requires manual steps:"
-            echo "1. Upload exports: scp -r tmp/elementor-exports/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/"
-            echo "2. Upload script: scp infra/shared/scripts/import-elementor-pages.php ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/elementor-exports/"
-            echo "3. Execute import: ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} 'cd ${{ secrets.HOSTINGER_WP_ROOT }} && wp eval-file ~/elementor-exports/import-elementor-pages.php'"
+            echo "⚠️  ELEMENTOR DEPLOYMENT REQUIRES MANUAL STEPS"
+            echo "================================================"
             echo ""
-            echo "Or use the automated export script locally:"
-            echo "  pwsh infra/shared/scripts/export-elementor-pages.ps1"
+            echo "Elementor pages cannot be fully automated in CI/CD because:"
+            echo "  - Exports require running local WordPress container"
+            echo "  - Binary-safe file handling needed to avoid encoding corruption"
             echo ""
-            echo "Note: Elementor page deployment via CI/CD is not fully automated due to:"
-            echo "  - Exports require local WordPress container running"
-            echo "  - Binary data handling requires special care"
-            echo "  - PowerShell encoding issues in Windows development environment"
+            echo "Follow these steps to complete Elementor deployment:"
+            echo ""
+            echo "1. Export pages locally:"
+            echo "   pwsh infra/shared/scripts/export-elementor-pages.ps1"
+            echo ""
+            echo "2. Upload exports to production:"
+            echo "   scp -r tmp/elementor-exports/ ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/"
+            echo ""
+            echo "3. Upload import script:"
+            echo "   scp infra/shared/scripts/import-elementor-pages.php ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }}:~/elementor-exports/"
+            echo ""
+            echo "4. Execute import on production:"
+            echo "   ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} 'cd ${{ secrets.HOSTINGER_WP_ROOT }} && wp eval-file ~/elementor-exports/import-elementor-pages.php'"
+            echo ""
+            echo "5. Clear caches:"
+            echo "   ssh ${{ secrets.HOSTINGER_USER }}@${{ secrets.HOSTINGER_HOST }} 'cd ${{ secrets.HOSTINGER_WP_ROOT }} && wp elementor flush_css && wp litespeed-purge all'"
+            echo ""
+            echo "================================================"
 
       - name: Clear Caches
         uses: appleboy/ssh-action@v1.0.3
@@ -228,9 +338,15 @@ jobs:
           echo "Release: v$VERSION"
           echo "Description: ${{ steps.release.outputs.description }}"
           echo "Code deployed: ${{ steps.deploy_code.outputs.code_deployed || 'false' }}"
+          echo "Database deployed: ${{ steps.deploy_database.outputs.database_deployed || 'false' }}"
+          echo "Theme activated: ${{ steps.activate_theme.outputs.theme_activated || 'false' }}"
           echo "Elementor pages: ${{ steps.check_elementor.outputs.has_elementor }}"
           echo "=========================================="
           echo ""
+          if [ "${{ steps.check_elementor.outputs.has_elementor }}" = "true" ]; then
+            echo "⚠️  MANUAL ELEMENTOR DEPLOYMENT REQUIRED - See above for instructions"
+            echo ""
+          fi
           echo "Manual Verification Steps:"
           jq -r '.steps[] | select(.type == "manual") | .config.instructions[]' "$RELEASE_FILE" 2>/dev/null || echo "  None specified"
           echo ""
