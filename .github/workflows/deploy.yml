@@ -82,10 +82,18 @@ jobs:
             echo "⚠️  This release includes Elementor page deployment"
             echo "⚠️  Ensure Elementor exports are committed to repository"
           fi
-
-          if [ "$HAS_ELEMENTOR" = "true" ]; then
-            echo "⚠️  This release includes Elementor page deployment"
-            echo "⚠️  Ensure Elementor exports are committed to repository"
+      
+      - name: Check for Plugin Deployment
+        id: check_plugins
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          HAS_PLUGINS=$(jq '[.steps[] | select(.type == "deploy_plugins")] | length > 0' "$RELEASE_FILE")
+          echo "has_plugins=$HAS_PLUGINS" >> $GITHUB_OUTPUT
+          
+          if [ "$HAS_PLUGINS" = "true" ]; then
+            echo "⚠️  This release includes new plugin deployment"
+            PLUGINS=$(jq -r '.steps[] | select(.type == "deploy_plugins") | .config.plugins[]' "$RELEASE_FILE")
+            echo "Plugins to deploy: $PLUGINS"
           fi
 
       - name: Deploy Code (wp-content)
@@ -256,6 +264,48 @@ jobs:
               exit 1
             fi
 
+      - name: Activate Plugins
+        if: steps.check_plugins.outputs.has_plugins == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Activating plugins..."
+            
+            # Read plugins from release JSON
+            PLUGINS=$(cat <<'EOF'
+            ${{ steps.check_plugins.outputs.plugins || '' }}
+            EOF
+            )
+            
+            if [ -z "$PLUGINS" ]; then
+              # Fallback: get plugins from local release file
+              cd ~/
+              if [ -f ".github/releases/v${{ steps.release.outputs.version }}.json" ]; then
+                PLUGINS=$(jq -r '.steps[] | select(.type == "deploy_plugins") | .config.plugins[]' ".github/releases/v${{ steps.release.outputs.version }}.json")
+              fi
+            fi
+            
+            for plugin in $PLUGINS; do
+              echo "Activating plugin: $plugin"
+              if wp plugin is-installed "$plugin"; then
+                if wp plugin activate "$plugin"; then
+                  echo "✓ Plugin activated: $plugin"
+                else
+                  echo "✗ Plugin activation failed: $plugin"
+                fi
+              else
+                echo "⚠ Plugin not found: $plugin"
+              fi
+            done
+            
+            echo "Plugin activation complete"
+
       - name: Deploy Elementor Pages
         if: steps.check_elementor.outputs.has_elementor == 'true'
         uses: appleboy/ssh-action@v1.0.3
@@ -340,6 +390,7 @@ jobs:
           echo "Code deployed: ${{ steps.deploy_code.outputs.code_deployed || 'false' }}"
           echo "Database deployed: ${{ steps.deploy_database.outputs.database_deployed || 'false' }}"
           echo "Theme activated: ${{ steps.activate_theme.outputs.theme_activated || 'false' }}"
+          echo "Plugins deployed: ${{ steps.check_plugins.outputs.has_plugins || 'false' }}"
           echo "Elementor pages: ${{ steps.check_elementor.outputs.has_elementor }}"
           echo "=========================================="
           echo ""

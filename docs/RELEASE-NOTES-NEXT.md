@@ -1,53 +1,93 @@
-## User Registration & Role Selection Updates (v3.3.0)
-
-### 1. Role Selection & Registration Flow
-- New Select Role page (custom template) created for user onboarding.
-- Only Candidate, Employer, and Scout are available for self-registration.
-- Manager and Operator accounts are created by admin via a separate workflow (see open actions).
-- Next button on Select Role page routes to Register Profile page with selected role in URL.
-- Back button returns to Welcome page.
-- Links for "Already have an account? Sign In" and "Lost your password?" added to both Select Role and Registration pages.
-- Registration page redirects to Welcome page after successful submission.
-- Default /register page now redirects to Select Role page for custom flow.
-
-### 2. Page Templates & Theme
-- Blocksy Child theme activated and configured.
-- Custom page-role-selection.php template added and made Elementor-friendly.
-- All template headers and file locations validated for WordPress recognition.
-
-### 3. Redirects & Routing
-- Register, Next, and Back button logic implemented via JavaScript and PHP.
-- All slugs and URLs standardized (e.g., /select-role/, /register-profile/, /welcome/).
-- 404 troubleshooting and resolution documented for missing registration pages.
-
-### 4. Open Actions & Documentation
-- All standalone open actions consolidated into docs/OPEN-ACTIONS.md.
-- Feature-specific open actions remain in their respective feature docs.
-- Manager/Operator registration workflow and admin screen design tracked as open action.
-
-### 5. Database & Backend
-- td_user_data_change_requests table and automation scripts implemented (see previous section).
-- Backend logic for registration, approval, and audit trail in place.
-
-### 6. Testing & Validation
-- Registration flow tested locally: role selection, registration, redirects, and post-submission behavior all verified.
-- Troubleshooting steps for template and theme issues documented.
-
----
 # Release Notes & Deployment Instructions
 
-**Status:** 🔄 Ready for Deployment
+**Status:** 📋 Planning  
+**Version:** v3.4.0  
+**Target Date:** TBD
 
 This document tracks all manual deployment steps required for the **next production release**.
 
 **Purpose:** Ensure consistent, error-free deployments by documenting every manual step needed after Git push to main branch.
 
-**Git Commit Summary:**
-```
-Add Candidates and Scouts landing pages (v3.1.0), complete role-based navigation for external roles, document consent/legal section design pattern
+**📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
+
+---
+
+## Planned Features
+
+*Document new features, changes, and deployment steps here as development progresses.*
+
+---
+
+## Deployment Checklist
+
+### Pre-Deployment
+- [ ] All code changes committed to `develop` branch
+- [ ] Local testing completed
+- [ ] Database migrations tested locally
+- [ ] `.github/releases/v3.4.0.json` created with deployment steps
+- [ ] If Elementor pages: Run `pwsh infra/shared/scripts/export-elementor-pages.ps1`
+- [ ] If new plugins: Add to `deploy_plugins` step in release JSON
+
+### Git Workflow
+```bash
+# Merge develop to main to trigger deployment
+git checkout main
+git merge develop
+git push origin main
 ```
 
-**📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
+### Post-Deployment (Automated via GitHub Actions)
+- [ ] Code deployed to ~/public_html/wp-content/ (auto)
+- [ ] Database migrations executed (auto if configured)
+- [ ] Themes activated (auto if configured)
+- [ ] Plugins activated (auto if configured)
+- [ ] Caches cleared (auto)
+
+### Manual Steps (If Required)
+*Document any manual steps that cannot be automated*
+
+---
+
+## Git Commit Template
+
+```
+[Brief description of main feature/change] (vX.X.X)
+
+- Feature 1
+- Feature 2
+- Bug fix
+```
+
+---
+
+## Testing Verification
+
+### Functional Tests
+- [ ] Feature 1 works as expected
+- [ ] Feature 2 works as expected
+- [ ] No regressions in existing features
+
+### Performance Tests
+- [ ] Page load times acceptable
+- [ ] No console errors
+- [ ] Mobile responsive
+
+---
+
+## Rollback Plan
+
+If deployment fails:
+1. Check GitHub Actions logs for specific error
+2. SSH to production: `ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129`
+3. Investigate error: `cd domains/talendelight.com/public_html && wp plugin list`
+4. If critical: Revert main branch to previous release tag
+5. Document issue in docs/lessons/
+
+---
+
+## Notes
+
+*Add any additional context, warnings, or considerations here.*
 
 ---
 

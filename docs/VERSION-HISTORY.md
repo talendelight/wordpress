@@ -142,6 +142,57 @@ Add Operators Dashboard with role-based access control (v3.2.0 Phase 1)
 
 ---
 
+### v3.3.0 - User Registration Flow
+
+**Deployed:** January 18, 2026 at 20:00  
+**Status:** ✅ Production  
+**Branch:** develop → main
+
+**Description:** Complete user registration flow with custom role selection page, Forminator form integration, and data change request tracking system.
+
+**Minor Features:**
+- Select Role page (/select-role/)
+  - Custom PHP template: `page-role-selection.php`
+  - Role cards: Candidate, Employer, Scout (self-registration only)
+  - Manager and Operator accounts created by admin separately
+  - Next button routes to /register-profile/?role={selected_role}
+  - Back button returns to /welcome/
+  - Login and password reset links
+- Register Profile page (/register-profile/)
+  - Forminator form integration (Form ID: 80 - "Person Registration Form")
+  - Elementor page with form shortcode widget
+  - Submission redirects to /welcome/ page
+  - Form appears correctly after fixing shortcode ID mismatch
+- Blocksy Child theme:
+  - Theme: `blocksy-child` activated in production
+  - Functions: Login redirects (/register → /select-role/), logout redirects
+  - Template: `page-role-selection.php` for custom role selection page
+  - Template: `logout-redirect.php` for logout handling
+  - Stylesheet: Basic child theme styles
+- Database changes:
+  - Table: `wp_td_user_data_change_requests` (22 columns)
+  - Tracks user registration/profile change requests
+  - Fields: user_id, request_type, first_name, email, phone, profile_method, linkedin_url, cv_file_path, citizenship_id_file, status, etc.
+
+**Bug Fixes:**
+- Forminator plugin deployment: Plugin wasn't deployed initially, manually uploaded and activated
+- Form ID mismatch: Changed from ID 364 (local) to ID 80 (production) in Elementor data
+- WordPress root path: Corrected from ~/public_html to ~/domains/talendelight.com/public_html
+- Shortcode display issue: Fixed by updating both Gutenberg block module_id and shortcode id
+
+**Lessons Learned:**
+- Hostinger Git deployment deploys to ~/public_html/wp-content/, but WordPress root is at ~/domains/talendelight.com/public_html/
+- New plugins must be explicitly included in deployment workflow (not auto-deployed by Git integration)
+- Forminator form IDs differ between local and production (requires manual ID mapping)
+- GitHub Actions deploy.yml enhanced with plugin deployment support
+
+**Git Commit:**
+```
+Add User Registration flow with role selection, Forminator integration, blocksy-child theme, database tracking table (v3.3.0)
+```
+
+---
+
 ### v3.0.1 - Hotfixes (If Needed)
 
 **Status:** Not Created  
