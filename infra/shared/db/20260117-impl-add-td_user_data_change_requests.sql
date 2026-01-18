@@ -1,0 +1,28 @@
+-- Create table for user registration and profile change requests (all roles)
+CREATE TABLE IF NOT EXISTS td_user_data_change_requests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NULL,
+    request_type ENUM('register', 'update', 'disable') NOT NULL,
+    prefix VARCHAR(20),
+    first_name VARCHAR(100) NOT NULL,
+    middle_name VARCHAR(100),
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(200) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    profile_method ENUM('linkedin', 'cv') NOT NULL,
+    linkedin_url VARCHAR(500),
+    cv_file_path VARCHAR(500),
+    citizenship_id_file VARCHAR(500) NOT NULL,
+    residence_id_file VARCHAR(500),
+    ids_are_same BOOLEAN DEFAULT 0,
+    consent BOOLEAN DEFAULT 0,
+    captcha_passed BOOLEAN DEFAULT 0,
+    status ENUM('new', 'pending', 'approved', 'rejected') DEFAULT 'new',
+    assigned_to BIGINT,
+    submitted_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status),
+    INDEX idx_request_type (request_type),
+    INDEX idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

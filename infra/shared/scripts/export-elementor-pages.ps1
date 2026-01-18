@@ -73,40 +73,67 @@ foreach ($page in $manifest.pages) {
     
     Write-Host "`n  Exporting: $($page.title) (ID: $localId)" -ForegroundColor Cyan
     
-    try {
-        # Export inside container (no PowerShell interference)
-        $exportCmd = "wp post meta get $localId _elementor_data --allow-root 2>/dev/null > /tmp/$name.json"
-        podman exec $ContainerName bash -c $exportCmd
-        
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "    ERROR: Failed to export from container" -ForegroundColor Red
-            $errorCount++
-            continue
-        }
-        
-        # Copy from container (binary copy)
-        podman cp "${ContainerName}:/tmp/$name.json" $outputFile
-        
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "    ERROR: Failed to copy from container" -ForegroundColor Red
-            $errorCount++
-            continue
-        }
-        
-        # Verify file
-        $fileSize = (Get-Item $outputFile).Length
-        if ($fileSize -eq 0) {
-            Write-Host "    ERROR: Exported file is empty" -ForegroundColor Red
-            $errorCount++
-            continue
-        }
-        
-        Write-Host "    ✓ Exported: $outputFile ($fileSize bytes)" -ForegroundColor Green
-        $successCount++
-        
-    } catch {
-        Write-Host "    ERROR: $_" -ForegroundColor Red
+    # Export inside container (no PowerShell interference)
+    $exportCmd = "wp post meta get $localId _elementor_data --allow-root 2>/dev/null > /tmp/$name.json"
+    podman exec $ContainerName bash -c $exportCmd
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "    ERROR: Failed to export from container" -ForegroundColor Red
         $errorCount++
+        continue
+    }
+    
+    # Copy from container (binary copy)
+    podman cp "${ContainerName}:/tmp/$name.json" $outputFile
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "    ERROR: Failed to copy from container" -ForegroundColor Red
+        $errorCount++
+        continue
+    }
+    
+    # Verify file size
+    $fileSize = (Get-Item $outputFile).Length
+    if ($fileSize -eq 0) {
+        Write-Host "    ERROR: Exported file is empty" -ForegroundColor Red
+        $errorCount++
+        continue
+    }
+    
+    # Verify JSON validity
+    $hasError = $false
+    $jsonData = $null
+    
+    try {
+        $jsonContent = Get-Content $outputFile -Raw
+        $jsonData = $jsonContent | ConvertFrom-Json
+    } catch {
+        Write-Host "    ERROR: Invalid JSON in exported file: $_" -ForegroundColor Red
+        $errorCount++
+        $hasError = $true
+    }
+    
+    if (-not $hasError) {
+        # Check for BOM or encoding issues
+        $bytes = [System.IO.File]::ReadAllBytes($outputFile)
+        if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+            Write-Host "    WARNING: UTF-8 BOM detected - file may be corrupted" -ForegroundColor Yellow
+        }
+        if ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+            Write-Host "    ERROR: UTF-16 LE encoding detected - file is corrupted" -ForegroundColor Red
+            $hasError = $true
+        }
+        if ($bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
+            Write-Host "    ERROR: UTF-16 BE encoding detected - file is corrupted" -ForegroundColor Red
+            $hasError = $true
+        }
+    }
+    
+    if ($hasError) {
+        $errorCount++
+    } else {
+        Write-Host "    ✓ Exported: $outputFile ($fileSize bytes, $($jsonData.Count) sections)" -ForegroundColor Green
+        $successCount++
     }
 }
 

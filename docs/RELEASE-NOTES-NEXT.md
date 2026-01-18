@@ -1,3 +1,39 @@
+## User Registration & Role Selection Updates (v3.3.0)
+
+### 1. Role Selection & Registration Flow
+- New Select Role page (custom template) created for user onboarding.
+- Only Candidate, Employer, and Scout are available for self-registration.
+- Manager and Operator accounts are created by admin via a separate workflow (see open actions).
+- Next button on Select Role page routes to Register Profile page with selected role in URL.
+- Back button returns to Welcome page.
+- Links for "Already have an account? Sign In" and "Lost your password?" added to both Select Role and Registration pages.
+- Registration page redirects to Welcome page after successful submission.
+- Default /register page now redirects to Select Role page for custom flow.
+
+### 2. Page Templates & Theme
+- Blocksy Child theme activated and configured.
+- Custom page-role-selection.php template added and made Elementor-friendly.
+- All template headers and file locations validated for WordPress recognition.
+
+### 3. Redirects & Routing
+- Register, Next, and Back button logic implemented via JavaScript and PHP.
+- All slugs and URLs standardized (e.g., /select-role/, /register-profile/, /welcome/).
+- 404 troubleshooting and resolution documented for missing registration pages.
+
+### 4. Open Actions & Documentation
+- All standalone open actions consolidated into docs/OPEN-ACTIONS.md.
+- Feature-specific open actions remain in their respective feature docs.
+- Manager/Operator registration workflow and admin screen design tracked as open action.
+
+### 5. Database & Backend
+- td_user_data_change_requests table and automation scripts implemented (see previous section).
+- Backend logic for registration, approval, and audit trail in place.
+
+### 6. Testing & Validation
+- Registration flow tested locally: role selection, registration, redirects, and post-submission behavior all verified.
+- Troubleshooting steps for template and theme issues documented.
+
+---
 # Release Notes & Deployment Instructions
 
 **Status:** 🔄 Ready for Deployment
@@ -18,38 +54,57 @@ Add Candidates and Scouts landing pages (v3.1.0), complete role-based navigation
 ## Release Information
 
 **Target Deployment Date:** TBD  
-**Release Version:** 3.2.0  
+**Release Version:** 3.3.0  
 **Branch:** develop → main  
-**Status:** 🔄 In Progress - Operator Dashboard Phase 1 Complete
+**Status:** 🔄 Planning
 
 ### Overview
-- [x] **Operator landing page (/operators/) - ✅ Phase 1 Complete (January 13-14, 2026)**
-  - ✅ Page created and published (ID: 299, slug: operators)
-  - ✅ Hero: "Operators Dashboard" with introduction
-  - ✅ Needs Action section (placeholder for dynamic content from external app)
-  - ✅ 5 navigation tiles: Needs Action (info), Candidates, Employers, Scouts, Reports
-  - ✅ CTA: "Need Help?" with documentation link
-  - ✅ Footer section with compliance badges
-  - ✅ Role-based access control implemented (Operators, Managers, Admins only)
-  - ✅ Login redirect: Operator users auto-redirect to `/operators/`
-  - ✅ 403 Forbidden page for unauthorized access
-  - ✅ Test user verified: operator_test → `/operators/` redirect working
-  - ✅ Plugin updated: talendelight-roles v1.0.0 with page-specific access control
-  - 📄 Feature spec: [WP-01.4-operator-landing-page.md](features/WP-01.4-operator-landing-page.md)
-  - 📄 Build guide: [OPERATOR-PAGE-BUILD-GUIDE.md](OPERATOR-PAGE-BUILD-GUIDE.md)
-  - ⏳ Phase 2: Dynamic "Needs Action" content (external app integration)
-  - ⏳ Phase 3: Management pages (Candidates, Employers, Scouts, Reports)
-  
-- [ ] **Manager landing page (/managers/) - ⏳ Planned for v3.2.0**
-  - Access control already implemented in talendelight-roles plugin
-  - Awaiting page content creation
-  - 📄 Feature spec: [WP-01.5-manager-landing-page.md](features/WP-01.5-manager-landing-page.md)
-  
-- [x] **Previous v3.1.0 features - ✅ Deployed (January 9, 2026)**
-  - Candidates landing page (WP-01.3) - ✅ Complete
-  - Scouts landing page (WP-01.3 - Scouts) - ✅ Complete
-  - Design pattern documentation - ✅ Complete
-  - Compliance & trust signals - ✅ Complete
+
+**v3.2.0 Deployment Complete:** ✅ January 14, 2026 at 01:00 AM
+- Operators Dashboard (Phase 1) successfully deployed to production
+- Role-based access control active
+- See [VERSION-HISTORY.md](VERSION-HISTORY.md) for complete v3.2.0 details
+
+**Next Release (v3.3.0) - Options:**
+- [ ] **Option A: Manager Dashboard** - Create `/managers/` landing page
+  - Similar structure to Operators Dashboard
+  - Access control already implemented in plugin
+  - Target for executive/management role
+  - Feature spec: [WP-01.5-manager-landing-page.md](features/WP-01.5-manager-landing-page.md)
+
+- [ ] **Option B: Operators Phase 2** - Dynamic "Needs Action" content
+  - External app/API integration
+  - Working dropdown filter (Today/7 days/All)
+  - Real-time data display
+  - Requires API contract design
+
+- [ ] **Option C: Management Pages** - Operators sub-pages
+  - Create `/operators/candidates/` page (search, filter, table)
+  - Create `/operators/employers/` page
+  - Create `/operators/scouts/` page
+  - Create `/operators/reports/` page
+
+**Decision Pending:** Select Option A, B, or C based on business priority
+
+---
+
+## Issues from v3.2.0 (Resolved)
+
+### ✅ Operators Page Title/Menu Issue (RESOLVED)
+
+**Problem:** Operators Dashboard missing page title and top menu in production
+
+**Root Cause:** Blocksy theme's "Page Layout" setting was not set to "Default"
+
+**Resolution:** Changed Page Layout to "Default" (January 14, 2026)
+- ✅ Page title now visible
+- ✅ Top navigation menu now visible
+- ✅ Page integrated with site navigation
+
+**Standard for All Pages:**
+- **Blocksy Page Layout:** Set to "Default"
+- **Elementor Template:** Can use "Elementor Full Width" or "Elementor Canvas" as needed
+- **Applies to:** All role landing pages (Employers, Candidates, Scouts, Operators, Managers)
 
 ---
 
@@ -367,6 +422,35 @@ wp user create contributor_test contributor@test.local --role=contributor --user
 
 ---
 
+## Candidate Submission Form (Forminator) - Implementation Steps
+
+### Step 1: Install and Activate Forminator
+- Installed Forminator plugin v1.49.2 via WP CLI
+- Verified plugin is active in WordPress admin
+
+### Step 2: Update Documentation
+- Updated WP-02.1 feature spec to use Forminator syntax and features
+- Documented field IDs, notification templates, and CandidateID logic for Forminator
+
+### Step 3: Create Candidate Submission Form in Forminator
+- Created new form: "Candidate Submission Form"
+- Added fields: First Name (required), Middle Name (optional), Last Name (required), Email, Phone, LinkedIn Profile (optional), CV Upload (optional), Location, Current Role, Years of Experience, Primary Skills, Privacy Consent (required)
+- Configured file upload: PDF/DOC/DOCX only, 10MB max
+- Set up notifications: Candidate confirmation and internal team alert
+- Enabled anti-spam (reCAPTCHA/hCaptcha, honeypot)
+- Published form and copied shortcode
+
+### Step 4: Configure Conditional Validation (LinkedIn OR CV Required)
+- Planned custom validation: Either LinkedIn or CV must be provided, cannot submit without one
+- Will implement via Forminator's custom validation hook or JavaScript (see WP-02.1 spec)
+
+### Step 5: Next Steps
+- Create /candidates/identify/ page and embed form shortcode
+- Add CandidateID generation code to talendelight-roles plugin
+- Test form submission, notifications, and file upload
+
+---
+
 **Verification:**
 - Navigate to: **Users → All Users**
 - Verify 9 test users created with correct roles
@@ -565,8 +649,21 @@ Create via WordPress Admin:
    - Username: manager_test
    - Email: manager@test.local
    - Role: **Manager** (custom role)
+   - Password: Test123!
+
+**Via WP-CLI (faster alternative, if SSH access available):**
+```bash
+# Create remaining test users
+wp user create scout_test scout@test.local --role=td_scout --user_pass=Test123!
+wp user create operator_test operator@test.local --role=td_operator --user_pass=Test123!
+wp user create manager_test manager@test.local --role=td_manager --user_pass=Test123!
+```
+
+**Time:** 5 minutes
+
 ---
-### Verification Steps
+
+## Verification Steps
 
 1. **Visit production site:** `https://talendelight.com/`
 
@@ -781,3 +878,26 @@ Application forms coming soon!
 - v3.2.0: Candidate identification form + Scout submission form (High Priority)
 - v3.2.0 or v3.3.0: Operator/Manager landing pages (Low Priority)
 - Future: Design system audit and standardization
+
+---
+
+## Database & Backend Changes (v3.3.0)
+
+### 1. New Table: td_user_data_change_requests
+- Added SQL schema for td_user_data_change_requests to support user registration, profile changes, and approval workflow for all roles.
+- See: infra/shared/db/20260117-impl-add-td_user_data_change_requests.sql
+- Columns: id, user_id, request_type (register, update, disable), name fields, email, phone, profile method, LinkedIn/CV, citizenship/residence ID, consent, captcha, status, assigned_to, timestamps.
+
+### 2. Automation Scripts for SQL Changes
+- PowerShell script for local dev: infra/shared/scripts/apply-sql-change.ps1
+- Bash script for CI/CD/production: infra/shared/scripts/apply-sql-change.sh
+- Scripts apply SQL files to MariaDB/MySQL using release instructions.
+- Open action: Integrate bash script into CI/CD pipeline for automated production database changes.
+
+### 3. Backend Workflow Updates
+- Registration and profile changes now use td_user_data_change_requests for all user roles.
+- Manager approval, ID verification, and audit trail logic implemented.
+- OTP verification required for email/phone changes.
+- All changes logged for compliance and audit.
+
+---

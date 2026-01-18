@@ -48,11 +48,11 @@ Implement TalenDelight custom roles (v1.0.0), role-based login redirect, 403 for
 
 ---
 
-### v3.1.0 - Candidate & Scout Landing Pages (Planned)
+### v3.1.0 - Candidate & Scout Landing Pages
 
-**Target Deployment:** TBD  
-**Status:** 🔄 In Progress  
-**Branch:** TBD
+**Deployed:** January 11, 2026  
+**Status:** ✅ Production  
+**Branch:** develop → main
 
 **Description:** Complete role landing pages set by adding Candidates and Scout pages, enabling all user types to access role-specific information and CTAs.
 
@@ -93,15 +93,51 @@ Implement TalenDelight custom roles (v1.0.0), role-based login redirect, 403 for
   - CSS file: config/custom-css/login.css
 - ✅ Access Restricted page footer compliance section (January 11, 2026)
 
-**Deferred to v3.2.0:**
-- [ ] Operator landing page (/operators/)
-- [ ] Manager landing page (/managers/)
-- [ ] Test all role redirects (Employer ✅, Candidate ✅, Scout pending)
-- [ ] Cross-page responsive design testing
-
-**Git Commit (planned):**
+**Git Commit:**
 ```
-Add Candidates, Scout, Operator, and Manager landing pages (v3.1.0), complete role-based navigation set
+Add Candidates and Scout landing pages (v3.1.0), compliance footer sections, login page styling, complete role-based navigation for external roles
+```
+
+---
+
+### v3.2.0 - Operators Dashboard (Phase 1)
+
+**Deployed:** January 14, 2026 at 01:00  
+**Status:** ✅ Production  
+**Branch:** develop → main
+
+**Description:** Add Operators Dashboard landing page with role-based access control, enabling operators to access centralized navigation for candidate/employer/scout management.
+
+**Minor Features:**
+- Operators landing page (/operators/)
+  - Hero: "Operators Dashboard" with subtitle and "View Reports" button
+  - Needs Action section (placeholder for dynamic content from external app)
+  - 5 navigation tiles: Needs Action (info), Candidates, Employers, Scouts, Reports
+  - CTA: "Need Help?" with documentation link
+  - Footer section with compliance badges
+  - Design: Navy hero, alternating white/grey sections, Blocksy theme colors
+- Role-based access control enhancements:
+  - Page-specific restrictions for `/operators/` (Operators, Managers, Admins only)
+  - Future-ready restrictions for `/managers/` page
+  - 403 redirects for unauthorized users
+  - Login redirect: Operator users → `/operators/`
+- Test user: `operator_test` created and verified
+
+**Technical Changes:**
+- Plugin: `talendelight-roles` v1.0.0 updated with page-specific access functions
+- Function: `talendelight_restrict_operators_page()` - page access control
+- Function: `talendelight_restrict_managers_page()` - future-ready access control
+- Page: `/operators/` (ID: 299, template: Elementor Canvas)
+- Documentation: OPERATOR-PAGE-BUILD-GUIDE.md, SESSION-SUMMARY-JAN-13-14.md
+
+**Future Phases (Deferred to v3.3.0+):**
+- Phase 2: Dynamic "Needs Action" content (external app/API integration)
+- Phase 3: Management pages (Candidates, Employers, Scouts, Reports)
+- Phase 4: Detail pages for candidates/employers
+
+**Git Commit:**
+```
+Add Operators Dashboard with role-based access control (v3.2.0 Phase 1)
 ```
 
 ---
@@ -215,8 +251,8 @@ Add Candidates, Scout, Operator, and Manager landing pages (v3.1.0), complete ro
    - **Bug fixes only:** Increment PATCH (x.1.0 → x.1.1)
    - **Breaking changes:** Increment MAJOR (3.x.x → 4.0.0)
 
-**Current Production Version:** v3.0.0  
-**Next Planned Version:** v3.1.0 (Candidates + Scout pages)
+**Current Production Version:** v3.2.0  
+**Next Planned Version:** v3.3.0 (Manager Dashboard or Operators Phase 2)
 
 ---
 

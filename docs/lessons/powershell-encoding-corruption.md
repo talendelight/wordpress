@@ -90,6 +90,42 @@ podman cp wp:/tmp/file tmp/file
 
 ---
 
+## Verification After Export
+
+Always verify exported files don't have encoding corruption:
+
+```powershell
+# Check for UTF-8 BOM
+$bytes = [System.IO.File]::ReadAllBytes("tmp/file.json")
+if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    Write-Host "ERROR: UTF-8 BOM detected - file corrupted"
+}
+
+# Check for UTF-16 LE
+if ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
+    Write-Host "ERROR: UTF-16 LE encoding - file corrupted"
+}
+
+# Verify JSON is valid
+try {
+    $json = Get-Content "tmp/file.json" -Raw | ConvertFrom-Json
+    Write-Host "OK: Valid JSON with $($json.Count) items"
+} catch {
+    Write-Host "ERROR: Invalid JSON"
+}
+```
+
+**On Linux (production):**
+```bash
+# Check encoding
+file operators.json
+# Should say: "JSON data" or "ASCII text"
+# Should NOT say: "UTF-8 Unicode (with BOM)" or "UTF-16"
+```
+
+---
+
 ## See Also
 
 - [elementor-cli-deployment.md](elementor-cli-deployment.md) - Full context and alternative approaches
+- [export-elementor-pages.ps1](../../infra/shared/scripts/export-elementor-pages.ps1) - Automated export with verification

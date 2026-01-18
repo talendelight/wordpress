@@ -17,9 +17,40 @@ pwsh infra/shared/scripts/export-elementor-pages.ps1
 
 **Output:** `tmp/elementor-exports/*.json`
 
-**Verify:**
+**Verify Exports (CRITICAL - Always Run):**
 ```powershell
-Get-ChildItem tmp/elementor-exports/*.json | Measure-Object -Property Length -Sum
+# Check file sizes
+Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
+    Write-Host "$($_.Name): $($_.Length) bytes"
+}
+
+# Verify encoding (should see "OK" for each file)
+Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
+    $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
+    $hasBOM = ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
+    $isUTF16LE = ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE)
+    $isUTF16BE = ($bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF)
+    
+    if ($hasBOM -or $isUTF16LE -or $isUTF16BE) {
+        Write-Host "❌ $($_.Name): ENCODING CORRUPTED" -ForegroundColor Red
+    } else {
+        try {
+            $json = Get-Content $_.FullName -Raw | ConvertFrom-Json
+            Write-Host "✓ $($_.Name): OK ($($json.Count) sections)" -ForegroundColor Green
+        } catch {
+            Write-Host "❌ $($_.Name): INVALID JSON" -ForegroundColor Red
+        }
+    }
+}
+```
+
+**If any files show corruption, re-export using `podman cp`:**
+```powershell
+# Export inside container
+podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root > /tmp/page.json"
+
+# Copy directly (no PowerShell encoding)
+podman cp wp:/tmp/page.json tmp/elementor-exports/page.json
 ```
 
 ---
@@ -29,6 +60,13 @@ Get-ChildItem tmp/elementor-exports/*.json | Measure-Object -Property Length -Su
 ### Step 1: Upload Exports
 ```bash
 scp -i tmp/hostinger_deploy_key -P 65002 -r tmp/elementor-exports/ u909075950@45.84.205.129:~/
+```
+
+**Verify Upload (on production):**
+```bash
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "file ~/elementor-exports/*.json"
+# Should show: "JSON data" or "ASCII text"
+# Should NOT show: "UTF-8 Unicode (with BOM)" or "UTF-16"
 ```
 
 ### Step 2: Upload Import Script
