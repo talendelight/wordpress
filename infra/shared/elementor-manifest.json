@@ -1,12 +1,14 @@
-{
-  "version": "3.2.0",
+﻿{
+  "version": "3.4.0",
   "exported_at": "TBD",
-  "description": "Next release - update description when exporting",
+  "description": "ID mapping manifest for pages, forms, and content synchronization",
+  "strategy": "Use slugs for lookups, maintain ID mappings for cross-references",
   "pages": [
     {
       "name": "homepage",
       "local_id": 20,
       "prod_id": 14,
+      "slug": "homepage",
       "file": "homepage.json",
       "title": "Homepage (Welcome)",
       "url_local": "http://localhost:8080/",
@@ -16,6 +18,7 @@
       "name": "employers",
       "local_id": 93,
       "prod_id": 64,
+      "slug": "employers",
       "file": "employers.json",
       "title": "Employers",
       "url_local": "http://localhost:8080/employers/",
@@ -25,6 +28,7 @@
       "name": "candidates",
       "local_id": 229,
       "prod_id": 75,
+      "slug": "candidates",
       "file": "candidates.json",
       "title": "Candidates",
       "url_local": "http://localhost:8080/candidates/",
@@ -34,6 +38,7 @@
       "name": "scouts",
       "local_id": 248,
       "prod_id": 76,
+      "slug": "scouts",
       "file": "scouts.json",
       "title": "Scouts",
       "url_local": "http://localhost:8080/scouts/",
@@ -43,10 +48,50 @@
       "name": "access-restricted",
       "local_id": 152,
       "prod_id": 44,
+      "slug": "403-forbidden",
       "file": "access-restricted.json",
       "title": "Access Restricted",
       "url_local": "http://localhost:8080/403-forbidden/",
       "url_prod": "https://talendelight.com/403-forbidden/"
+    },
+    {
+      "name": "register-profile",
+      "local_id": "TBD",
+      "prod_id": 79,
+      "slug": "register-profile",
+      "file": "register-profile.json",
+      "title": "Register Profile",
+      "url_local": "http://localhost:8080/register-profile/",
+      "url_prod": "https://talendelight.com/register-profile/",
+      "notes": "Uses Forminator shortcode - requires form ID mapping"
+    },
+    {
+      "name": "select-role",
+      "local_id": "TBD",
+      "prod_id": 78,
+      "slug": "select-role",
+      "file": null,
+      "title": "Select Role",
+      "url_local": "http://localhost:8080/select-role/",
+      "url_prod": "https://talendelight.com/select-role/",
+      "notes": "Custom PHP template, no Elementor data"
     }
-  ]
+  ],
+  "forms": [
+    {
+      "name": "person-registration",
+      "type": "forminator_forms",
+      "local_id": "TBD",
+      "prod_id": 80,
+      "slug": "person-registration-form",
+      "title": "Person Registration Form",
+      "notes": "Main registration form for candidates/employers/scouts"
+    }
+  ],
+  "lookup_strategy": {
+    "description": "Always lookup by slug first, cache ID mapping for session",
+    "pages": "wp post list --post_type=page --name={slug} --field=ID",
+    "forms": "wp post list --post_type=forminator_forms --name={slug} --field=ID",
+    "example": "PROD_ID=$(wp post list --post_type=page --name=register-profile --field=ID)"
+  }
 }
