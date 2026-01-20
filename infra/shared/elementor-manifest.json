@@ -100,7 +100,7 @@
     {
       "name": "manager-admin",
       "local_id": 386,
-      "prod_id": "TBD",
+      "prod_id": 86,
       "slug": "manager-admin",
       "file": "manager-admin.json",
       "title": "Manager Admin",
