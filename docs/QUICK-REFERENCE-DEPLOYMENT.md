@@ -194,6 +194,37 @@ cp docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
 
 ---
 
+## Custom CSS Deployment
+
+**Combine and upload CSS files:**
+```powershell
+# Combine CSS
+$buttonCss = Get-Content config/custom-css/td-button.css -Raw
+$pageCss = Get-Content config/custom-css/td-page.css -Raw
+$combinedCss = $buttonCss + "`n`n" + $pageCss
+Set-Content -Path tmp/combined-custom.css -Value $combinedCss
+
+# Upload to production
+scp -i tmp/hostinger_deploy_key -P 65002 tmp/combined-custom.css u909075950@45.84.205.129:~/custom.css
+scp -i tmp/hostinger_deploy_key -P 65002 infra/shared/scripts/deploy-custom-css.php u909075950@45.84.205.129:~/
+```
+
+**Deploy to WordPress Additional CSS:**
+```bash
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075050@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp eval-file ~/deploy-custom-css.php"
+```
+
+**Expected Output:**
+```
+✓ Custom CSS deployed successfully
+Theme: blocksy-child
+CSS length: XXXX bytes
+```
+
+**See:** [wordpress-custom-css-deployment.md](lessons/wordpress-custom-css-deployment.md) for detailed explanation.
+
+---
+
 ## Files Reference
 
 | Purpose | Location |
