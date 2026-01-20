@@ -88,14 +88,14 @@
     },
     {
       "name": "managers",
-      "local_id": 333,
-      "prod_id": "TBD",
+      "local_id": 469,
+      "prod_id": 90,
       "slug": "managers",
       "file": "managers.json",
       "title": "Managers Dashboard",
       "url_local": "http://localhost:8080/managers/",
       "url_prod": "https://talendelight.com/managers/",
-      "notes": "v3.3.0 - Built locally but never deployed to production"
+      "notes": "v3.3.0 - Manager landing page deployed to production"
     },
     {
       "name": "manager-admin",
