@@ -137,19 +137,17 @@ function td_forminator_to_custom_table($form_id, $response) {
 
     if ($result === false) {
         file_put_contents($log_file, "INSERT FAILED: " . $wpdb->last_error . "\n", FILE_APPEND);
-        error_log('Forminator custom table insert failed: ' . $wpdb->last_error);
+            error_log('Forminator custom table insert failed: ' . $wpdb->last_error);
     } else {
         $new_id = $wpdb->insert_id;
-    // Log errors to WordPress error log
-    if ($result === false) {
-        error_log(sprintf(
-            'Forminator sync failed for form %d, entry %d: %s',
-            $form_id,
-            $entry_id,
-            $wpdb->last_error
-        )
-    
-    // meta_data is an associative array where keys are field names
+    }
+}
+
+/**
+ * Helper function to extract field value from Forminator meta_data
+ * meta_data is an associative array where keys are field names
+ */
+function td_forminator_meta_value($meta, $field_key) {
     if (isset($meta[$field_key])) {
         $field_data = $meta[$field_key];
         
