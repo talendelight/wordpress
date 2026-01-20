@@ -1,0 +1,139 @@
+/* Standard button sizing */
+button,
+input[type="submit"],
+input[type="button"],
+.elementor a.elementor-button,
+.elementor button.elementor-button,
+.elementor .elementor-button,
+a.button,
+.button  {
+  min-width: 180px;
+  justify-content: center;
+}
+
+/* Exception: Keep action buttons small (Manager Admin table actions) */
+button.td-approve-btn,
+button.td-reject-btn,
+button.td-undo-btn {
+  min-width: unset !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 6px !important;
+}
+
+/* Optional: consistent padding/line-height if needed */
+button,
+input[type="submit"],
+input[type="button"],
+.elementor .elementor-button,
+a.button,
+.button  {
+  padding: 14px 22px;
+  line-height: 1.2;
+}
+
+/* Button Color Variants */
+
+/* Light Blue button - use class "btn-blue" */
+button.btn-blue,
+input[type="submit"].btn-blue,
+input[type="button"].btn-blue,
+.elementor-button.btn-blue,
+.elementor .elementor-button.btn-blue,
+a.button.btn-blue,
+.button.btn-blue {
+  background-color: #3498DB !important;
+  color: #ffffff !important;
+  border-color: #3498DB !important;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3) !important;
+}
+
+button.btn-blue:hover,
+input[type="submit"].btn-blue:hover,
+input[type="button"].btn-blue:hover,
+.elementor-button.btn-blue:hover,
+.elementor .elementor-button.btn-blue:hover,
+a.button.btn-blue:hover,
+.button.btn-blue:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* Grey button - use class "btn-grey" */
+button.btn-grey,
+input[type="submit"].btn-grey,
+input[type="button"].btn-grey,
+.elementor-button.btn-grey,
+.elementor .elementor-button.btn-grey,
+a.button.btn-grey,
+.button.btn-grey {
+  background-color: #ECECEC !important;
+  color: #333333 !important;
+  border-color: #ECECEC !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+button.btn-grey:hover,
+input[type="submit"].btn-grey:hover,
+input[type="button"].btn-grey:hover,
+.elementor-button.btn-grey:hover,
+.elementor .elementor-button.btn-grey:hover,
+a.button.btn-grey:hover,
+.button.btn-grey:hover {
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}
+
+button,
+input[type="submit"],
+input[type="button"],
+a.button,
+.button  {
+  border-radius: 50px !important;
+}
+
+/* WP User Manager Login Button - Apply btn-blue */
+.wpum-form input[type="submit"].button,
+.wpum-form input[name="submit_login"] {
+  background-color: #3498DB !important;
+  color: #ffffff !important;
+  border-color: #3498DB !important;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3) !important;
+}
+
+.wpum-form input[type="submit"].button:hover,
+.wpum-form input[name="submit_login"]:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* Next button - btn-blue style */
+#td-role-next {
+  background-color: #3498DB !important;
+  color: #ffffff !important;
+  border-color: #3498DB !important;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3) !important;
+}
+
+#td-role-next:hover {
+  background-color: #2980b9 !important;
+  border-color: #2980b9 !important;
+  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* Back button - btn-grey style */
+#td-role-back {
+  background-color: #ECECEC !important;
+  color: #333333 !important;
+  border-color: #ECECEC !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+#td-role-back:hover {
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+}

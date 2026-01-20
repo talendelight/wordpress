@@ -2,6 +2,76 @@
   "version": "3.4.0",
   "release_date": null,
   "status": "planned",
-  "description": "Next release - TBD",
-  "steps": []
+  "description": "Deploy missing Manager Dashboard (v3.3.0 backlog) and new Manager Admin Operations page with tabbed interface, real-time actions, and audit logging",
+  "steps": [
+    {
+      "type": "deploy_page",
+      "page_slug": "managers",
+      "local_id": 333,
+      "prod_id": "TBD",
+      "title": "Managers Dashboard",
+      "export_required": true,
+      "notes": "Built in v3.3.0 but never deployed. Export and deploy to production."
+    },
+    {
+      "type": "deploy_page",
+      "page_slug": "manager-admin",
+      "local_id": 386,
+      "prod_id": "TBD",
+      "title": "Manager Admin",
+      "export_required": true,
+      "notes": "New admin hub with tabbed interface (Submitted, Approved, Rejected, All). Includes User Request Approvals with approve/reject/undo actions, role display, and profile method support (LinkedIn + CV)."
+    },
+    {
+      "type": "database_migration",
+      "file": "260117-impl-add-td_user_data_change_requests.sql",
+      "description": "Create user_data_change_requests table for registration and profile update requests",
+      "verify_command": "wp db query \"SHOW TABLES LIKE 'td_user_data_change_requests';\""
+    },
+    {
+      "type": "database_migration",
+      "file": "260119-1400-add-role-and-audit-log.sql",
+      "description": "Add role column, has_linkedin/has_cv columns, and create generic audit log table for compliance tracking",
+      "verify_command": "wp db query \"SHOW TABLES LIKE 'td_audit_log';\" && wp db query \"DESCRIBE td_user_data_change_requests;\""
+    },
+    {
+      "type": "deploy_mu_plugins",
+      "files": [
+        "user-requests-display.php",
+        "audit-logger.php"
+      ],
+      "description": "Deploy mu-plugins for tabbed interface with AJAX actions and generic audit logging system",
+      "verify_command": "ls -la wp-content/mu-plugins/ | grep -E '(user-requests-display|audit-logger)'"
+    },
+    {
+      "type": "verify_ajax_endpoints",
+      "endpoints": [
+        "td_approve_request",
+        "td_reject_request",
+        "td_undo_reject"
+      ],
+      "verify_command": "wp eval \"echo has_action('wp_ajax_td_approve_request') ? 'OK' : 'MISSING';\""
+    },
+    {
+      "type": "verify_access_control",
+      "pages": ["managers", "manager-admin"],
+      "allowed_roles": ["Manager", "Administrator"],
+      "notes": "Both pages should show 403 for non-manager users. Test manager_test user access."
+    },
+    {
+      "type": "functional_test",
+      "description": "Test User Request Approvals functionality",
+      "test_steps": [
+        "Login as manager",
+        "Navigate to /manager-admin/",
+        "Verify 4 tabs visible with counts",
+        "Test approve action on pending request",
+        "Test reject action on pending request",
+        "Switch to Rejected tab",
+        "Test undo action",
+        "Verify audit log entries created"
+      ],
+      "verify_command": "wp db query \"SELECT * FROM td_audit_log ORDER BY changed_at DESC LIMIT 5;\""
+    }
+  ]
 }

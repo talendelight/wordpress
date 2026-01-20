@@ -14,7 +14,138 @@ This document tracks all manual deployment steps required for the **next product
 
 ## Planned Features
 
-*Document new features, changes, and deployment steps here as development progresses.*
+### v3.4.0 Features
+
+**1. Manager Dashboard Page (Missing from v3.3.0 - HIGH PRIORITY)**
+- **Issue:** Manager Dashboard page exists locally (ID 333) but was never deployed to production
+- **Status:** Built locally on January 14, 2026, but missing from production
+- **Feature Spec:** [WP-01.5-manager-landing-page.md](features/WP-01.5-manager-landing-page.md)
+- **What to Deploy:**
+  - Elementor page: `/managers/` (slug: `managers`)
+  - 7 navigation tiles: Manage Operators, Manage Scouts, Manage Candidates, Manage Employers, Finance, Admin, Reports
+  - Team Performance Overview section (placeholder)
+  - Hero, CTA, and Footer sections
+  - Access control already in plugin (Manager and Admin roles only)
+
+**2. Manager Admin Operations Page (NEW)**
+- **URL:** `/manager-admin/`
+- **Page Title:** Manager Admin
+- **Hero Heading:** Admin Operations
+- **Navigation:** Managers Dashboard → Admin tile
+- **Feature Spec:** [WP-01.6-user-request-approvals.md](features/WP-01.6-user-request-approvals.md)
+- **Implementation Guide:** [MANAGER-ADMIN-TABS-IMPLEMENTATION.md](MANAGER-ADMIN-TABS-IMPLEMENTATION.md)
+- **Purpose:** Centralized hub for system administration tasks including user request approvals, user management, system settings, and other admin operations
+- **What to Deploy:**
+  - Elementor page with tabbed interface (4 tabs: Submitted, Approved, Rejected, All)
+  - User Request Approvals table with real-time database integration
+  - Action buttons: Approve (✓), Reject (✗), Undo Rejection (↶)
+  - Role-based display (Candidate, Employer, Scout, Operator, Manager)
+  - Profile method support (LinkedIn + CV combined)
+  - Generic audit logging system for compliance tracking
+  - Database migrations:
+    - `260117-impl-add-td_user_data_change_requests.sql` - User requests table
+    - `260119-1400-add-role-and-audit-log.sql` - Role column, profile method updates, audit log table
+  - New mu-plugins:
+    - `user-requests-display.php` - Tabbed interface with AJAX actions
+    - `audit-logger.php` - Generic audit logging helper
+    - `forminator-custom-table.php` - Syncs Forminator form submissions to td_user_data_change_requests table
+  - Forminator integration:
+    - Hook: `forminator_form_after_save_entry` 
+    - Form ID: 364 (Person Registration Form)
+    - Uses Forminator_API::get_entry() for reliable data extraction
+    - Auto-inserts submissions into td_user_data_change_requests with status='new'
+  - Database migrations (added January 20):
+    - `260120-1945-alter-add-approver-comments.sql` - Added approver_id and comments columns
+  - Access control: Manager and Administrator only
+- **Key Features:**
+  - **Tabbed Interface:** 4 tabs (Submitted/Pending, Approved, Rejected, All) with counts
+  - **Real-time Actions:** Approve/Reject pending requests, Undo rejected requests
+  - **Audit Logging:** All status changes logged to `td_audit_log` table with user, timestamp, IP, and notes
+  - **Role Display:** Shows role badge for each request (Candidate, Employer, Scout, etc.)
+  - **Profile Methods:** Displays both LinkedIn and CV if provided (e.g., "🔗 LinkedIn + 📄 CV")
+  - **Summary Metrics:** Total requests, request type distribution, reviewed today count
+  - **Automatic Updates:** Rows removed from view after action without page refresh
+
+### New Features for v3.4.0
+
+**3. UI/UX Consistency Updates**
+
+**Button Standardization:**
+- **File:** `config/custom-css/elementor-button.css`
+- **Updates:**
+  - Global button sizing: 180px min-width (reduced from 240px), 14px/22px padding, 50px border-radius
+  - Button variants: `btn-blue` (#3498DB with blue shadow), `btn-grey` (#ECECEC with subtle shadow)
+  - WP User Manager login button: Blue button with matching styles
+  - Select Role page buttons: Next (blue), Back (grey), heading (navy #063970)
+  - Action button exceptions: Manager Admin approve/reject/undo buttons maintain 28x28px size
+- **Deployment:** Manually copy entire file to WordPress Customizer → Additional CSS
+
+**Forminator Form Styling:**
+- **File:** `config/custom-css/td-page.css` (NEW)
+- **Purpose:** Match Person Registration Form (Forminator ID 364) to WP User Manager login page aesthetic
+- **Styles:**
+  - Form container: 900px max-width, white background, 8px border-radius, subtle shadow
+  - Form title: Navy (#063970), 32px, bold, centered
+  - Field labels: Navy (#063970), 14px, bold
+  - Input fields: Consistent padding (12px 16px), border (#E0E0E0), focus state with navy outline
+  - Submit button: Blue (#3498DB), rounded (50px), shadow effect, centered, auto width
+  - Required indicators: Red (#dc3545)
+  - Success/error messages: Color-coded borders and backgrounds
+  - Responsive design: Mobile breakpoints for smaller screens
+- **Deployment:** Manually copy entire file to WordPress Customizer → Additional CSS
+
+**Manager Admin Table Typography:**
+- **File:** `wp-content/mu-plugins/user-requests-display.php`
+- **Change:** Added `font-size: 13px` to Name column cell (line 287) to match other table cells
+- **Deployment:** Automatically deployed via Git push (file already in wp-content/)
+
+**Post-Registration Redirect:**
+- **File:** `wp-content/themes/blocksy-child/functions.php`
+- **Change:** Added Forminator form redirect filter to redirect users to Welcome page after Person Registration Form submission
+- **Hook:** `forminator_custom_form_submit_response` filter for form ID 364
+- **Deployment:** Automatically deployed via Git push (file already in wp-content/)
+
+**4. Navigation Menu Conditional Display (January 20, 2026)**
+
+**Conditional Login/Logout Display:**
+- **File:** `wp-content/themes/blocksy-child/functions.php`
+- **Change:** Added `wp_nav_menu_items` filter to conditionally display Login/Logout menu items
+- **Logic:** 
+  - Hide "Log In" menu item (ID 149) when user is logged in
+  - Hide "Log Out" menu item (ID 150) when user is logged out
+- **Implementation:** Uses `preg_replace` to remove entire `<li>` elements based on menu item class
+- **Deployment:** Automatically deployed via Git push (file already in wp-content/)
+
+**5. Forminator Form Integration (January 20, 2026)**
+
+**User Registration Data Flow:**
+- **Plugin:** `wp-content/plugins/td-user-data-change-requests.php`
+- **Purpose:** Copy Forminator Person Registration Form (ID 364) submissions to custom approval table
+- **Hook:** `forminator_custom_form_after_handle_submit`
+- **Field Mapping:**
+  - name-1/2/3 → first_name/middle_name/last_name
+  - email-1 → email, phone-1 → phone
+  - checkbox-1 → profile_method (linkedin/cv)
+  - upload-1/2/3 → file paths (CV, citizenship ID, residence ID)
+  - radio-1 → ids_are_same flag
+  - consent-1 → consent
+- **Table:** `td_user_data_change_requests` (no wp_ prefix)
+- **Role:** Hardcoded to 'candidate' for form 364
+- **Deployment:** Automatically deployed via Git push
+
+**Cleanup Script:**
+- **File:** `infra/shared/scripts/cleanup-forminator-entries.php`
+- **Purpose:** Delete redundant Forminator entries (optional)
+- **Usage:** WP-CLI only, dry-run by default
+- **Deployment:** Local dev tool only
+
+**6. Elementor Template Backups (January 20, 2026)**
+- **Location:** `tmp/elementor-templates/`
+- **Templates:** 5 main pages backed up after Manager page corruption incident
+- **Documentation:** Full restoration guide in README.md
+- **Deployment:** Local-only, NOT deployed to production
+
+*Document additional features here as development progresses.*
 
 ---
 
@@ -44,7 +175,189 @@ git push origin main
 - [ ] Caches cleared (auto)
 
 ### Manual Steps (If Required)
-*Document any manual steps that cannot be automated*
+
+**1. CSS Workflow & Synchronization (CRITICAL):**
+
+**⚠️ CSS Management Strategy:**
+
+WordPress with Elementor requires CSS to be in **WordPress Customizer → Additional CSS** to work correctly. File-based CSS in the repository serves only as version control reference.
+
+**CSS Files to Sync:**
+- `config/custom-css/elementor-button.css` - Global button standards, login button, Select Role buttons
+- `config/custom-css/td-page.css` - Forminator form styling, Select Role heading
+- `config/custom-css/login.css` - WPUM login page styling (no changes this release)
+
+**Manual Sync Process (MUST be done on production):**
+
+**Step 1: Copy elementor-button.css**
+```bash
+# On local machine, copy content
+cat config/custom-css/elementor-button.css
+```
+- Navigate to WordPress Admin → Appearance → Customize → Additional CSS
+- Find section: `/* Global Button Standards (elementor-button.css) */`
+- Replace entire section with copied content
+- Verify includes: `.btn-blue`, `.btn-grey`, `.wpum-form input[type="submit"]`, `#td-role-next`, `#td-role-back`
+
+**Step 2: Copy td-page.css**
+```bash
+# On local machine, copy content
+cat config/custom-css/td-page.css
+```
+- In same Customizer Additional CSS area
+- Find section: `/* Forminator & Page-Specific Styles (td-page.css) */` (or add new section if first time)
+- Replace entire section with copied content
+- Verify includes: `.forminator-custom-form`, `.forminator-button-submit`, `.td-role-selection-container h2`
+
+**Step 3: Publish Changes**
+- Click "Publish" button in WordPress Customizer
+- Verify changes saved successfully
+
+**Testing After CSS Sync:**
+- [ ] Login page button displays blue (#3498DB) with shadow at /log-in/
+- [ ] Select Role page at /select-role/: Next button blue, Back button grey, heading navy
+- [ ] Person Registration Form at /register-profile/ displays properly:
+  - [ ] Form container 900px max-width, centered
+  - [ ] Labels navy (#063970), 14px, bold
+  - [ ] Input fields consistent padding and borders
+  - [ ] Submit button auto width, centered, blue styling
+  - [ ] Required indicators red (#dc3545)
+- [ ] Manager Admin table at /manager-admin/: Name column font 13px (matches other cells)
+
+**2. Deploy Manager Dashboard Page (v3.3.0 Backlog):**
+
+```powershell
+# Step 1: Export Manager Dashboard from local
+cd c:\data\lochness\talendelight\code\wordpress
+pwsh infra/shared/scripts/export-elementor-pages.ps1
+# Output: tmp/elementor-exports/managers.json
+
+# Step 2: Upload to production
+scp -i tmp/hostinger_deploy_key -P 65002 tmp/elementor-exports/managers.json u909075950@45.84.205.129:~/
+
+# Step 3: Import via SSH
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd ~/domains/talendelight.com/public_html
+
+# Create page
+wp post create --post_type=page --post_status=publish --post_title="Managers" --post_name=managers --page_template="elementor_canvas"
+
+# Get page ID
+MANAGER_PAGE_ID=$(wp post list --post_type=page --name=managers --field=ID)
+echo "Manager Page ID: $MANAGER_PAGE_ID"
+
+# Import Elementor data (manual JSON import via Elementor UI or wp-cli)
+# ... import steps here
+
+# Step 4: Set Page Layout
+# - Login to WordPress Admin
+# - Edit Managers page
+# - Sidebar → Blocksy → Page Layout: Set to "Default"
+# - Update page
+
+# Step 5: Test Access
+# - Login as manager_test user
+# - Should redirect to /managers/
+# - Verify all 7 tiles visible
+# - Test unauthorized access (should show 403)
+```
+
+**2. Deploy Manager Admin Page with Tabbed Interface:**
+
+```powershell
+# Local: Export page
+pwsh infra/shared/scripts/export-elementor-pages.ps1
+# Output: tmp/elementor-exports/manager-admin.json
+
+# Upload to production
+scp -i tmp/hostinger_deploy_key -P 65002 tmp/elementor-exports/manager-admin.json u909075950@45.84.205.129:~/
+
+# SSH to production
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd ~/domains/talendelight.com/public_html
+
+# Create page
+wp post create --post_type=page --post_status=publish --post_title="Manager Admin" --post_name=manager-admin --page_template="elementor_canvas"
+
+# Get page ID
+ADMIN_PAGE_ID=$(wp post list --post_type=page --name=manager-admin --field=ID)
+echo "Manager Admin Page ID: $ADMIN_PAGE_ID"
+
+# Import Elementor data (follow standard import process)
+# Set Blocksy layout to "Default"
+
+# Test tabbed interface and action buttons
+```
+
+**3. Apply Database Migrations:**
+
+```bash
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd ~/domains/talendelight.com/public_html
+
+# Upload both SQL migrations
+# From local:
+scp -i tmp/hostinger_deploy_key -P 65002 infra/shared/db/260117-impl-add-td_user_data_change_requests.sql u909075950@45.84.205.129:~/
+scp -i tmp/hostinger_deploy_key -P 65002 infra/shared/db/260119-1400-add-role-and-audit-log.sql u909075950@45.84.205.129:~/
+
+# Apply migrations in order
+wp db query < ~/260117-impl-add-td_user_data_change_requests.sql
+wp db query < ~/260119-1400-add-role-and-audit-log.sql
+
+# Verify tables created
+wp db query "SHOW TABLES LIKE 'td_user_data_change_requests';"
+wp db query "SHOW TABLES LIKE 'td_audit_log';"
+wp db query "DESCRIBE td_user_data_change_requests;" # Check role, has_linkedin, has_cv columns
+wp db query "DESCRIBE td_audit_log;"
+
+# ✅ Local migrations applied January 20, 2026
+# - td_user_data_change_requests created
+# - td_audit_log created
+# - Ready for production
+```
+
+**4. Deploy plugins:**
+
+```bash
+# Verify mu-plugins:
+cd ~/domains/talendelight.com/public_html
+ls -la wp-content/mu-plugins/ | grep -E "(user-requests-display|audit-logger)"
+
+# Verify and activate regular plugin:
+wp plugin list | grep td-user-data-change-requests
+wp plugin activate td-user-data-change-requests
+
+# ✅ Local status January 20, 2026:
+# - td-user-data-change-requests.php active and working
+# - user-requests-display.php deployed
+# - audit-logger.php deployed
+```
+
+**5. Test User Request Approvals Functionality:**
+
+```bash
+# Test shortcode rendering
+wp eval "echo do_shortcode('[user_requests_table status=\"pending\"]');" | head -50
+
+# Test AJAX endpoints availability
+wp eval "echo has_action('wp_ajax_td_approve_request') ? 'OK' : 'MISSING';"
+wp eval "echo has_action('wp_ajax_td_reject_request') ? 'OK' : 'MISSING';"
+wp eval "echo has_action('wp_ajax_td_undo_reject') ? 'OK' : 'MISSING';"
+
+# Insert test data (optional)
+wp db query "INSERT INTO td_user_data_change_requests (user_id, role, request_type, prefix, first_name, last_name, email, phone, profile_method, has_linkedin, has_cv, citizenship_id_file, status) VALUES (1, 'candidate', 'register', 'Mr', 'Test', 'User', 'test@example.com', '+1-555-000-0000', 'linkedin', 1, 1, '/test.pdf', 'pending');"
+
+# Test via browser
+# - Login as manager
+# - Go to /manager-admin/
+# - Verify tabs work (Submitted, Approved, Rejected, All)
+# - Test approve/reject actions
+# - Check rejected tab for undo button
+# - Verify audit log entries
+wp db query "SELECT * FROM td_audit_log ORDER BY changed_at DESC LIMIT 5;"
+```
+
+**See Also:** [ID-MANAGEMENT-STRATEGY.md](ID-MANAGEMENT-STRATEGY.md) for cross-environment deployment patterns
 
 ---
 
@@ -63,9 +376,30 @@ git push origin main
 ## Testing Verification
 
 ### Functional Tests
-- [ ] Feature 1 works as expected
-- [ ] Feature 2 works as expected
-- [ ] No regressions in existing features
+- [ ] Manager Dashboard: Login button displays blue styling with shadow
+- [ ] Login page (/log-in/): Submit button has blue color (#3498DB) and shadow effect
+- [ ] Select Role page (/select-role/):
+  - [ ] "Select Your Role" heading is navy (#063970)
+  - [ ] Next button is blue with shadow
+  - [ ] Back button is grey with subtle shadow
+- [ ] Person Registration Form (/register-profile/):
+  - [ ] Form container displays at 900px max-width, centered
+  - [ ] Form title is navy (#063970), 32px, bold, centered
+  - [ ] Field labels are navy, 14px, bold
+  - [ ] Input fields have consistent padding and borders
+  - [ ] Submit button is blue, centered, auto width (not 100% wide)
+  - [ ] Required indicators display in red
+  - [ ] After successful submission, redirects to /welcome/
+- [ ] Manager Admin page (/manager-admin/):
+  - [ ] Name column font size matches other table cells (13px)
+  - [ ] Tab switching works (Submitted, Approved, Rejected, All)
+  - [ ] Approve/Reject actions work
+  - [ ] Undo button appears in Rejected tab
+  - [ ] Audit log records status changes
+- [ ] Redirect flow:
+  - [ ] After logout: redirects to /welcome/
+  - [ ] From /register: redirects to /select-role/
+  - [ ] After form submission: redirects to /welcome/
 
 ### Performance Tests
 - [ ] Page load times acceptable
@@ -925,7 +1259,7 @@ Application forms coming soon!
 
 ### 1. New Table: td_user_data_change_requests
 - Added SQL schema for td_user_data_change_requests to support user registration, profile changes, and approval workflow for all roles.
-- See: infra/shared/db/20260117-impl-add-td_user_data_change_requests.sql
+- See: infra/shared/db/260117-impl-add-td_user_data_change_requests.sql
 - Columns: id, user_id, request_type (register, update, disable), name fields, email, phone, profile method, LinkedIn/CV, citizenship/residence ID, consent, captcha, status, assigned_to, timestamps.
 
 ### 2. Automation Scripts for SQL Changes

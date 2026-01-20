@@ -193,6 +193,77 @@ Add User Registration flow with role selection, Forminator integration, blocksy-
 
 ---
 
+### v3.4.0 - Manager Admin & User Request Approvals
+
+**Deployed:** January 20, 2026  
+**Status:** ✅ Production  
+**Branch:** develop → main
+
+**Description:** Complete user request approval workflow with Manager Admin page, Forminator integration, and database schema for approval tracking with audit trail.
+
+**Minor Features:**
+- Manager Admin page (/manager-admin/)
+  - Tabbed interface: New, Pending, Approved, Rejected, All
+  - Real-time database integration with td_user_data_change_requests table
+  - Action buttons: Approve (✓), Reject (✗), Undo Rejection (↶)
+  - Role-based display (Candidate, Employer, Scout, Operator, Manager)
+  - Profile method support (LinkedIn + CV combined)
+  - Responsive table with sorting and filtering
+  - Access control: Manager and Admin roles only
+- Forminator integration:
+  - MU-plugin: `forminator-custom-table.php`
+  - Hook: `forminator_form_after_save_entry` for Form ID 364
+  - Auto-sync: Registration form submissions → td_user_data_change_requests table
+  - Uses Forminator_API::get_entry() for reliable data extraction
+  - Field mapping: Name, email, phone, profile method, uploads, consent
+- Generic audit logging system:
+  - MU-plugin: `audit-logger.php`
+  - Tracks all user approval actions for compliance
+  - Table: td_audit_log (user_id, action, entity_type, entity_id, details, timestamp)
+- Conditional menu display:
+  - Login menu item hidden when user logged in
+  - Logout menu item hidden when user logged out
+  - Implemented in blocksy-child theme functions.php
+
+**Technical Changes:**
+- Database tables:
+  - `td_user_data_change_requests`: 26 columns including approver_id, comments
+  - `td_audit_log`: Generic audit trail for compliance tracking
+- MU-Plugins:
+  - `user-requests-display.php`: Shortcode [user_requests_table status="new|pending|approved|rejected|all"]
+  - `audit-logger.php`: Helper function td_log_audit_action()
+  - `forminator-custom-table.php`: Forminator form sync to custom table
+- Child theme enhancements:
+  - Conditional menu item display (wp_nav_menu_objects filter)
+  - Logout redirect to home page
+  - Form submission redirect with behavior='redirect'
+- Utility scripts:
+  - `cleanup-forminator-entries.php`: Clean redundant Forminator data (dry-run by default)
+  - `diagnose-forminator.php`: Diagnostic tool for data flow debugging
+
+**Database Migrations:**
+- `260117-impl-add-td_user_data_change_requests.sql`: User requests table creation
+- `260119-1400-add-role-and-audit-log.sql`: Role column, profile method, audit log
+- `260120-1945-alter-add-approver-comments.sql`: Approver tracking and comments
+
+**Bug Fixes:**
+- Fixed Forminator hook issue: Changed from forminator_custom_form_after_save_entry to forminator_form_after_save_entry
+- Fixed meta_data extraction: Direct array access instead of loop iteration
+- Fixed file path extraction from nested upload arrays
+
+**Lessons Learned:**
+- Forminator module_slug is 'form' not 'custom_form' for custom forms
+- Meta data structure is associative array not numeric array
+- Entry ID not always in response - fetch from database as fallback
+- Upload fields contain nested arrays ['file']['file_path']
+
+**Git Commit:**
+```
+Add Manager Admin page with user request approvals, Forminator integration, audit logging system (v3.4.0)
+```
+
+---
+
 ### v3.0.1 - Hotfixes (If Needed)
 
 **Status:** Not Created  

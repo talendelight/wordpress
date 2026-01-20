@@ -59,6 +59,13 @@ Should show `LocalMachine: RemoteSigned`
 
 ## Quick Links
 
+### Deployment & Operations
+- **[DEPLOYMENT-WORKFLOW.md](DEPLOYMENT-WORKFLOW.md)** - Complete deployment process and lessons learned
+- **[ID-MANAGEMENT-STRATEGY.md](ID-MANAGEMENT-STRATEGY.md)** - Slug-based ID lookups for cross-environment deployments
+- **[QUICK-REFERENCE-DEPLOYMENT.md](QUICK-REFERENCE-DEPLOYMENT.md)** - Command cheat sheet for deployments
+- **[RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md)** - Release lifecycle workflow
+
+### Core Documentation
 - **[WORDPRESS-DATABASE.md](WORDPRESS-WORDPRESS-DATABASE.md)** - Database management for dev and production environments
 - **[WORDPRESS-DEPLOYMENT.md](WORDPRESS-WORDPRESS-DEPLOYMENT.md)** - Deploy to Hostinger, VPS, or cloud platforms
 - **[WORDPRESS-SECURITY.md](WORDPRESS-WORDPRESS-SECURITY.md)** - Vulnerability scanning, hardening, and best practices

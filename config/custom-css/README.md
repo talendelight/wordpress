@@ -46,6 +46,7 @@ This directory contains custom CSS files for styling WordPress pages that aren't
 ## Future Files
 
 Additional custom CSS files can be added here for:
+- Button size standards (consider using Elementor's built-in button sizes instead)
 - Password reset page styling
 - Registration form styling
 - Profile page enhancements

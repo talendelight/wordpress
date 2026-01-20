@@ -1,5 +1,9 @@
 # Quick Reference: Elementor Page Deployment
 
+**📚 See Also:** [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - How to handle IDs across environments
+
+---
+
 ## Prerequisites Check
 - [ ] Local WordPress container running (`podman ps` shows `wp` container)
 - [ ] SSH access to production configured (`ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129`)
@@ -56,6 +60,8 @@ podman cp wp:/tmp/page.json tmp/elementor-exports/page.json
 ---
 
 ## Deploy to Production
+
+**⚠️ Important:** If pages reference forms or other content with IDs, use the [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) to handle ID replacements automatically.
 
 ### Step 1: Upload Exports
 ```bash

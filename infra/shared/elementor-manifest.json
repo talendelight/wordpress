@@ -75,6 +75,38 @@
       "url_local": "http://localhost:8080/select-role/",
       "url_prod": "https://talendelight.com/select-role/",
       "notes": "Custom PHP template, no Elementor data"
+    },
+    {
+      "name": "operators",
+      "local_id": 299,
+      "prod_id": 77,
+      "slug": "operators",
+      "file": "operators.json",
+      "title": "Operators Dashboard",
+      "url_local": "http://localhost:8080/operators/",
+      "url_prod": "https://talendelight.com/operators/"
+    },
+    {
+      "name": "managers",
+      "local_id": 333,
+      "prod_id": "TBD",
+      "slug": "managers",
+      "file": "managers.json",
+      "title": "Managers Dashboard",
+      "url_local": "http://localhost:8080/managers/",
+      "url_prod": "https://talendelight.com/managers/",
+      "notes": "v3.3.0 - Built locally but never deployed to production"
+    },
+    {
+      "name": "manager-admin",
+      "local_id": 386,
+      "prod_id": "TBD",
+      "slug": "manager-admin",
+      "file": "manager-admin.json",
+      "title": "Manager Admin",
+      "url_local": "http://localhost:8080/manager-admin/",
+      "url_prod": "https://talendelight.com/manager-admin/",
+      "notes": "v3.4.0 - Admin operations hub with user request approvals, system settings, and other admin tasks"
     }
   ],
   "forms": [

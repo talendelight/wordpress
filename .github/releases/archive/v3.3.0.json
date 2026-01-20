@@ -34,7 +34,7 @@
       "description": "Create td_user_data_change_requests table",
       "config": {
         "sql_files": [
-          "infra/shared/db/20260117-impl-add-td_user_data_change_requests.sql"
+          "infra/shared/db/260117-impl-add-td_user_data_change_requests.sql"
         ],
         "import_method": "wp-cli"
       }

@@ -1,5 +1,12 @@
 # Deployment Workflow Summary
 
+**Related Documentation:**
+- [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - Slug-based ID lookups and cross-environment ID mapping
+- [Quick Reference](QUICK-REFERENCE-DEPLOYMENT.md) - Command cheat sheet
+- [Release Process](RELEASE-NOTES-PROCESS.md) - Release lifecycle workflow
+
+---
+
 ## What Changed (v3.1.0 Implementation)
 
 ### Problems Discovered
@@ -48,9 +55,13 @@ ELEMENTOR_DRY_RUN=true wp eval-file ~/elementor-exports/import-elementor-pages.p
 
 **What it defines:**
 - Page ID mappings (local → production)
+- Form ID mappings for cross-references
+- Slugs for dynamic lookups (see [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md))
 - File names for exports
 - URLs for verification
 - Version and description
+
+**Important:** Always use slug-based lookups instead of hardcoded IDs. See [ID-MANAGEMENT-STRATEGY.md](ID-MANAGEMENT-STRATEGY.md) for details.
 
 #### 4. Release Instructions (Dual Format)
 

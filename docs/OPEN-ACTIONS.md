@@ -4,6 +4,31 @@ This document consolidates all open actions from standalone open actions files (
 
 ---
 
+## Forminator Integration - Approver & Comments Mapping
+
+**Status**: Database schema updated (2026-01-20), field mapping pending
+
+The `td_user_data_change_requests` table now includes:
+- `approver_id` (bigint) - References wp_users.ID for the manager who approved/rejected
+- `comments` (text) - Approval/rejection notes from manager
+
+### Open Actions
+1. **Map approver_id in Manager Admin page**
+   - When manager approves/rejects a request, populate approver_id with current user ID
+   - Update: `UPDATE td_user_data_change_requests SET approver_id = %d, status = 'approved' WHERE id = %d`
+   
+2. **Add comments field to approval workflow**
+   - Add textarea in Manager Admin page for approval/rejection comments
+   - Store comments when changing status (approve/reject/undo actions)
+   - Display comments in request history/audit trail
+
+3. **Display approver information**
+   - Show approver name in Manager Admin table (JOIN with wp_users)
+   - Show approval timestamp (updated_date)
+   - Show comments in modal/expanded view
+
+---
+
 ## Manager & Operator Registration
 
 - As of 2026-01-18, the Select Role page only allows self-registration for Candidate, Employer, and Scout roles.
