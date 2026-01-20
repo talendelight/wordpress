@@ -86,6 +86,33 @@ ELEMENTOR_DRY_RUN=true wp eval-file ~/elementor-exports/import-elementor-pages.p
 - Clears caches after deployment
 - Shows manual verification checklist
 
+### 6. Custom CSS Deployment
+**Location:** `infra/shared/scripts/deploy-custom-css.php`
+
+**What it does:**
+- Deploys CSS from `config/custom-css/` to WordPress Additional CSS
+- Uses PHP script via `wp eval-file` to avoid command-line limitations
+- Updates theme mods directly via WordPress API
+- Handles large files (8KB+) and special characters
+
+**Usage:**
+```bash
+# 1. Combine CSS files
+$combined = (Get-Content config/custom-css/*.css -Raw) -join "`n`n"
+Set-Content tmp/combined-custom.css -Value $combined
+
+# 2. Upload to production
+scp -i tmp/hostinger_deploy_key -P 65002 tmp/combined-custom.css u909075950@45.84.205.129:~/custom.css
+scp -i tmp/hostinger_deploy_key -P 65002 infra/shared/scripts/deploy-custom-css.php u909075950@45.84.205.129:~/
+
+# 3. Deploy
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd public_html && wp eval-file ~/deploy-custom-css.php"
+```
+
+**Why not wp-cli theme mod set:** Command substitution fails with large/complex CSS files. See [wordpress-custom-css-deployment.md](lessons/wordpress-custom-css-deployment.md) for details.
+
+---
+
 ### Key Lessons Documented
 
 1. **[elementor-cli-deployment.md](lessons/elementor-cli-deployment.md)**
