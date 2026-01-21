@@ -14,6 +14,10 @@
 
 ## Export Pages (Local)
 
+**⚠️ CRITICAL:** Use `podman cp` method to avoid PowerShell encoding corruption.
+
+### Method 1: Automated Export (Recommended)
+
 ```powershell
 # Run from repository root
 pwsh infra/shared/scripts/export-elementor-pages.ps1
@@ -21,41 +25,69 @@ pwsh infra/shared/scripts/export-elementor-pages.ps1
 
 **Output:** `tmp/elementor-exports/*.json`
 
+### Method 2: Manual Single Page Export (For Troubleshooting)
+
+```powershell
+# Step 1: Export inside container (avoids PowerShell encoding issues)
+podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root > /tmp/page-export.json"
+
+# Step 2: Copy using podman cp (binary-safe, no encoding conversion)
+podman cp wp:/tmp/page-export.json tmp/elementor-exports/page-name.json
+```
+
+**❌ NEVER DO THIS (Corrupts JSON):**
+```powershell
+# DON'T: PowerShell redirection corrupts JSON with shortcodes
+podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root" > tmp/export.json
+
+# DON'T: Piping through PowerShell corrupts encoding
+podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root" | Out-File tmp/export.json
+```
+
 **Verify Exports (CRITICAL - Always Run):**
 ```powershell
-# Check file sizes
+# Check file sizes and JSON validity
 Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
-    Write-Host "$($_.Name): $($_.Length) bytes"
-}
-
-# Verify encoding (should see "OK" for each file)
-Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
+    Write-Host "$($_.Name): $($_.Length) bytes" -NoNewline
+    
+    # Check for encoding issues
     $bytes = [System.IO.File]::ReadAllBytes($_.FullName)
     $hasBOM = ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF)
     $isUTF16LE = ($bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE)
     $isUTF16BE = ($bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF)
     
     if ($hasBOM -or $isUTF16LE -or $isUTF16BE) {
-        Write-Host "❌ $($_.Name): ENCODING CORRUPTED" -ForegroundColor Red
-    } else {
-        try {
-            $json = Get-Content $_.FullName -Raw | ConvertFrom-Json
-            Write-Host "✓ $($_.Name): OK ($($json.Count) sections)" -ForegroundColor Green
-        } catch {
-            Write-Host "❌ $($_.Name): INVALID JSON" -ForegroundColor Red
+        Write-Host " - ❌ ENCODING CORRUPTED" -ForegroundColor Red
+        return
+    }
+    
+    # Validate JSON structure
+    try {
+        $json = Get-Content $_.FullName -Raw | ConvertFrom-Json
+        $elementCount = $json.Count
+        
+        # Check for shortcodes (if page uses them)
+        $content = Get-Content $_.FullName -Raw
+        $shortcodeMatches = ([regex]'\"shortcode\":\"([^\"]+)\"').Matches($content)
+        
+        if ($shortcodeMatches.Count -gt 0) {
+            # Verify shortcode attributes are properly escaped
+            $hasUnescapedQuotes = $content -match '"shortcode":"\[user_requests_table status=(?![\\"])'
+            if ($hasUnescapedQuotes) {
+                Write-Host " - ❌ SHORTCODE QUOTES NOT ESCAPED" -ForegroundColor Red
+                return
+            }
+            Write-Host " - ✓ OK ($elementCount sections, $($shortcodeMatches.Count) shortcodes)" -ForegroundColor Green
+        } else {
+            Write-Host " - ✓ OK ($elementCount sections)" -ForegroundColor Green
         }
+    } catch {
+        Write-Host " - ❌ INVALID JSON: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 ```
 
-**If any files show corruption, re-export using `podman cp`:**
-```powershell
-# Export inside container
-podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root > /tmp/page.json"
-
-# Copy directly (no PowerShell encoding)
-podman cp wp:/tmp/page.json tmp/elementor-exports/page.json
-```
+**If any files show corruption, re-export using Method 2 (Manual Export) above.**
 
 ---
 

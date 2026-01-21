@@ -129,6 +129,19 @@ define( 'WP_DEBUG_LOG', true );      // Log errors to debug.log
 
 /* Add any custom values between this line and the "stop editing" line. */
 
+// Load environment-specific configuration
+// In container: /config/env-config.php, On production: same dir as wp-config.php
+$env_config_paths = [
+    '/config/env-config.php',           // Docker/Podman container path
+    __DIR__ . '/env-config.php',        // Production path (same directory)
+];
+foreach ($env_config_paths as $path) {
+    if (file_exists($path)) {
+        require_once($path);
+        break;
+    }
+}
+
 // If we're behind a proxy server and using HTTPS, we need to alert WordPress of that fact
 // see also https://wordpress.org/support/article/administration-over-ssl/#using-a-reverse-proxy
 if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false) {
