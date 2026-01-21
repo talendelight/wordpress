@@ -165,6 +165,9 @@ This document tracks all manual deployment steps required for the **next product
 git checkout main
 git merge develop
 git push origin main
+
+# Switch back to develop branch for continued work
+git checkout develop
 ```
 
 ### Post-Deployment (Automated via GitHub Actions)
@@ -405,6 +408,54 @@ wp db query "SELECT * FROM td_audit_log ORDER BY changed_at DESC LIMIT 5;"
 - [ ] Page load times acceptable
 - [ ] No console errors
 - [ ] Mobile responsive
+
+---
+
+## Post-Deployment Cleanup
+
+After successful deployment and verification, clean up temporary files from `tmp/` folder:
+
+### Delete Exported Data
+```powershell
+# Delete Elementor exports
+Remove-Item tmp/elementor-exports/*.json -ErrorAction SilentlyContinue
+
+# Delete stale exports (JSON, HTML, CSS)
+cd c:\data\lochness\talendelight\code\wordpress
+Remove-Item tmp/*-from-container.json, tmp/*-elementor.json, tmp/local-*.json, tmp/prod-*.json, tmp/local-*.html, tmp/operator-*.html, tmp/manager-*.html, tmp/*.css, tmp/*-raw.txt, tmp/*-formatted.json -ErrorAction SilentlyContinue
+```
+
+### Delete One-Time Fixes
+```powershell
+# Delete one-time fix scripts (already applied)
+Remove-Item tmp/fix-*.php, tmp/update-*.php, tmp/check-*.php, tmp/test-*.php -ErrorAction SilentlyContinue
+```
+
+### Delete Temporary Deployment Files
+```powershell
+# Delete deployment comparison and temporary scripts
+Remove-Item tmp/deployment-comparison-report.md, tmp/deploy-*.php, tmp/create-*.php, tmp/enable-*.php, tmp/force-*.php, tmp/import-*.php -ErrorAction SilentlyContinue
+```
+
+### Keep Essential Files
+**DO NOT DELETE** these reusable scripts and keys:
+- `hostinger_deploy_key` / `hostinger_deploy_key.pub` - SSH deployment keys
+- `verify-deployment.php` - Production verification script
+- `add-env-config-loader.php` - Config loader script
+- `env-config-production.php` - Production environment config template
+- `test-env.php` - Environment detection test script
+- `force-deploy-elementor.php` - Elementor deployment script
+- `regenerate-elementor-css.php` - CSS regeneration script
+- `backfill-forminator-submissions.php` - Data migration script
+- `sample-user-requests.sql` - Test data script
+
+### Cleanup Checklist
+- [ ] Delete exported Elementor JSON files
+- [ ] Delete stale exports (JSON, HTML, CSS)
+- [ ] Delete one-time fix scripts
+- [ ] Delete temporary deployment files
+- [ ] Verify essential scripts preserved
+- [ ] Commit cleanup to develop branch
 
 ---
 
