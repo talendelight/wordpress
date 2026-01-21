@@ -39,7 +39,8 @@ This document tracks all manual deployment steps required for the **next product
 - [ ] All code changes committed to `develop` branch
 - [ ] Local testing completed
 - [ ] Database migrations tested locally
-- [ ] `.github/releases/v3.4.0.json` created with deployment steps
+- [ ] `.github/releases/v3.5.0.json` created/updated with deployment steps
+- [ ] **If new SQL files in `infra/shared/db/`:** Add filenames to `deploy_database.config.sql_files` array in release JSON
 - [ ] If Elementor pages: Run `pwsh infra/shared/scripts/export-elementor-pages.ps1`
 - [ ] If new plugins: Add to `deploy_plugins` step in release JSON
 
