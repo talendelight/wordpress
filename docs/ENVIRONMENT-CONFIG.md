@@ -6,7 +6,9 @@ TalenDelight uses environment-specific configuration to handle differences betwe
 
 ## Configuration File
 
-**Location:** `config/env-config.php`
+**Location:** `wp-content/mu-plugins/td-env-config.php`
+
+**Deployment:** Automatically deployed via Git (as part of wp-content/)
 
 This file is automatically loaded by `wp-config.php` and defines constants based on environment detection.
 
@@ -88,7 +90,7 @@ function my_forminator_handler($form_id, $response) {
 
 ## Adding New Configuration Values
 
-1. Edit `config/env-config.php`
+1. Edit `wp-content/mu-plugins/td-env-config.php`
 2. Add new constant with environment-specific logic:
 
 ```php

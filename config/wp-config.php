@@ -130,16 +130,10 @@ define( 'WP_DEBUG_LOG', true );      // Log errors to debug.log
 /* Add any custom values between this line and the "stop editing" line. */
 
 // Load environment-specific configuration
-// In container: /config/env-config.php, On production: same dir as wp-config.php
-$env_config_paths = [
-    '/config/env-config.php',           // Docker/Podman container path
-    __DIR__ . '/env-config.php',        // Production path (same directory)
-];
-foreach ($env_config_paths as $path) {
-    if (file_exists($path)) {
-        require_once($path);
-        break;
-    }
+// Auto-loads from mu-plugins (deployed via Git)
+$env_config_path = __DIR__ . '/../wp-content/mu-plugins/td-env-config.php';
+if (file_exists($env_config_path)) {
+    require_once($env_config_path);
 }
 
 // If we're behind a proxy server and using HTTPS, we need to alert WordPress of that fact

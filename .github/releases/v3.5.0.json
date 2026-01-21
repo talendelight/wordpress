@@ -1,0 +1,26 @@
+{
+  "version": "3.5.0",
+  "release_date": null,
+  "status": "planned",
+  "description": "Next planned release - TBD",
+  "steps": [
+    {
+      "type": "notes",
+      "description": "Add deployment steps as features are developed"
+    }
+  ],
+  "verification": {
+    "steps": [
+      {
+        "description": "Add verification steps as needed"
+      }
+    ]
+  },
+  "rollback": {
+    "steps": [
+      {
+        "description": "Revert main branch to v3.4.0 tag if critical issues arise"
+      }
+    ]
+  }
+}

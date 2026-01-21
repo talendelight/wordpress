@@ -127,6 +127,22 @@ foreach ($page in $manifest.pages) {
             Write-Host "    ERROR: UTF-16 BE encoding detected - file is corrupted" -ForegroundColor Red
             $hasError = $true
         }
+        
+        # Check for shortcode attribute escaping (critical for pages with shortcodes)
+        $jsonContent = Get-Content $outputFile -Raw
+        $shortcodeMatches = ([regex]'\"shortcode\":\"([^\"]+)\"').Matches($jsonContent)
+        if ($shortcodeMatches.Count -gt 0) {
+            # Verify shortcode attributes are properly escaped
+            $hasUnescapedQuotes = $jsonContent -match '"shortcode":"\[[^\]]+\s+\w+="(?!\\")' 
+            if ($hasUnescapedQuotes) {
+                Write-Host "    ERROR: Shortcode attributes not properly escaped (quotes will break JSON)" -ForegroundColor Red
+                Write-Host "          This happens when PowerShell piping corrupts the export" -ForegroundColor Red
+                Write-Host "          Re-run export or file a bug report" -ForegroundColor Yellow
+                $hasError = $true
+            } else {
+                Write-Host "    ✓ Validated $($shortcodeMatches.Count) shortcode(s)" -ForegroundColor Gray
+            }
+        }
     }
     
     if ($hasError) {

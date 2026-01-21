@@ -264,6 +264,39 @@ Add Manager Admin page with user request approvals, Forminator integration, audi
 
 ---
 
+### v3.5.0 - Environment Config Automation
+
+**Deployed:** TBD  
+**Status:** 🚧 In Development  
+**Branch:** develop
+
+**Description:** Automate environment-specific configuration deployment by relocating env-config.php to mu-plugins for automatic Git-based deployment.
+
+**Minor Features:**
+- Environment configuration automation:
+  - Move `config/env-config.php` → `wp-content/mu-plugins/td-env-config.php`
+  - Auto-deploys via Git (no manual uploads needed)
+  - Update `wp-config.php` loader path
+  - Documentation updated
+
+**Benefits:**
+- ✅ No manual file uploads for config changes
+- ✅ Version controlled and auto-deployed
+- ✅ Production and local use identical file
+- ✅ Form IDs, page IDs auto-detect environment
+
+**Technical Changes:**
+- File relocation: `config/env-config.php` → `wp-content/mu-plugins/td-env-config.php`
+- Update: `wp-config.php` loader path
+- Documentation: Update ENVIRONMENT-CONFIG.md with new location
+
+**Git Commit:**
+```
+Automate environment config deployment via mu-plugins (v3.5.0)
+```
+
+---
+
 ### v3.0.1 - Hotfixes (If Needed)
 
 **Status:** Not Created  
