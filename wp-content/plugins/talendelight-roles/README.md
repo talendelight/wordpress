@@ -11,11 +11,7 @@
 ### 1. Employer (`td_employer`)
 **Type:** External role for hiring companies
 
-**Capabilities:**
-- `read` - Access WordPress frontend
-- `td_view_own_requests` - View own candidate requests
-- `td_request_candidates` - Submit candidate requests
-- `td_view_request_status` - Check status of submissions
+**Capabilities:** Uses canonical capability names from [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md)
 
 **Landing Page:** `/employers/`  
 **Access Level:** Can only view/manage own data
@@ -25,11 +21,7 @@
 ### 2. Candidate (`td_candidate`)
 **Type:** External role for job seekers
 
-**Capabilities:**
-- `read` - Access WordPress frontend
-- `td_view_own_profile` - View own profile/submission
-- `td_update_own_profile` - Edit own information
-- `td_upload_cv` - Upload/update CV file
+**Capabilities:** Uses canonical capability names from [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md)
 
 **Landing Page:** `/candidates/` (WP-01.3, future)  
 **Access Level:** Can only view/manage own data
@@ -39,13 +31,9 @@
 ### 3. Scout (`td_scout`)
 **Type:** External role for talent referrers (renamed from "Partner")
 
-**Capabilities:**
-- `read` - Access WordPress frontend
-- `td_submit_candidate` - Submit candidates on behalf
-- `td_view_own_submissions` - View own submissions
-- `td_upload_candidate_cv` - Upload CV for candidates
+**Capabilities:** Uses canonical capability names from [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md)
 
-**Landing Page:** `/scout/` (WP-03, future)  
+**Landing Page:** `/scouts/` (WP-03, future)  
 **Access Level:** Can only view own submissions
 
 ---
@@ -53,36 +41,19 @@
 ### 4. Operator (`td_operator`)
 **Type:** Internal role for operations team
 
-**Capabilities:**
-- `read` - Access WordPress frontend
-- `edit_posts` - Edit posts (operational content)
-- `edit_pages` - Edit pages (operational content)
-- `td_manage_submissions` - View/edit all submissions
-- `td_manage_candidates` - Manage candidate data
-- `td_manage_employers` - Manage employer data
-- `td_view_all_data` - Access all system data
-- `td_export_data` - Export CSV/reports
-- `td_update_candidate_status` - Change workflow status
+**Capabilities:** Uses canonical capability names from [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md)
 
-**Landing Page:** `/operator/` (future)  
-**Access Level:** Full operational access to all data
+**Landing Page:** `/operators/` (future)  
+**Access Level:** Full operational access to all data (read-only for submitted user data)
 
 ---
 
 ### 5. Manager (`td_manager`)
 **Type:** Internal role for management/oversight
 
-**Capabilities:**
-- `read` - Access WordPress frontend
-- `edit_posts` - Edit posts
-- `edit_pages` - Edit pages
-- `td_view_all_data` - Access all system data
-- `td_view_analytics` - View analytics/metrics
-- `td_view_reports` - Generate reports
-- `td_manage_operators` - Oversee operator activities
-- `td_export_data` - Export CSV/reports
+**Capabilities:** Uses canonical capability names from [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md)
 
-**Landing Page:** `/manager/` (future)  
+**Landing Page:** `/managers/` (future)  
 **Access Level:** Read-only operational oversight + analytics
 
 ---
@@ -120,11 +91,11 @@
 - Routes users to appropriate landing page after login
 - **Priority order:**
   1. Administrator → `/wp-admin/`
-  2. Manager → `/manager/` (fallback: `/account/`)
-  3. Operator → `/operator/` (fallback: `/account/`)
+  2. Manager → `/managers/` (fallback: `/account/`)
+  3. Operator → `/operators/` (fallback: `/account/`)
   4. Employer → `/employers/` (fallback: `/account/`)
   5. Candidate → `/candidates/` (fallback: `/account/`)
-  6. Scout → `/scout/` (fallback: `/account/`)
+  6. Scout → `/scouts/` (fallback: `/account/`)
   7. Default → `/account/`
 - Checks if target page exists before redirecting
 - Falls back to `/account/` if role-specific page not yet created
@@ -196,9 +167,9 @@ wp user create manager_test manager@test.local --role=td_manager --user_pass=Tes
 ### Test Role-Based Redirect
 1. Login as `employer_test` → should redirect to `/employers/` (or `/account/` if page doesn't exist)
 2. Login as `candidate_test` → should redirect to `/candidates/` (or `/account/` if page doesn't exist)
-3. Login as `scout_test` → should redirect to `/scout/` (or `/account/` if page doesn't exist)
-4. Login as `operator_test` → should redirect to `/operator/` (or `/account/` if page doesn't exist)
-5. Login as `manager_test` → should redirect to `/manager/` (or `/account/` if page doesn't exist)
+3. Login as `scout_test` → should redirect to `/scouts/` (or `/account/` if page doesn't exist)
+4. Login as `operator_test` → should redirect to `/operators/` (or `/account/` if page doesn't exist)
+5. Login as `manager_test` → should redirect to `/managers/` (or `/account/` if page doesn't exist)
 6. Login as administrator → should redirect to `/wp-admin/`
 
 ### Test Custom Capabilities
@@ -229,35 +200,9 @@ wp user create manager_test manager@test.local --role=td_manager --user_pass=Tes
 
 ## Custom Capabilities Reference
 
-### Employer Capabilities
-- `td_view_own_requests` - View own candidate requests
-- `td_request_candidates` - Submit candidate requests
-- `td_view_request_status` - Check submission status
+**All custom capabilities are defined in [ROLE-CAPABILITIES-MATRIX.md](../../docs/ROLE-CAPABILITIES-MATRIX.md) under "Canonical Capability Names (v1 - MVP)".**
 
-### Candidate Capabilities
-- `td_view_own_profile` - View own profile
-- `td_update_own_profile` - Edit own information
-- `td_upload_cv` - Upload/update CV
-
-### Scout Capabilities
-- `td_submit_candidate` - Submit candidates
-- `td_view_own_submissions` - View own submissions
-- `td_upload_candidate_cv` - Upload CVs for candidates
-
-### Operator Capabilities
-- `td_manage_submissions` - View/edit all submissions
-- `td_manage_candidates` - Manage candidate data
-- `td_manage_employers` - Manage employer data
-- `td_view_all_data` - Access all system data
-- `td_export_data` - Export CSV/reports
-- `td_update_candidate_status` - Change workflow status
-
-### Manager Capabilities
-- `td_view_all_data` - Access all system data
-- `td_view_analytics` - View analytics/metrics
-- `td_view_reports` - Generate reports
-- `td_manage_operators` - Oversee operators
-- `td_export_data` - Export CSV/reports
+This prevents implementation drift across multiple files. Always refer to the canonical list when implementing or updating capabilities.
 
 ---
 

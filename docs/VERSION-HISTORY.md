@@ -193,7 +193,7 @@ Add User Registration flow with role selection, Forminator integration, blocksy-
 
 ---
 
-### v3.4.0 - Manager Admin & User Request Approvals
+### v3.4.0 - Manager Admin & User Registration Request Approvals
 
 **Deployed:** January 20, 2026  
 **Status:** ✅ Production  
@@ -259,7 +259,7 @@ Add User Registration flow with role selection, Forminator integration, blocksy-
 
 **Git Commit:**
 ```
-Add Manager Admin page with user request approvals, Forminator integration, audit logging system (v3.4.0)
+Add Manager Admin page with user registration request approvals, Forminator integration, audit logging system (v3.4.0)
 ```
 
 ---

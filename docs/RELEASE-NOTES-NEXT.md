@@ -1,7 +1,7 @@
 # Release Notes & Deployment Instructions
 
 **Status:** 📋 Planning  
-**Version:** v3.5.0  
+**Version:** v3.6.0  
 **Target Date:** TBD
 
 This document tracks all manual deployment steps required for the **next production release**.
@@ -14,20 +14,102 @@ This document tracks all manual deployment steps required for the **next product
 
 ## Planned Features
 
-### v3.5.0 Features
+### v3.6.0 Features
 
-**1. Environment Config Automation (Git-Based Deployment)**
-- **Purpose:** Eliminate manual uploads of environment configuration file
-- **Change:** Relocate `config/env-config.php` → `wp-content/mu-plugins/td-env-config.php`
+**1. Phase 0 Business Foundations (January 23-25, 2026)**
+
+**BMSL-001: Role Capabilities Matrix (Complete - January 24, 2026)**
+- **Purpose:** Define role capabilities and access boundaries for all custom roles
+- **Deliverable:** [docs/ROLE-CAPABILITIES-MATRIX.md](ROLE-CAPABILITIES-MATRIX.md)
+- **Scope:**
+  - 5 custom roles defined: Employer, Candidate, Scout, Operator, Manager
+  - External vs Internal role categorization
+  - Explicit CAN/CANNOT permission lists for each role
+  - WordPress capabilities mapping
+  - Admin panel access rules
+  - Approval authority matrix (Operator vs Manager)
 - **Benefits:**
-  - ✅ Auto-deploys via Git with every push to main
-  - ✅ No manual file uploads needed
-  - ✅ Version controlled and synchronized
-  - ✅ Works identically on local and production
-- **Files Modified:**
-  - `config/wp-config.php` - Updated loader path to `../wp-content/mu-plugins/td-env-config.php`
-  - `docs/ENVIRONMENT-CONFIG.md` - Updated documentation with new location
-- **Deployment:** Automatic via Git (wp-content/ is deployed, config/ is excluded)
+  - ✅ Foundation for all RBAC enforcement
+  - ✅ Unblocks PENG-053 (wp-admin blocking)
+  - ✅ Unblocks PENG-054 (endpoint hardening)
+  - ✅ Guides Phase 1-2 registration and approval workflows
+
+**PENG-001: CandidateID Strategy (Complete - January 25, 2026)**
+- **Purpose:** Define unique, stable identifier system for all users across WordPress, Excel, and future Person app
+- **Deliverable:** [docs/PENG-001-CANDIDATEID-STRATEGY.md](PENG-001-CANDIDATEID-STRATEGY.md)
+- **Format:** TD-YYYY-NNNN (e.g., TD-2026-0001)
+- **Scope:**
+  - Multi-role prefixes: TD/TE/TS/TO/TM for Candidate/Employer/Scout/Operator/Manager
+  - Storage strategy: Add `td_user_id` column to `td_user_data_change_requests` table
+  - Generation: Auto-assign on form submission with year-based sequences
+  - Migration path: WordPress → Excel → Person app via external_id mapping
+  - Rebrand strategy: Hard cutover from TD- to HA- prefixes on rebrand date
+- **Benefits:**
+  - ✅ Stable reference ID independent of email/phone changes
+  - ✅ Cross-system tracking capability
+  - ✅ Operator-friendly format for verbal communication
+  - ✅ Chronological ordering for operational efficiency
+- **Next:** PENG-016 implementation in Phase 1
+
+**COPS-001: CV Lifecycle Policy (Complete - January 25, 2026)**
+- **Purpose:** Define CV storage, archiving, and deletion policies for GDPR compliance
+- **Deliverable:** [docs/COPS-001-CV-LIFECYCLE-POLICY.md](COPS-001-CV-LIFECYCLE-POLICY.md)
+- **Scope:**
+  - CV storage location and naming conventions
+  - Retention periods aligned with GDPR requirements
+  - Archiving and deletion workflows
+  - Consent capture requirements
+- **Benefits:**
+  - ✅ GDPR Art. 5(1)(e) compliance (storage limitation)
+  - ✅ Unblocks PENG-041 (CV upload system)
+  - ✅ Foundation for LFTC-002 (retention policy)
+
+**PENG-053: Block /wp-admin/ Access (Complete - January 25, 2026)**
+- **Purpose:** Enforce Administrator-only access to WordPress admin panel
+- **Implementation:** [wp-content/plugins/talendelight-roles/talendelight-roles.php](../wp-content/plugins/talendelight-roles/talendelight-roles.php) v1.1.0
+- **Documentation:** [docs/PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md](PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md)
+- **Scope:**
+  - Block all non-Administrator roles from `/wp-admin/` URLs
+  - Role-based redirects to appropriate landing pages
+  - User-friendly access denied notices
+  - Hide admin bar for non-Administrators
+  - Security audit logging for blocked attempts
+- **Benefits:**
+  - ✅ Critical security hardening
+  - ✅ Enforces separation between operational dashboards and technical admin
+  - ✅ Prevents unauthorized configuration changes
+  - ✅ Audit trail for access attempts
+- **Testing:** Manual testing required (see [PENG-053 documentation](PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md#7-testing-checklist))
+- **Deployment:** Plugin v1.1.0 must be deployed to production
+
+**2. Design System Compliance Audit (Complete - January 22-23, 2026)**
+- **Purpose:** Ensure all Elementor pages follow consistent design standards for mobile responsiveness
+- **Scope:** 10 Elementor-built pages audited and corrected
+- **Standards Applied:**
+  - Hero H1 mobile typography: 42px (explicitly set via responsive controls)
+  - CTA title mobile typography: 42px (where CTA sections exist)
+  - Icon box standardization: 48px icon, 24px/700 title, 16px description
+  - Footer mobile spacing: 60px (space_between_mobile)
+  - CTA padding: 20px all sides (outer section)
+- **Pages Completed:**
+  - Homepage (Welcome) - ID 20
+  - Employers - ID 93
+  - Candidates - ID 229
+  - Scouts - ID 248
+  - Operators Dashboard - ID 299
+  - Managers Dashboard - ID 469
+  - Manager Admin - ID 386
+  - 403 Forbidden - ID 152
+  - Register Profile - ID 365
+- **Documentation:** [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) updated with implementation status
+- **Benefits:**
+  - ✅ Consistent mobile experience across all pages
+  - ✅ Design standards documented and verified
+  - ✅ Future page creation follows established patterns
+
+**3. Content Updates**
+- Manager Admin page title/form updated: "User Request Approvals" → "User Registration Request Approvals"
+- Manager Admin sub-heading updated to reflect: Users, Roles, and System Settings
 
 *Add additional features here as development progresses.*
 
@@ -221,7 +303,7 @@ wp plugin activate td-user-data-change-requests
 # - audit-logger.php deployed
 ```
 
-**5. Test User Request Approvals Functionality:**
+**5. Test User Registration Request Approvals Functionality:**
 
 ```bash
 # Test shortcode rendering

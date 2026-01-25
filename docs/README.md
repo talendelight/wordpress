@@ -4,7 +4,7 @@
 
 This repository documents the **WordPress Primary Application** (Hostinger) used for marketing and candidate/employer intake while support applications are being built.
 
-- **WordPress (Primary):** public pages + candidate CV intake (no mandatory login) + partner/employee-assisted submissions + role-based access.
+- **WordPress (Primary):** public pages + candidate CV intake (no mandatory login) + scout and staff-assisted submissions (with consent) + role-based access.
 - **Excel (Interim Ops):** operational tracking for candidate/employer/job pipelines (expected ~100 candidates/month; cycles up to ~9 months).
 - **Person App (Future):** Angular + Java 25 + MySQL system of record for structured candidate profiles (work history, qualifications, search, dedupe).
 - **CV Storage (Pattern 1):** CVs are staged on Hostinger initially, offloaded weekly to OneDrive/SharePoint, and cleaned up after a buffer window.

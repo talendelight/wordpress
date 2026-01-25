@@ -1,6 +1,6 @@
 # Manager Admin Page - Tabbed Interface Implementation Guide
 
-**Feature:** User Request Approvals Tabbed Interface  
+**Feature:** User Registration Request Approvals Tabbed Interface  
 **Page:** Manager Admin (/manager-admin/)  
 **Updated:** January 19, 2026
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-This guide walks through implementing the tabbed interface for User Request Approvals section on the Manager Admin page using Elementor.
+This guide walks through implementing the tabbed interface for User Registration Request Approvals section on the Manager Admin page using Elementor.
 
 ### Tab Structure
 - **Pending (Default)** - Active requests awaiting review
@@ -41,7 +41,7 @@ This guide walks through implementing the tabbed interface for User Request Appr
 
 ---
 
-### Step 2: Add User Request Approvals Section Container
+### Step 2: Add User Registration Request Approvals Section Container
 
 **Inside the main content container:**
 
@@ -66,7 +66,7 @@ This guide walks through implementing the tabbed interface for User Request Appr
 
 1. Add **Heading** widget (H2)
 2. **Content:**
-   - Text: "User Request Approvals"
+   - Text: "User Registration Request Approvals"
    - Size: H2
    - Color: #063970 (navy)
    - Alignment: Left
@@ -196,7 +196,7 @@ Add 4 **Container** widgets (one for each tab content):
 <div style="padding: 40px; text-align: center; background: #fff; border: 2px dashed #ddd; border-radius: 8px; margin-top: 30px;">
   <h3 style="color: #063970; margin-bottom: 15px; font-size: 24px;">🚧 Under Development</h3>
   <p style="color: #666; margin-bottom: 15px; font-size: 16px;">
-    The User Request Approvals interface is currently being developed.
+    The User Registration Request Approvals interface is currently being developed.
   </p>
   <p style="color: #898989; font-size: 14px; line-height: 1.6;">
     <strong>Planned Features:</strong><br>
@@ -304,7 +304,7 @@ jQuery(document).ready(function($) {
 
 ### Step 10: Add Other Admin Sections (Placeholders)
 
-After the User Request Approvals section, add 5 more section containers for:
+After the User Registration Request Approvals section, add 5 more section containers for:
 
 1. **User Management** (ID: `user-management`)
 2. **System Settings** (ID: `system-settings`)

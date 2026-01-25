@@ -106,7 +106,7 @@
       "title": "Manager Admin",
       "url_local": "http://localhost:8080/manager-admin/",
       "url_prod": "https://talendelight.com/manager-admin/",
-      "notes": "v3.4.0 - Admin operations hub with user request approvals, system settings, and other admin tasks"
+      "notes": "v3.4.0 - Admin operations hub with user registration request approvals, system settings, and other admin tasks"
     }
   ],
   "forms": [

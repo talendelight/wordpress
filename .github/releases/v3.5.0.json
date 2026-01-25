@@ -2,7 +2,7 @@
   "version": "3.5.0",
   "release_date": null,
   "status": "planned",
-  "description": "Automated environment configuration deployment via mu-plugins",
+  "description": "Security hardening: Block /wp-admin/ for non-Administrator roles (PENG-053) + Phase 0 policy documentation",
   "steps": [
     {
       "type": "deploy_code",
@@ -32,10 +32,63 @@
       "notes": "Add SQL filenames to config.sql_files array when database changes are needed"
     }
   ],
+  "features": [
+    {
+      "task_id": "PENG-053",
+      "title": "Block /wp-admin/ for non-Administrator roles",
+      "description": "Critical security hardening - only Administrator role can access WordPress admin panel",
+      "implementation": "wp-content/plugins/talendelight-roles/talendelight-roles.php v1.1.0",
+      "documentation": "docs/PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md",
+      "dependencies": ["BMSL-001"],
+      "completed": "2026-01-25"
+    },
+    {
+      "task_id": "BMSL-001",
+      "title": "Role Capabilities Matrix",
+      "description": "Define role capabilities and access boundaries for all 5 custom roles",
+      "implementation": "docs/ROLE-CAPABILITIES-MATRIX.md",
+      "documentation": "docs/ROLE-CAPABILITIES-MATRIX.md",
+      "completed": "2026-01-24"
+    },
+    {
+      "task_id": "PENG-001",
+      "title": "CandidateID Strategy",
+      "description": "Define unique identifier system (TD-YYYY-NNNN) for cross-system tracking",
+      "implementation": "docs/PENG-001-CANDIDATEID-STRATEGY.md",
+      "documentation": "docs/PENG-001-CANDIDATEID-STRATEGY.md",
+      "completed": "2026-01-25",
+      "notes": "Implementation in PENG-016 (Phase 1)"
+    },
+    {
+      "task_id": "COPS-001",
+      "title": "CV Lifecycle Policy",
+      "description": "Define CV storage, archiving, and deletion policies for GDPR compliance",
+      "implementation": "docs/COPS-001-CV-LIFECYCLE-POLICY.md",
+      "documentation": "docs/COPS-001-CV-LIFECYCLE-POLICY.md",
+      "completed": "2026-01-25"
+    }
+  ],
   "verification": {
     "steps": [
       {
-        "description": "Add verification steps as needed"
+        "description": "Test Administrator can access /wp-admin/",
+        "command": "Login as admin → Navigate to /wp-admin/ → Should see dashboard"
+      },
+      {
+        "description": "Test Manager blocked from /wp-admin/",
+        "command": "Login as Manager → Navigate to /wp-admin/ → Should redirect to /managers/?access_denied=wp-admin"
+      },
+      {
+        "description": "Test Operator blocked from /wp-admin/",
+        "command": "Login as Operator → Navigate to /wp-admin/ → Should redirect to /operators/?access_denied=wp-admin"
+      },
+      {
+        "description": "Verify admin bar hidden for non-Administrators",
+        "command": "Login as Manager/Operator → No black admin bar at top"
+      },
+      {
+        "description": "Check security audit logs",
+        "command": "wp-content/debug.log should contain: 'TalenDelight Security: Blocked wp-admin access for user...'"
       }
     ]
   },

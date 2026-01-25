@@ -2,8 +2,8 @@
 /**
  * Plugin Name: TalenDelight Custom Roles
  * Plugin URI: https://talendelight.com
- * Description: Custom WordPress roles for TalenDelight recruitment platform (Employer, Candidate, Scout, Operator, Manager) with 403 access control
- * Version: 1.0.0
+ * Description: Custom WordPress roles for TalenDelight recruitment platform (Employer, Candidate, Scout, Operator, Manager) with 403 access control and wp-admin blocking (PENG-053)
+ * Version: 1.1.0
  * Author: TalenDelight
  * Author URI: https://talendelight.com
  * License: GPL v2 or later
@@ -80,6 +80,128 @@ function talendelight_register_custom_roles() {
     error_log('TalenDelight: Custom roles registered successfully');
 }
 add_action('after_setup_theme', 'talendelight_register_custom_roles');
+
+/**
+ * PENG-053: Block /wp-admin/ access for non-Administrator roles
+ * Only users with 'administrator' role can access WordPress admin panel
+ * All custom TalenDelight roles (Employer, Candidate, Scout, Operator, Manager) are blocked
+ */
+function talendelight_block_wp_admin_access() {
+    // Only run in admin area (not during AJAX to avoid breaking admin-ajax.php)
+    if (!is_admin() || wp_doing_ajax()) {
+        return;
+    }
+
+    // Skip if not logged in (WordPress will handle this with auth_redirect)
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    // Get current user
+    $user = wp_get_current_user();
+
+    // Check if user is Administrator
+    if (in_array('administrator', $user->roles)) {
+        return; // Allow access
+    }
+
+    // Block all non-Administrator roles from /wp-admin/
+    // Get role-specific redirect URL
+    $redirect_url = talendelight_get_role_landing_page($user);
+    
+    // Log the block attempt for security auditing
+    error_log(sprintf(
+        'TalenDelight Security: Blocked wp-admin access for user %s (ID: %d, Roles: %s)',
+        $user->user_login,
+        $user->ID,
+        implode(', ', $user->roles)
+    ));
+
+    // Redirect to appropriate landing page with access denied message
+    wp_redirect(add_query_arg('access_denied', 'wp-admin', $redirect_url));
+    exit;
+}
+add_action('admin_init', 'talendelight_block_wp_admin_access', 1);
+
+/**
+ * Helper function: Get role-specific landing page URL
+ * Returns the appropriate landing page based on user's role
+ */
+function talendelight_get_role_landing_page($user) {
+    // Role priority order (first match wins)
+    if (in_array('td_manager', $user->roles)) {
+        $manager_page = get_page_by_path('managers');
+        return $manager_page ? home_url('/managers/') : home_url('/account/');
+    } elseif (in_array('td_operator', $user->roles)) {
+        $operator_page = get_page_by_path('operators');
+        return $operator_page ? home_url('/operators/') : home_url('/account/');
+    } elseif (in_array('td_employer', $user->roles)) {
+        $employers_page = get_page_by_path('employers');
+        return $employers_page ? home_url('/employers/') : home_url('/account/');
+    } elseif (in_array('td_candidate', $user->roles)) {
+        $candidates_page = get_page_by_path('candidates');
+        return $candidates_page ? home_url('/candidates/') : home_url('/account/');
+    } elseif (in_array('td_scout', $user->roles)) {
+        $scout_page = get_page_by_path('scouts');
+        return $scout_page ? home_url('/scouts/') : home_url('/account/');
+    }
+    
+    // Default fallback
+    return home_url('/account/');
+}
+
+/**
+ * Display access denied notice on landing pages
+ * Shows a dismissible notice if user was redirected from wp-admin
+ */
+function talendelight_display_access_denied_notice() {
+    // Check if access_denied parameter is present
+    if (!isset($_GET['access_denied']) || $_GET['access_denied'] !== 'wp-admin') {
+        return;
+    }
+
+    // Only show to logged-in users
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    // Display notice
+    echo '<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 20px 0; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;">
+        <div style="display: flex; align-items: start; gap: 12px;">
+            <svg style="flex-shrink: 0; width: 24px; height: 24px; color: #856404;" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+            </svg>
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #856404;">WordPress Admin Access Restricted</h3>
+                <p style="margin: 0; font-size: 14px; color: #856404; line-height: 1.5;">
+                    You attempted to access the WordPress admin panel, which is restricted to Administrators only. 
+                    Your account has been redirected to your dashboard. If you need administrative access, please contact your Manager.
+                </p>
+            </div>
+        </div>
+    </div>';
+}
+add_action('wp_body_open', 'talendelight_display_access_denied_notice');
+
+/**
+ * Hide admin bar for non-Administrator roles
+ * Prevents the top admin bar from showing for custom TalenDelight roles
+ */
+function talendelight_hide_admin_bar_for_custom_roles() {
+    // Skip if not logged in
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    // Get current user
+    $user = wp_get_current_user();
+
+    // If user is not an Administrator, hide admin bar
+    if (!in_array('administrator', $user->roles)) {
+        show_admin_bar(false);
+    }
+}
+add_action('after_setup_theme', 'talendelight_hide_admin_bar_for_custom_roles');
 
 /**
  * 403 Access Control: Block logged-in users without TalenDelight roles
