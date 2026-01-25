@@ -36,10 +36,35 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Session Continuity:**
 - Always check [docs/SESSION-SUMMARY-*.md](docs/) files for recent work context
-- Current active session: [docs/SESSION-SUMMARY-JAN-13-14.md](docs/SESSION-SUMMARY-JAN-13-14.md)
-- Previous session: [docs/SESSION-SUMMARY-JAN-11.md](docs/SESSION-SUMMARY-JAN-11.md)
+- Current active session: [docs/SESSION-SUMMARY-JAN-23.md](docs/SESSION-SUMMARY-JAN-23.md) - Task management restructuring + MVP requirements
+- Previous sessions: [JAN-18](docs/SESSION-SUMMARY-JAN-18.md), [JAN-13-14](docs/SESSION-SUMMARY-JAN-13-14.md), [JAN-11](docs/SESSION-SUMMARY-JAN-11.md)
 - If user mentions laptop restart or lost context, read latest session summary first
 - Progress tracking in [docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md](docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md)
+
+**Task Management:**
+- **Master Guide:** [TASK-MANAGEMENT-GUIDE.md](../../Documents/TASK-MANAGEMENT-GUIDE.md) - Complete task naming, estimation, workflow strategy
+- **Current Execution:** [WORDPRESS-MVP-TASKS.csv](../../Documents/WORDPRESS-MVP-TASKS.csv) + [.md](../../Documents/WORDPRESS-MVP-TASKS.md) - Phase 0-4 tasks with dependencies
+- **Future Features:** [WORDPRESS-BACKLOG.csv](../../Documents/WORDPRESS-BACKLOG.csv) - Feature-level, decompose to tasks when moved to active phase
+- **Strategic View:** [WORDPRESS-BACKLOG.md](../../Documents/WORDPRESS-BACKLOG.md) - Comprehensive roadmap with all epics
+- **MVP Requirements:** [WORDPRESS-MVP-REQUIREMENTS.md](../../Documents/WORDPRESS-MVP-REQUIREMENTS.md) - Detailed registration/approval workflows
+- **ALWAYS reference TASK-MANAGEMENT-GUIDE.md before creating, estimating, or organizing tasks**
+
+**Team & Working Constraints:**
+- **Manager (user):** Technical & functional lead, 2 hours/day (1 calendar day = 2 hours work)
+- **External contractors:** Lawyer (LFTC-002 GDPR), Accountant (financial tasks)
+- **Future team:** Part-time assistant (Q2 2026), developer/designer for pre-launch polish
+- **AI Tools:** GitHub Copilot for pair programming
+- **Estimation:** Always use calendar days (not hours) to account for 2hrs/day constraint
+
+**MVP Scope (v3.6.0 - April 5, 2026):**
+- Registration workflows: Candidate, Employer, Scout, Employee (with consent)
+- Approval logic: Public users (Operator OR Manager), Internal users (Manager ONLY)
+- CV submission with consent (Scout/Operator/Manager)
+- Employer request with consent (Operator/Manager)
+- Company email provisioning (@talendelight.com → @hireaccord.com)
+- 12 email notification templates (registration, assignment, approval, rejection)
+- Rebrand: TalenDelight → HireAccord before public launch
+- See [WORDPRESS-MVP-REQUIREMENTS.md](../../Documents/WORDPRESS-MVP-REQUIREMENTS.md) for complete workflows
 
 **Deployment Strategy:**
 - **Development**: Docker/Podman containers on local machine

@@ -136,7 +136,7 @@ podman cp wp:/tmp/page-export.json tmp/page-export.json
 **Before fix:** Page completely broken (blank sections)
 **After fix:** All sections render correctly:
 - ✅ Hero section (Admin Operations)
-- ✅ 6 icon boxes (User Request Approvals, User Management, System Settings, Audit Logs, Role Management, Platform Monitoring)
+- ✅ 6 icon boxes (User Registration Request Approvals, User Management, System Settings, Audit Logs, Role Management, Platform Monitoring)
 - ✅ Tabs component with 5 tabs (New, Submitted, Approved, Rejected, All)
 - ✅ Shortcodes render data tables
 - ✅ Help section

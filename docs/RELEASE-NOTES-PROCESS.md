@@ -246,6 +246,96 @@ git push origin main
 
 ---
 
+## Release Frequency Strategy
+
+**Adopted:** January 26, 2026  
+**Philosophy:** Small, frequent releases over large, infrequent ones
+
+### Target Cadence
+
+**Frequency:** Every 3-5 days with 2-4 completed tasks  
+**Working Hours:** 2 hours/day (1 calendar day = 2 hours work)
+
+**Benefits:**
+- ✅ Keeps scope manageable and testable
+- ✅ Faster feedback from production environment
+- ✅ Easier rollback if issues arise
+- ✅ Maintains project momentum
+- ✅ Reduces risk of deployment conflicts
+- ✅ Enables iterative improvements
+
+### Release Composition Guidelines
+
+#### Minimum Requirements for a Release:
+1. **At least one deployable code change** (plugin update, theme change, etc.)
+   - OR: Critical documentation that changes operational procedures
+2. **Clear, testable acceptance criteria**
+3. **Documented rollback procedure**
+4. **Verification steps defined**
+
+#### Optimal Release Scope:
+
+**Small Release (3-5 days):**
+- 1-2 code changes
+- Supporting documentation
+- Single feature area (e.g., security, forms, UI)
+
+**Example - v3.5.0 (Security Focus):**
+```
+✅ PENG-053: Block /wp-admin/ (code change)
+📄 BMSL-001: Role Capabilities Matrix (documentation)
+📄 PENG-001: CandidateID Strategy (documentation)
+📄 COPS-001: CV Lifecycle Policy (documentation)
+```
+
+**Medium Release (5-7 days):**
+- 2-4 code changes
+- Related feature set
+- Multiple interconnected tasks
+
+#### Release Grouping Strategies:
+
+**Strategy 1: Security Bundle**
+- Group related security tasks together
+- Example: PENG-053 (wp-admin block) + PENG-054 (endpoint hardening)
+
+**Strategy 2: Policy Complete**
+- Group all policy/documentation tasks
+- Example: COPS-002 + PMAS-001 + BMSL-002
+
+**Strategy 3: Feature Vertical**
+- Complete one user journey end-to-end
+- Example: Registration form + validation + email + dashboard display
+
+**Strategy 4: Technical Foundations**
+- Infrastructure and tooling improvements
+- Example: Database schema + helper functions + test fixtures
+
+### What NOT to Include in One Release:
+
+❌ **Avoid:**
+- Mixing unrelated features (e.g., security + forms + email in one release)
+- Incomplete feature implementations (no half-done work)
+- Tasks still in progress or blocked
+- Database changes without tested rollback
+- More than 5-7 discrete changes at once
+
+### Release Naming Convention:
+
+**Semantic Versioning:** MAJOR.MINOR.PATCH (e.g., 3.5.0)
+
+**Increment Rules:**
+- **MAJOR (3.x.x):** Breaking changes, major architecture shifts
+- **MINOR (x.5.x):** New features, enhancements, non-breaking changes
+- **PATCH (x.x.1):** Bug fixes, small corrections, documentation updates
+
+**For MVP Development (v3.x.x):**
+- Use MINOR version for all feature releases
+- Reserve PATCH for production hotfixes only
+- MAJOR version reserved for major milestones (v4.0.0 = post-MVP features)
+
+---
+
 ## Process Evaluation
 
 ### ✅ Benefits of This Approach

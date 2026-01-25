@@ -522,7 +522,7 @@ Test-Path tmp/elementor-exports/manager-admin.json
 ## Next Steps After Building
 
 1. **Add Interactivity (Future):**
-   - User Request Approvals section: Add actual table with data
+   - User Registration Request Approvals section: Add actual table with data
    - Connect tiles to real admin sub-pages
    - Implement API calls for summary metrics
 

@@ -8,6 +8,7 @@ services:
     container_name: wp
     volumes:
       - ../../config/wp-config.php:/var/www/html/wp-config.php
+      - ../../config/env-config.php:/var/www/html/env-config.php
       - ../../config/.htaccess:/var/www/html/.htaccess
       - ../../wp-content:/var/www/html/wp-content:rw
       - ../../config/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
@@ -18,6 +19,7 @@ services:
       - WORDPRESS_DB_USER=root
       - WORDPRESS_DB_PASSWORD=password
       - WORDPRESS_DEBUG=1
+      - WP_ENV=local
       # - WORDPRESS_DB_ADMIN_PASSWORD=dba-password
       # - WORDPRESS_ADMIN_NAME=WpAdminFirstName
       # - WORDPRESS_ADMIN_LASTNAME=WpAdminLastName

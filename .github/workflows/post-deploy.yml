@@ -18,7 +18,7 @@ on:
 jobs:
   archive-release:
     runs-on: ubuntu-latest
-    if: github.event.inputs.confirmed == 'yes'
+    if: github.event.inputs.confirmed == 'yes' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,51 +88,54 @@ jobs:
           NEXT_VERSION="${{ env.next_version }}"
           NEXT_FILE=".github/releases/v${NEXT_VERSION}.json"
           
-          cat > "$NEXT_FILE" << 'EOF'
-{
-  "version": "'"${NEXT_VERSION}"'",
-  "release_date": "TBD",
-  "description": "Next release - description TBD",
-  "requires_db_backup": false,
-  "requires_manual_verification": true,
-  "changelog": [
-    "Add changelog items here"
-  ],
-  "steps": [
-    {
-      "type": "deploy_code",
-      "description": "Deploy wp-content (plugins, themes) to production",
-      "config": {
-        "source": "wp-content/",
-        "destination": "/domains/talendelight.com/public_html/wp-content/",
-        "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
-        "rsync_flags": "-avz --delete --exclude-from=.hostingerignore",
-        "critical_files": []
-      }
-    },
-    {
-      "type": "clear_cache",
-      "description": "Clear LiteSpeed and Elementor caches",
-      "config": {
-        "cache_types": ["litespeed", "elementor"]
-      }
-    },
-    {
-      "type": "manual",
-      "description": "Verify deployment",
-      "config": {
-        "instructions": [
-          "1. Verify deployed features on production site",
-          "2. Test all functionality",
-          "3. Check error logs",
-          "4. Monitor for issues"
-        ],
-        "approve_before_continue": false
-      }
-    }
-  ]
-}
-EOF
+          cat > "$NEXT_FILE" <<'JSONEOF'
+          {
+            "version": "VERSION_PLACEHOLDER",
+            "release_date": "TBD",
+            "description": "Next release - description TBD",
+            "requires_db_backup": false,
+            "requires_manual_verification": true,
+            "changelog": [
+              "Add changelog items here"
+            ],
+            "steps": [
+              {
+                "type": "deploy_code",
+                "description": "Deploy wp-content (plugins, themes) to production",
+                "config": {
+                  "source": "wp-content/",
+                  "destination": "/domains/talendelight.com/public_html/wp-content/",
+                  "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
+                  "rsync_flags": "-avz --delete --exclude-from=.hostingerignore",
+                  "critical_files": []
+                }
+              },
+              {
+                "type": "clear_cache",
+                "description": "Clear LiteSpeed and Elementor caches",
+                "config": {
+                  "cache_types": ["litespeed", "elementor"]
+                }
+              },
+              {
+                "type": "manual",
+                "description": "Verify deployment",
+                "config": {
+                  "instructions": [
+                    "1. Verify deployed features on production site",
+                    "2. Test all functionality",
+                    "3. Check error logs",
+                    "4. Monitor for issues"
+                  ],
+                  "approve_before_continue": false
+                }
+              }
+            ]
+          }
+          JSONEOF
+          
+          # Replace placeholder with actual version
+          sed -i "s/VERSION_PLACEHOLDER/${NEXT_VERSION}/" "$NEXT_FILE"
           
           git add "$NEXT_FILE"
           echo "✓ Created next release template: $NEXT_FILE"
@@ -164,65 +167,71 @@ EOF
           fi
           
           # Create fresh RELEASE-NOTES-NEXT.md for next version
-          cat > docs/RELEASE-NOTES-NEXT.md << 'EOF'
-# Release Notes & Deployment Instructions
-
-**Status:** 🔄 Planning
-
-This document tracks all manual deployment steps required for the **next production release**.
-
-**Purpose:** Ensure consistent, error-free deployments by documenting every manual step needed after Git push to main branch.
-
-**📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
-
----
-
-## Release Information
-
-**Target Deployment Date:** TBD  
-**Release Version:** '"${NEXT_VERSION}"'  
-**Branch:** develop → main  
-**Status:** 🔄 Planning
-
-### Overview
-
-**v'"${PREV_VERSION}"' Deployment Complete:** ✅ '"${TIMESTAMP}"'
-- See [VERSION-HISTORY.md](VERSION-HISTORY.md) for complete v'"${PREV_VERSION}"' details
-- Release archived in .github/releases/archive/
-
-**Next Release (v'"${NEXT_VERSION}"') - Planning:**
-- [ ] Define features and changes
-- [ ] Update changelog in .github/releases/v'"${NEXT_VERSION}"'.json
-- [ ] Document deployment steps
-- [ ] Test locally before deployment
-
----
-
-## Deployment Steps
-
-_To be defined..._
-
----
-
-## Manual Verification Checklist
-
-- [ ] All pages loading correctly
-- [ ] No console errors
-- [ ] Functionality works as expected
-- [ ] Mobile responsive
-- [ ] Performance acceptable
-
----
-
-## Rollback Plan
-
-If issues occur:
-1. Revert to previous Git commit
-2. Restore database backup (if database changes were made)
-3. Clear all caches
-4. Verify rollback successful
-
-EOF
+          cat > docs/RELEASE-NOTES-NEXT.md <<'MDEOF'
+          # Release Notes & Deployment Instructions
+          
+          **Status:** 🔄 Planning
+          
+          This document tracks all manual deployment steps required for the **next production release**.
+          
+          **Purpose:** Ensure consistent, error-free deployments by documenting every manual step needed after Git push to main branch.
+          
+          **📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
+          
+          ---
+          
+          ## Release Information
+          
+          **Target Deployment Date:** TBD  
+          **Release Version:** NEXT_VERSION_PLACEHOLDER  
+          **Branch:** develop → main  
+          **Status:** 🔄 Planning
+          
+          ### Overview
+          
+          **vPREV_VERSION_PLACEHOLDER Deployment Complete:** ✅ TIMESTAMP_PLACEHOLDER
+          - See [VERSION-HISTORY.md](VERSION-HISTORY.md) for complete vPREV_VERSION_PLACEHOLDER details
+          - Release archived in .github/releases/archive/
+          
+          **Next Release (vNEXT_VERSION_PLACEHOLDER) - Planning:**
+          - [ ] Define features and changes
+          - [ ] Update changelog in .github/releases/vNEXT_VERSION_PLACEHOLDER.json
+          - [ ] Document deployment steps
+          - [ ] Test locally before deployment
+          
+          ---
+          
+          ## Deployment Steps
+          
+          _To be defined..._
+          
+          ---
+          
+          ## Manual Verification Checklist
+          
+          - [ ] All pages loading correctly
+          - [ ] No console errors
+          - [ ] Functionality works as expected
+          - [ ] Mobile responsive
+          - [ ] Performance acceptable
+          
+          ---
+          
+          ## Rollback Plan
+          
+          If issues occur:
+          1. Revert to previous Git commit
+          2. Restore database backup (if database changes were made)
+          3. Clear all caches
+          4. Verify rollback successful
+          
+          ---
+          MDEOF
+          
+          # Replace placeholders
+          sed -i "s/NEXT_VERSION_PLACEHOLDER/${NEXT_VERSION}/g" docs/RELEASE-NOTES-NEXT.md
+          sed -i "s/PREV_VERSION_PLACEHOLDER/${PREV_VERSION}/g" docs/RELEASE-NOTES-NEXT.md
+          sed -i "s/TIMESTAMP_PLACEHOLDER/${TIMESTAMP}/g" docs/RELEASE-NOTES-NEXT.md
           
           git add docs/RELEASE-NOTES-NEXT.md
           echo "✓ Reset RELEASE-NOTES-NEXT.md for v${NEXT_VERSION}"
@@ -236,28 +245,34 @@ EOF
           ARCHIVE_FILE=".github/releases/archive/v${VERSION}.json"
           DESCRIPTION=$(jq -r '.description' "$ARCHIVE_FILE")
           
-          # Create version entry
-          VERSION_ENTRY="### v${VERSION}
-
-**Deployed:** ${TIMESTAMP}  
-**Status:** ✅ Production  
-
-**Description:** ${DESCRIPTION}
-
-**See:** .github/releases/archive/v${VERSION}.json for complete deployment details
-
----
-"
+          # Create version entry using heredoc
+          cat > /tmp/version-entry.txt <<'VERSIONEOF'
+          ### vVERSION_PLACEHOLDER
+          
+          **Deployed:** TIMESTAMP_PLACEHOLDER  
+          **Status:** ✅ Production  
+          
+          **Description:** DESCRIPTION_PLACEHOLDER
+          
+          **See:** .github/releases/archive/vVERSION_PLACEHOLDER.json for complete deployment details
+          
+          ---
+          VERSIONEOF
+          
+          # Replace placeholders
+          sed -i "s/VERSION_PLACEHOLDER/${VERSION}/g" /tmp/version-entry.txt
+          sed -i "s/TIMESTAMP_PLACEHOLDER/${TIMESTAMP}/g" /tmp/version-entry.txt
+          sed -i "s|DESCRIPTION_PLACEHOLDER|${DESCRIPTION}|g" /tmp/version-entry.txt
           
           # Insert after version section header
-          if grep -q "## Version ${VERSION%%.*}.x.x" docs/VERSION-HISTORY.md; then
+          MAJOR_VERSION="${VERSION%%.*}"
+          if grep -q "## Version ${MAJOR_VERSION}.x.x" docs/VERSION-HISTORY.md; then
             # Version section exists, insert after it
-            sed -i "/## Version ${VERSION%%.*}.x.x/a\\
-\\
-$VERSION_ENTRY" docs/VERSION-HISTORY.md
+            awk "/## Version ${MAJOR_VERSION}.x.x/ {print; print \"\"; system(\"cat /tmp/version-entry.txt\"); next} 1" docs/VERSION-HISTORY.md > /tmp/version-history-updated.md
+            mv /tmp/version-history-updated.md docs/VERSION-HISTORY.md
           else
             # Append to file
-            echo "$VERSION_ENTRY" >> docs/VERSION-HISTORY.md
+            cat /tmp/version-entry.txt >> docs/VERSION-HISTORY.md
           fi
           
           git add docs/VERSION-HISTORY.md
@@ -268,15 +283,23 @@ $VERSION_ENTRY" docs/VERSION-HISTORY.md
           VERSION="${{ github.event.inputs.version }}"
           NEXT_VERSION="${{ env.next_version }}"
           
-          git commit -m "Archive v${VERSION}, prepare v${NEXT_VERSION}
-
-- Move .github/releases/v${VERSION}.json to archive/
-- Archive release notes with timestamp
-- Create .github/releases/v${NEXT_VERSION}.json template
-- Reset RELEASE-NOTES-NEXT.md for v${NEXT_VERSION}
-- Update VERSION-HISTORY.md with v${VERSION} deployment
-
-Post-deployment cleanup after successful v${VERSION} review."
+          cat > /tmp/commit-message.txt <<'COMMITEOF'
+          Archive vVERSION_PLACEHOLDER, prepare vNEXT_VERSION_PLACEHOLDER
+          
+          - Move .github/releases/vVERSION_PLACEHOLDER.json to archive/
+          - Archive release notes with timestamp
+          - Create .github/releases/vNEXT_VERSION_PLACEHOLDER.json template
+          - Reset RELEASE-NOTES-NEXT.md for vNEXT_VERSION_PLACEHOLDER
+          - Update VERSION-HISTORY.md with vVERSION_PLACEHOLDER deployment
+          
+          Post-deployment cleanup after successful vVERSION_PLACEHOLDER review.
+          COMMITEOF
+          
+          # Replace placeholders
+          sed -i "s/VERSION_PLACEHOLDER/${VERSION}/g" /tmp/commit-message.txt
+          sed -i "s/NEXT_VERSION_PLACEHOLDER/${NEXT_VERSION}/g" /tmp/commit-message.txt
+          
+          git commit -F /tmp/commit-message.txt
 
       - name: Push to Develop
         run: |
