@@ -1,0 +1,46 @@
+{
+  "version": "3.6.0",
+  "release_date": null,
+  "status": "planned",
+  "description": "TBD - Next release features",
+  "steps": [
+    {
+      "type": "deploy_code",
+      "source": "wp-content",
+      "target": "public_html/wp-content",
+      "exclusions_file": ".hostingerignore",
+      "description": "Deploy wp-content directory with automatic exclusions",
+      "notes": "Includes automated td-env-config.php deployment via mu-plugins location"
+    },
+    {
+      "type": "clear_cache",
+      "method": "litespeed",
+      "verify_command": "curl -I https://talendelight.com | grep 'x-litespeed-cache'"
+    },
+    {
+      "type": "verify_env_config",
+      "file": "wp-content/mu-plugins/td-env-config.php",
+      "verify_command": "ls -la wp-content/mu-plugins/td-env-config.php && wp eval 'echo defined(\"TD_PERSON_REGISTRATION_FORM_ID\") ? \"OK\" : \"MISSING\";'",
+      "description": "Verify env config automatically loaded from mu-plugins"
+    },
+    {
+      "type": "deploy_database",
+      "config": {
+        "sql_files": []
+      },
+      "description": "No database changes in this release",
+      "notes": "Add SQL filenames to config.sql_files array when database changes are needed"
+    }
+  ],
+  "features": [],
+  "verification": {
+    "steps": []
+  },
+  "rollback": {
+    "steps": [
+      {
+        "description": "Revert main branch to v3.4.0 tag if critical issues arise"
+      }
+    ]
+  }
+}
