@@ -1,8 +1,10 @@
 <?php
 // Redirect default register page to custom role selection page
+// Only redirect the top-level /register/ page, not child pages like /persons/register/
 add_action('template_redirect', function() {
-    if (is_page('register')) {
-        wp_redirect(site_url('/select-role/'));
+    global $post;
+    if (is_page() && $post && $post->post_name === 'register' && $post->post_parent == 0) {
+        wp_redirect(site_url('/roles/select/'));
         exit;
     }
 });
@@ -11,6 +13,35 @@ add_action('template_redirect', function() {
 add_action('wp_logout', function() {
     wp_redirect(home_url('/'));
     exit;
+});
+
+// Role-based page access control (MVP - Replace with plugin in v3.7.0+)
+// TODO v3.7.0: Migrate to PublishPress Capabilities or similar plugin
+add_action('template_redirect', function() {
+    if (!is_page()) {
+        return;
+    }
+    
+    $page_id = get_the_ID();
+    $current_user = wp_get_current_user();
+    
+    // Manager-only pages (Dashboard, Admin, Actions)
+    $manager_pages = [386, 469, 670];
+    if (in_array($page_id, $manager_pages)) {
+        if (!array_intersect(['administrator', 'td_manager'], $current_user->roles)) {
+            wp_redirect(home_url('/403-forbidden/'));
+            exit;
+        }
+    }
+    
+    // Operator pages (Dashboard, Actions)
+    $operator_pages = [299, 666];
+    if (in_array($page_id, $operator_pages)) {
+        if (!array_intersect(['administrator', 'td_operator'], $current_user->roles)) {
+            wp_redirect(home_url('/403-forbidden/'));
+            exit;
+        }
+    }
 });
 
 // Conditionally hide/show Login and Logout menu items based on user login status
