@@ -1,8 +1,8 @@
 {
   "version": "3.5.0",
-  "release_date": "2026-02-04",
-  "status": "ready_to_deploy",
-  "description": "Security hardening: Block /wp-admin/ for non-Administrator roles + Custom page access control + Manager/Operator Actions pages + Phase 0 policy documentation + Environment configuration + Upload handler",
+  "release_date": "2026-01-26",
+  "status": "completed",
+  "description": "Security hardening: Block /wp-admin/ for non-Administrator roles (PENG-053) + Phase 0 policy documentation + Environment configuration + Upload handler",
   "steps": [
     {
       "type": "deploy_code",
@@ -63,7 +63,7 @@
       "task_id": "COPS-001",
       "title": "CV Lifecycle Policy",
       "description": "Define CV storage, archiving, and deletion policies for GDPR compliance",
-      "implementation": "Documents/deliverables/COPS-001-CV-LIFECYCLE-POLICY.md",
+      "implementation": "docs/COPS-001-CV-LIFECYCLE-POLICY.md",
       "documentation": "docs/COPS-001-CV-LIFECYCLE-POLICY.md",
       "completed": "2026-01-25"
     },
@@ -82,38 +82,6 @@
       "implementation": "wp-content/plugins/forminator-upload-handler/",
       "completed": "2026-01-26",
       "notes": "Activated on production - handles CV uploads to /uploads/people/"
-    },
-    {
-      "task_id": "PAGE-ACCESS",
-      "title": "Custom Page Access Control (template_redirect hook)",
-      "description": "Role-based page access control using custom template_redirect hook - Manager/Operator pages restricted by role",
-      "implementation": "wp-content/themes/blocksy-child/functions.php",
-      "completed": "2026-02-02",
-      "notes": "Manager pages (386, 469, 670) for td_manager/administrator only. Operator pages (299, 666) for td_operator/administrator only. Will migrate to plugin in v3.7.0+."
-    },
-    {
-      "task_id": "PAGE-SPLIT",
-      "title": "Manager Actions Page (User Request Management)",
-      "description": "Split Manager Admin into Admin (dashboard) and Actions (user request approvals) pages",
-      "implementation": "Page ID 670 at /managers/actions/ with user_requests_table shortcodes",
-      "completed": "2026-02-01",
-      "notes": "Track Actions page - extensible for future activity types beyond user registrations"
-    },
-    {
-      "task_id": "PAGE-OPS",
-      "title": "Operator Actions Page with Data Filtering",
-      "description": "Operator equivalent of Manager Actions with filtered data (public roles only, assigned-to-me logic)",
-      "implementation": "Page ID 666 at /operators/actions/ with [operator_requests_table] shortcode",
-      "completed": "2026-02-04",
-      "notes": "Data filtering: Operators see only Candidate/Employer requests, only unassigned OR assigned to them. Uses operator_requests_table shortcode (v1.2.0)"
-    },
-    {
-      "task_id": "SHORTCODE-SPLIT",
-      "title": "Manager/Operator Separate Shortcodes",
-      "description": "Split shortcode logic - manager_requests_table (no filtering) and operator_requests_table (role + assignment filtering)",
-      "implementation": "wp-content/mu-plugins/user-requests-display.php v1.2.0",
-      "completed": "2026-02-04",
-      "notes": "Reduces complexity by separating Manager (all data) and Operator (filtered) logic into dedicated shortcodes"
     }
   ],
   "verification": {
@@ -149,22 +117,6 @@
       {
         "description": "Test file upload moves to correct directory",
         "command": "Submit Person Registration Form (ID 80) with CV → Check /wp-content/uploads/people/ for uploaded file"
-      },
-      {
-        "description": "Test Manager page access control",
-        "command": "Login as Operator → Try to access /managers/admin/ → Should see 403/Access Denied"
-      },
-      {
-        "description": "Test Operator page access control",
-        "command": "Login as Manager → Access /managers/admin/ → Should work. Login as Operator → Access /operators/actions/ → Should work"
-      },
-      {
-        "description": "Verify data filtering for Operators",
-        "command": "Login as Operator → Visit /operators/actions/ → Should see ONLY Candidate/Employer requests (no Scout/Operator/Manager requests)"
-      },
-      {
-        "description": "Verify assignment filtering for Operators",
-        "command": "Login as Operator → Should see unassigned requests + requests assigned to self (not others' assignments)"
       }
     ]
   },
