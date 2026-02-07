@@ -1,0 +1,46 @@
+<!-- PAT-ALERT-01 — Inline Status/Alert Component -->
+<!-- This pattern provides 4 alert variants: success, error, info, warning -->
+
+<!-- SUCCESS ALERT -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"margin":{"bottom":"var:preset|spacing|40"}},"border":{"left":{"color":"var:preset|color|success","width":"4px"},"radius":"4px"}},"backgroundColor":"gray-off-white","layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-gray-off-white-background-color has-background" style="border-radius:4px;border-left-color:var(--wp--preset--color--success);border-left-width:4px;margin-bottom:var(--wp--preset--spacing--40);padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+    
+    <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"color":{"text":"#28A745"}}} -->
+    <p class="has-text-color" style="color:#28A745;font-size:16px"><strong>✓ Success:</strong> Your changes have been saved successfully.</p>
+    <!-- /wp:paragraph -->
+    
+</div>
+<!-- /wp:group -->
+
+<!-- ERROR ALERT -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"margin":{"bottom":"var:preset|spacing|40"}},"border":{"left":{"color":"var:preset|color|error","width":"4px"},"radius":"4px"}},"backgroundColor":"gray-off-white","layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-gray-off-white-background-color has-background" style="border-radius:4px;border-left-color:var(--wp--preset--color--error);border-left-width:4px;margin-bottom:var(--wp--preset--spacing--40);padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+    
+    <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"color":{"text":"#DC3545"}}} -->
+    <p class="has-text-color" style="color:#DC3545;font-size:16px"><strong>✕ Error:</strong> Something went wrong. Please try again.</p>
+    <!-- /wp:paragraph -->
+    
+</div>
+<!-- /wp:group -->
+
+<!-- INFO ALERT -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"margin":{"bottom":"var:preset|spacing|40"}},"border":{"left":{"color":"var:preset|color|info","width":"4px"},"radius":"4px"}},"backgroundColor":"gray-off-white","layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-gray-off-white-background-color has-background" style="border-radius:4px;border-left-color:var(--wp--preset--color--info);border-left-width:4px;margin-bottom:var(--wp--preset--spacing--40);padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+    
+    <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"color":{"text":"#17A2B8"}}} -->
+    <p class="has-text-color" style="color:#17A2B8;font-size:16px"><strong>ℹ Info:</strong> Your account will be reviewed within 2 business days.</p>
+    <!-- /wp:paragraph -->
+    
+</div>
+<!-- /wp:group -->
+
+<!-- WARNING ALERT -->
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|30","right":"var:preset|spacing|30","bottom":"var:preset|spacing|30","left":"var:preset|spacing|30"},"margin":{"bottom":"var:preset|spacing|40"}},"border":{"left":{"color":"var:preset|color|warning","width":"4px"},"radius":"4px"}},"backgroundColor":"gray-off-white","layout":{"type":"constrained"}} -->
+<div class="wp-block-group has-gray-off-white-background-color has-background" style="border-radius:4px;border-left-color:var(--wp--preset--color--warning);border-left-width:4px;margin-bottom:var(--wp--preset--spacing--40);padding-top:var(--wp--preset--spacing--30);padding-right:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30);padding-left:var(--wp--preset--spacing--30)">
+    
+    <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"},"color":{"text":"#856404"}}} -->
+    <p class="has-text-color" style="color:#856404;font-size:16px"><strong>⚠ Warning:</strong> Your session will expire in 5 minutes.</p>
+    <!-- /wp:paragraph -->
+    
+</div>
+<!-- /wp:group -->
