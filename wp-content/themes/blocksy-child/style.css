@@ -188,7 +188,8 @@ input[type="submit"],
     font-family: var(--font-family-primary);
     font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    padding: 14px 36px;
+    padding: 14px 48px;
+    min-width: 180px;
     border-radius: var(--border-radius-button);
     border: none;
     cursor: pointer;
