@@ -43,7 +43,7 @@
 
 **Duration:** 2 calendar days (4 hours work)  
 **Started:** February 7, 2026  
-**Status:** ✅ CSS variables created
+**Status:** ✅ CSS variables created, GenerateBlocks installed
 
 **Tasks:**
 - [x] Extract colors from existing pages
@@ -51,13 +51,18 @@
 - [x] Define typography scale
 - [x] Define spacing system
 - [x] Define component styles (buttons, forms, cards)
+- [x] Install GenerateBlocks plugin (v2.2.0)
+- [x] Update button border radius to 50px (pill shape)
 - [ ] Test CSS variables on existing pages
 - [ ] Document design system usage
+- [ ] Create Forminator CSS overrides
 
 **Deliverables:**
-- ✅ `wp-content/themes/blocksy-child/style.css` - CSS variables
+- ✅ `wp-content/themes/blocksy-child/style.css` - CSS variables with design tokens
+- ✅ GenerateBlocks plugin installed and activated
 - ⏳ Updated `docs/DESIGN-SYSTEM.md` with implementation details
 - ⏳ Test page using new design system
+- ⏳ `wp-content/themes/blocksy-child/forminator-overrides.css` - Form styling
 
 ---
 
@@ -67,19 +72,25 @@
 **Starts:** February 9, 2026  
 **Status:** Not Started
 
+**Pattern Naming Convention:** `PAT-<Category>-<Number> — <Name>`
+
 **Tasks:**
-- [ ] Create hero section pattern (matching Elementor hero)
-- [ ] Create card grid pattern (3-column, 2-column)
-- [ ] Create icon box pattern
-- [ ] Create tab interface pattern (for Manager Actions)
-- [ ] Create data table pattern (for user requests)
-- [ ] Create CTA section pattern
-- [ ] Test patterns in Gutenberg editor
+- [ ] **PAT-HERO-01** — Hero section with single CTA (matching Elementor hero)
+- [ ] **PAT-HIW-01** — How It Works (3-step grid)
+- [ ] **PAT-SPEC-01** — Specialties Grid (4-6 card grid)
+- [ ] **PAT-CARD-01** — Icon box/feature card pattern
+- [ ] **PAT-CTA-01** — CTA band (primary)
+- [ ] **PAT-CTA-02** — CTA band with SLA note
+- [ ] **PAT-LOGIN-01** — Branded login panel (WPUM integration)
+- [ ] **PAT-ALERT-01** — Inline status/alert (success/warning/error/info)
+- [ ] **PAT-LEGAL-01** — Legal page header (title + last updated date)
+- [ ] Document all patterns in pattern library
 
 **Deliverables:**
-- Block patterns in child theme `functions.php`
-- Pattern library documentation
+- Block patterns registered in child theme `functions.php`
+- Pattern library documentation (`docs/PATTERN-LIBRARY.md`)
 - Screenshots of each pattern
+- Branded login page template using PAT-LOGIN-01
 
 ---
 
@@ -279,7 +290,34 @@
 
 ---
 
-## Risk Management
+## Governance Rules (Do Not Break)
+
+### Pattern & Design Standards
+- **Pattern naming:** Use `PAT-<Category>-<Number> — <Name>` convention
+- **Block library:** Only GenerateBlocks (no additional block plugins)
+- **Page construction:** All new UI must be composed from patterns
+- **Styling:** Only global tokens define colors/typography/button sizes
+- **No overrides:** No per-page style overrides without promoting into tokens/patterns
+
+### Plugin Management
+- **One theme:** Blocksy (base) + blocksy-child (customizations)
+- **One block library:** GenerateBlocks only
+- **One cache plugin:** LiteSpeed Cache
+- **One form plugin:** Forminator (with CSS overrides)
+- **Quarterly audit:** Remove unused plugins
+
+### Performance Standards
+- **No heavy libraries:** No background videos, heavy sliders, animation libraries
+- **Image optimization:** Responsive (srcset), compressed, lazy-loaded
+- **Shallow DOM:** Avoid excessive nested containers
+- **Mobile-first:** Content readable at 360px width, no horizontal scroll
+
+### Acceptance Criteria (All Patterns)
+- **Typography:** Uses global presets only
+- **Colors:** Uses palette tokens only
+- **Spacing:** Uses documented spacing scale
+- **Buttons:** Use global button style (50px border-radius)
+- **Accessibility:** Sufficient contrast, visible focus states, logical heading hierarchy
 
 ### Identified Risks
 

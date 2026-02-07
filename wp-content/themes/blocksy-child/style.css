@@ -18,13 +18,12 @@ Description: Custom child theme with unified design system for TalenDelight
     /* Primary Colors */
     --color-navy: #063970;              /* Hero backgrounds, headings, primary button text */
     --color-blue: #3498DB;              /* Icons, links, accents, hover states */
-    --color-white: #FFFFFF;             /* Text on dark backgrounds, card backgrounds */
     
     /* Neutral Colors */
     --color-gray-dark: #333333;         /* Primary body text, form labels */
     --color-gray-medium: #898989;       /* Descriptions, secondary text */
     --color-gray-light: #ECECEC;        /* Section backgrounds, borders */
-    --color-gray-off-white: #F8F9FA;    /* Alternate section backgrounds */
+    --color-gray-off-white: #F8F9FA;    /* Primary background color, text on dark backgrounds, cards, form inputs */
     --color-near-black: #1A1A1A;        /* Dark text on light backgrounds */
     
     /* Semantic Colors */
@@ -95,10 +94,11 @@ Description: Custom child theme with unified design system for TalenDelight
     
     /* === BORDERS === */
     
-    --border-radius-sm: 4px;            /* Small elements */
-    --border-radius-md: 8px;            /* Cards, buttons */
-    --border-radius-lg: 12px;           /* Large containers */
-    --border-radius-full: 9999px;       /* Pills, circular */
+    --border-radius-sm: 4px;            /* Small elements, form inputs */
+    --border-radius-md: 12px;           /* Cards, large containers */
+    --border-radius-lg: 24px;           /* Extra large containers */
+    --border-radius-button: 50px;       /* Buttons (pill shape) */
+    --border-radius-full: 9999px;       /* Circular elements */
     
     --border-width: 1px;                /* Standard border */
     --border-width-thick: 2px;          /* Emphasis borders */
@@ -188,8 +188,8 @@ input[type="submit"],
     font-family: var(--font-family-primary);
     font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    padding: 12px 32px;
-    border-radius: var(--border-radius-md);
+    padding: 14px 36px;
+    border-radius: var(--border-radius-button);
     border: none;
     cursor: pointer;
     transition: all var(--transition-base);
@@ -200,7 +200,7 @@ input[type="submit"],
 /* Primary Button */
 .wp-block-button.is-style-fill .wp-block-button__link,
 .button-primary {
-    background-color: var(--color-white);
+    background-color: var(--color-gray-off-white);
     color: var(--color-navy);
 }
 
@@ -214,12 +214,13 @@ input[type="submit"],
 .wp-block-button.is-style-outline .wp-block-button__link,
 .button-secondary {
     background-color: var(--color-navy);
-    color: var(--color-white);
+    color: var(--color-gray-off-white);
 }
 
 .wp-block-button.is-style-outline .wp-block-button__link:hover,
 .button-secondary:hover {
     background-color: var(--color-blue);
+    color: var(--color-gray-off-white);
 }
 
 /* Form Styles */
@@ -235,7 +236,7 @@ select {
     padding: 12px 16px;
     border: var(--border-width) solid var(--color-gray-light);
     border-radius: var(--border-radius-sm);
-    background-color: var(--color-white);
+    background-color: var(--color-gray-off-white);
     color: var(--color-gray-dark);
     transition: border-color var(--transition-fast);
 }
@@ -265,8 +266,8 @@ abbr[title="required"] {
 /* Cards */
 .wp-block-group.is-style-card,
 .card {
-    background-color: var(--color-white);
-    border-radius: var(--border-radius-lg);
+    background-color: var(--color-gray-off-white);
+    border-radius: var(--border-radius-md);
     padding: var(--container-padding);
     box-shadow: var(--shadow-md);
     transition: box-shadow var(--transition-base);
@@ -282,7 +283,7 @@ abbr[title="required"] {
 .section-hero,
 .section-cta {
     background-color: var(--color-navy);
-    color: var(--color-white);
+    color: var(--color-gray-off-white);
     padding: var(--section-padding-y) var(--section-padding-x);
 }
 
@@ -295,12 +296,12 @@ abbr[title="required"] {
 .section-cta h1,
 .section-cta h2,
 .section-cta h3 {
-    color: var(--color-white);
+    color: var(--color-gray-off-white);
 }
 
 /* Alternating Section Backgrounds */
 .section-light {
-    background-color: var(--color-white);
+    background-color: var(--color-gray-off-white);
 }
 
 .section-gray {
