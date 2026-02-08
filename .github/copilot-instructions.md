@@ -23,10 +23,12 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Directory Structure:**
 - **[infra/dev/](infra/dev/)** - Podman Compose config for local development environment
+- **[infra/shared/scripts/](infra/shared/scripts/)** - Reusable automation scripts (backup, restore, verify, deployment)
 - **[wp-content/](wp-content/)** - WordPress content (plugins, themes, uploads) - root level for Hostinger deployment
 - **[config/](config/)** - Dev-specific configurations (wp-config.php, .htaccess, PHP settings)
 - **[docs/](docs/)** - Project documentation (DATABASE, DEPLOYMENT, SECURITY, VERSION-HISTORY guides)
-- **[tmp/](tmp/)** - Sensitive data and manual SQL imports (not tracked in git)
+- **[tmp/](tmp/)** - Temporary working directory (not tracked in git, clean regularly)
+- **[restore/](restore/)** - Backup storage (backups/, pages/, assets/)
 
 **Version Management:**
 - See [docs/VERSION-HISTORY.md](docs/VERSION-HISTORY.md) for complete version history and semantic versioning approach
@@ -69,10 +71,43 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 **Deployment Strategy:**
 - **Development**: Docker/Podman containers on local machine
 - **Production**: Hostinger shared hosting with Git auto-deployment on push to `main` branch
+- **Disaster Recovery**: Automated backup/restore system - see [DISASTER-RECOVERY-PLAN.md](docs/DISASTER-RECOVERY-PLAN.md)
 
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
 **Active theme**: Blocksy (primary)
+Action Dispatcher (Central Command Registry)
 
+**Use `wp-action.ps1` as the main entry point for all WordPress operations:**
+
+```powershell
+# Main dispatcher - maps actions to implementation scripts
+pwsh infra/shared/scripts/wp-action.ps1 <action> [arguments]
+
+# Available actions:
+# - backup      → backup-production.ps1 (create timestamped backup)
+# - verify      → verify-production.ps1 (check production state)
+# - restore     → restore-production.ps1 (restore from backup)
+# - export-elementor → export-elementor-pages.ps1 (export Elementor pages)
+# - deploy      → show deployment workflow
+# - help        → show help for any action
+
+# Examples:
+pwsh infra/shared/scripts/wp-action.ps1 backup
+pwsh infra/shared/scripts/wp-action.ps1 verify
+pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true
+pwsh infra/shared/scripts/wp-action.ps1 help backup
+```
+
+**Why use wp-action.ps1:**
+- ✅ Single entry point for all operations
+- ✅ Consistent interface across all scripts
+- ✅ Built-in help system
+- ✅ Action registry prevents script name confusion
+- ✅ Forwards all arguments to underlying scripts
+
+**DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+
+## 
 ## Critical Developer Workflows
 
 ### Starting the Development Environment
@@ -153,7 +188,47 @@ Dev compose mounts `wp-content/` from repository root into container:
 ### Git Deployment Strategy
 
 Repository root contains only `wp-content/` for production deployment:
-- Hostinger's Git integration monitors `main` branch
+- Hostinger's Git integr & Disaster Recovery
+
+### Standard Deployment Workflow
+
+**CRITICAL: Always follow this sequence:**
+
+```powershell
+# 1. BACKUP (MANDATORY - before deployment)
+pwsh infra/shared/scripts/wp-action.ps1 backup
+
+# 2. DEPLOY (push to production)
+git checkout main && git merge develop --no-edit && git push origin main
+# Wait 30 seconds for Hostinger auto-deployment
+
+# 3. VERIFY (MANDATORY - after deployment)
+pwsh infra/shared/scripts/wp-action.ps1 verify
+
+# 4. RESTORE (if verification fails)
+pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true
+```
+
+### Disaster Recovery System
+
+**When production has issues (pages missing, site broken):**
+
+1. **Immediate Response**: See [DISASTER-RECOVERY-PLAN.md](docs/DISASTER-RECOVERY-PLAN.md) for incident-specific procedures
+2. **Quick Restore**: Use [BACKUP-RESTORE-QUICKSTART.md](docs/BACKUP-RESTORE-QUICKSTART.md) for fast recovery
+3. **Command Reference**: [QUICK-REFERENCE-DEPLOYMENT.md](docs/QUICK-REFERENCE-DEPLOYMENT.md) for copy-paste commands
+
+**Available Recovery Scripts:**
+- `backup-production.ps1` - Create timestamped backup (pages, options, theme, patterns, database)
+- `verify-production.ps1` - Check production state (18+ validation checks)
+- `restore-production.ps1` - Restore from any backup timestamp
+
+**Backup Schedule:**
+- Before every deployment (MANDATORY)
+- Daily at 02:00 UTC (automated via Task Scheduler)
+- Weekly with database (Sunday 02:00 UTC)
+- Retention: Last 10 backups (configurable)
+
+### Production Detailsation monitors `main` branch
 - Auto-deploys `wp-content/` to `public_html/wp-content/` on push
 - Excludes dev-only files via [.hostingerignore](.hostingerignore): `infra/`, `docs/`, `config/`, `tmp/`, `.github/`
 - Hostinger manages WordPress core, `wp-config.php`, and server configuration

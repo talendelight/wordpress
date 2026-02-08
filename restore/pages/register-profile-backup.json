@@ -1,0 +1,149 @@
+array (
+  0 => 
+  array (
+    'id' => '4c7ace5f',
+    'elType' => 'container',
+    'settings' => 
+    array (
+    ),
+    'elements' => 
+    array (
+      0 => 
+      array (
+        'id' => '3811dbe5',
+        'elType' => 'widget',
+        'settings' => 
+        array (
+          'editor' => '<!-- wp:forminator/forms {"module_id":"80"} -->
+<div class="forminator-guttenberg">[forminator_form id="364"]</div>
+<!-- /wp:forminator/forms --><!-- wp:paragraph -->
+<p>-á</p>
+<!-- /wp:paragraph -->',
+        ),
+        'elements' => 
+        array (
+        ),
+        'widgetType' => 'text-editor',
+      ),
+    ),
+    'isInner' => false,
+  ),
+  1 => 
+  array (
+    'id' => 'd4a1041',
+    'elType' => 'container',
+    'settings' => 
+    array (
+      'flex_direction' => 'column',
+    ),
+    'elements' => 
+    array (
+      0 => 
+      array (
+        'id' => '6a0ea3a',
+        'elType' => 'container',
+        'settings' => 
+        array (
+          'content_width' => 'full',
+          'background_background' => 'classic',
+          'background_color' => '#ECECEC',
+          '_flex_align_self' => 'center',
+        ),
+        'elements' => 
+        array (
+          0 => 
+          array (
+            'id' => 'f2aeae8',
+            'elType' => 'widget',
+            'settings' => 
+            array (
+              'view' => 'inline',
+              'icon_list' => 
+              array (
+                0 => 
+                array (
+                  'text' => 'GDPR Compliant',
+                  'selected_icon' => 
+                  array (
+                    'value' => 'fas fa-check-circle',
+                    'library' => 'fa-solid',
+                  ),
+                  '_id' => '9a89f04',
+                ),
+                1 => 
+                array (
+                  'text' => 'Secure & Reliable',
+                  'selected_icon' => 
+                  array (
+                    'value' => 'fas fa-lock',
+                    'library' => 'fa-solid',
+                  ),
+                  '_id' => '5a7d4e9',
+                ),
+                2 => 
+                array (
+                  'text' => 'Equal Opportunity',
+                  'selected_icon' => 
+                  array (
+                    'value' => 'fas fa-balance-scale',
+                    'library' => 'fa-solid',
+                  ),
+                  '_id' => 'c3bb0c0',
+                ),
+                3 => 
+                array (
+                  '_id' => '424c449',
+                  'text' => 'Serving EU Markets',
+                  'selected_icon' => 
+                  array (
+                    'value' => 'fas fa-flag-checkered',
+                    'library' => 'fa-solid',
+                  ),
+                ),
+              ),
+              'space_between' => 
+              array (
+                'unit' => 'px',
+                'size' => 30,
+                'sizes' => 
+                array (
+                ),
+              ),
+              'icon_align' => 'center',
+              'icon_color' => '#3498DB',
+              'icon_size' => 
+              array (
+                'unit' => 'px',
+                'size' => 24,
+                'sizes' => 
+                array (
+                ),
+              ),
+              'icon_self_align' => 'center',
+              'icon_typography_typography' => 'custom',
+              'icon_typography_font_size' => 
+              array (
+                'unit' => 'px',
+                'size' => 16,
+                'sizes' => 
+                array (
+                ),
+              ),
+              'text_color' => '#898989',
+              '_flex_align_self' => 'center',
+              '_background_background' => 'classic',
+              '_background_color' => '#ECECEC',
+            ),
+            'elements' => 
+            array (
+            ),
+            'widgetType' => 'icon-list',
+          ),
+        ),
+        'isInner' => true,
+      ),
+    ),
+    'isInner' => false,
+  ),
+)
+

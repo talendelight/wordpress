@@ -1,0 +1,115 @@
+﻿podman : Notice: Function _load_textdomain_just_in_time was called 
+<strong>incorrectly</strong>. Translation loading for the 
+<code>wp-user-manager</code> domain was triggered too early. This is 
+usually an indicator for some code in the plugin or theme running too 
+early. Translations should be loaded at the <code>init</code> action or 
+later. Please see <a href="https://developer.wordpress.org/advanced-administ
+ration/debug/debug-wordpress/">Debugging in WordPress</a> for more 
+information. (This message was added in version 6.7.0.) in 
+/var/www/html/wp-includes/functions.php on line 6131
+At line:1 char:1
++ podman exec wp bash -c "wp post meta get 10 _elementor_data --allow-r ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Notice: Functio...hp on line 6 
+   131:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Deprecated: Return type of 
+WPUM\Carbon_Fields\Pimple\Container::offsetExists($id) should either be 
+compatible with ArrayAccess::offsetExists(mixed $offset): bool, or the 
+#[\ReturnTypeWillChange] attribute should be used to temporarily suppress 
+the notice in /var/www/html/wp-content/plugins/wp-user-manager/vendor-dist/h
+tmlburger/carbon-fields/core/Pimple/Container.php on line 111
+Deprecated: Return type of 
+WPUM\Carbon_Fields\Pimple\Container::offsetGet($id) should either be 
+compatible with ArrayAccess::offsetGet(mixed $offset): mixed, or the 
+#[\ReturnTypeWillChange] attribute should be used to temporarily suppress 
+the notice in /var/www/html/wp-content/plugins/wp-user-manager/vendor-dist/h
+tmlburger/carbon-fields/core/Pimple/Container.php on line 87
+Deprecated: Return type of 
+WPUM\Carbon_Fields\Pimple\Container::offsetSet($id, $value) should either 
+be compatible with ArrayAccess::offsetSet(mixed $offset, mixed $value): 
+void, or the #[\ReturnTypeWillChange] attribute should be used to 
+temporarily suppress the notice in /var/www/html/wp-content/plugins/wp-user-
+manager/vendor-dist/htmlburger/carbon-fields/core/Pimple/Container.php on 
+line 70
+Deprecated: Return type of 
+WPUM\Carbon_Fields\Pimple\Container::offsetUnset($id) should either be 
+compatible with ArrayAccess::offsetUnset(mixed $offset): void, or the 
+#[\ReturnTypeWillChange] attribute should be used to temporarily suppress 
+the notice in /var/www/html/wp-content/plugins/wp-user-manager/vendor-dist/h
+tmlburger/carbon-fields/core/Pimple/Container.php on line 120
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Field.php on line 29
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Container.php on line 29
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$id is deprecated in /var/
+www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fi
+elds/core/Container/Container.php on line 188
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$type is deprecated in /va
+r/www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-
+fields/core/Container/Container.php on line 190
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Datastore/Datastore.php on line 75
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Container.php on line 29
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$id is deprecated in /var/
+www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fi
+elds/core/Container/Container.php on line 188
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$type is deprecated in /va
+r/www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-
+fields/core/Container/Container.php on line 190
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Datastore/Datastore.php on line 75
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Field.php on line 29
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Container.php on line 29
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$id is deprecated in /var/
+www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fi
+elds/core/Container/Container.php on line 188
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\User_Meta_Container::$type is deprecated in /va
+r/www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-
+fields/core/Container/Container.php on line 190
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Datastore/Datastore.php on line 75
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Field.php on line 29
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Container.php on line 29
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\Nav_Menu_Item_Container::$id is deprecated in /
+var/www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbo
+n-fields/core/Container/Container.php on line 188
+Deprecated: Creation of dynamic property 
+WPUM\Carbon_Fields\Container\Nav_Menu_Item_Container::$type is deprecated 
+in /var/www/html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/c
+arbon-fields/core/Container/Container.php on line 190
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Datastore/Datastore.php on line 75
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Container/Nav_Menu_Item_Container.php on line 36
+Deprecated: Calling get_class() without arguments is deprecated in /var/www/
+html/wp-content/plugins/wp-user-manager/vendor-dist/htmlburger/carbon-fields
+/core/Field.php on line 29
+[{"id":"29df104","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#FFFFFF"},"elements":[{"id":"157713cf","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#063970","padding":{"unit":"px","top":"80","right":"20","bottom":"80","left":"20","isLinked":false},"content_width":"full"},"elements":[{"id":"2efe1f60","elType":"widget","settings":{"title":"Admin Operations","header_size":"h1","align":"center","typography_typography":"custom","typography_font_size":{"unit":"px","size":48,"sizes":[]},"typography_font_weight":"700","title_color":"#FFFFFF","typography_font_size_mobile":{"unit":"px","size":36,"sizes":[]}},"elements":[],"widgetType":"heading"},{"id":"4214f7a3","elType":"widget","settings":{"title":"Oversee team operations, monitor performance, and maintain strategic oversight<span style=\"font-variant-ligatures: inherit; font-variant-caps: inherit;\">.<\/span><span style=\"font-variant-ligatures: inherit; font-variant-caps: inherit;\"><\/span><br>","header_size":"h3","align":"center","typography_typography":"custom","typography_font_size":{"unit":"px","size":16,"sizes":[]},"typography_font_weight":"400","title_color":"#FFFFFF"},"elements":[],"widgetType":"heading"},{"id":"1c61591c","elType":"widget","settings":{"text":"View Help","link":{"url":"#reports","is_external":"","nofollow":"","custom_attributes":""},"align":"center","button_text_color":"#063970","button_box_shadow_box_shadow_type":"yes","button_box_shadow_box_shadow":{"horizontal":0,"vertical":0,"blur":10,"spread":0,"color":"#3498DB"},"border_radius":{"unit":"px","top":"50","right":"50","bottom":"50","left":"50","isLinked":true},"background_background":"gradient","background_color":"#FFFFFF","background_color_b":"#FFFFFF","_background_background":"classic","__globals__":{"background_color_b":""},"text_shadow_text_shadow_type":"yes"},"elements":[],"widgetType":"button"}],"isInner":true}],"isInner":false},{"id":"3a245341","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#FFFFFF"},"elements":[{"id":"70df92e8","elType":"container","settings":{"flex_direction":"row","flex_wrap":"wrap","flex_gap":{"unit":"px","size":0,"column":"0","row":"0"},"content_width":"full","background_background":"classic"},"elements":[{"id":"7b1d4e54","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":"50"},"background_background":"classic"},"elements":[{"id":"2bee3e5d","elType":"widget","settings":{"selected_icon":{"value":"fas fa-users","library":"fa-solid"},"title_text":"User Request Approvals","description_text":"Review and approve pending user registrations and profile updates","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#candidates","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"}],"isInner":true},{"id":"2020ddd8","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":"50"},"background_background":"classic","background_color":"#ECECEC"},"elements":[{"id":"1c7727a2","elType":"widget","settings":{"selected_icon":{"value":"fas fa-user-cog","library":"fa-solid"},"title_text":"User Management","description_text":"Manage user accounts, roles, and access permissions","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#employers","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"}],"isInner":true},{"id":"47e937cd","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":"50"},"background_background":"classic","background_color":"#ECECEC"},"elements":[{"id":"2e4ef182","elType":"widget","settings":{"selected_icon":{"value":"fas fa-cog","library":"fa-solid"},"title_text":"System Settings","description_text":"Configure platform settings and system preferences","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#scouts","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"}],"isInner":true},{"id":"2d964dc9","elType":"widget","settings":{"selected_icon":{"value":"fas fa-history","library":"fa-solid"},"title_text":"Audit Logs","description_text":"View complete system activity and change history","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#operators","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"},{"id":"68606303","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":"50"},"background_background":"classic"},"elements":[{"id":"51979031","elType":"widget","settings":{"selected_icon":{"value":"fas fa-user-shield","library":"fa-solid"},"title_text":"Role Management","description_text":"View rankings, track metrics","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#performance","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"}],"isInner":true},{"id":"d00c646","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":"50"},"background_background":"classic","background_color":"#ECECEC"},"elements":[{"id":"7e8b0a4a","elType":"widget","settings":{"selected_icon":{"value":"fas fa-tachometer-alt","library":"fa-solid"},"title_text":"Platform Monitoring","description_text":"Manage rates, payments, commissions, etc.","primary_color":"#3498DB","title_color":"#063970","description_color":"#898989","_padding":{"unit":"px","top":"30","right":"30","bottom":"30","left":"30","isLinked":true},"_flex_size":"grow","_background_background":"classic","_background_color":"#FFFFFF","link":{"url":"#finance","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"icon-box"}],"isInner":true}],"isInner":true}],"isInner":false},{"id":"18e6cfa0","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#FFFFFF"},"elements":[{"id":"4b0f3917","elType":"container","settings":{"flex_direction":"column","content_width":"full","width":{"unit":"%","size":100},"background_background":"classic","background_color":"#F8F9FA"},"elements":[{"id":"22573cf5","elType":"container","settings":{"content_width":"full","background_background":"classic","background_color":"#F8F9FA","padding":{"unit":"px","top":"60","right":"20","bottom":"60","left":"20","isLinked":false},"_element_id":"admin-content-area"},"elements":[{"id":"280240e5","elType":"widget","settings":{"title":"User Request Approvals","align":"center","typography_typography":"custom","typography_font_size":{"unit":"px","size":32,"sizes":[]},"typography_font_weight":"700","title_color":"#063970"},"elements":[],"widgetType":"heading"},{"id":"11780446","elType":"widget","settings":{"title":"Requests with last updated in last 90 days<span style=\"font-variant-ligatures: inherit; font-variant-caps: inherit;\">.<\/span>","header_size":"h3","align":"center","typography_typography":"custom","typography_font_size":{"unit":"px","size":16,"sizes":[]},"typography_font_weight":"400","title_color":"#898989"},"elements":[],"widgetType":"heading"},{"id":"c06d106","elType":"container","settings":{"content_width":"full","background_background":"classic","background_color":"#FFFFFF","_element_id":"user-requests"},"elements":[{"id":"4ac78bee","elType":"widget","widgetType":"nested-tabs","settings":{"tabs":[{"tab_title":"Submitted","_id":"a649d1e"},{"tab_title":"Approved","_id":"32bc06d"},{"tab_title":"Rejected","_id":"e0624ae"},{"_id":"804b9d7","tab_title":"All"}]},"elements":[{"id":"28c6286e","elType":"container","settings":{"_title":"Tab #1","content_width":"full"},"elements":[{"id":"15a4cf52","elType":"container","settings":{"flex_direction":"column"},"elements":[{"id":"2a1a40c6","elType":"widget","settings":{"shortcode":"[user_requests_table status=\"pending\"]"},"elements":[],"widgetType":"shortcode"}],"isInner":true}],"isInner":true,"isLocked":true},{"id":"70306c8","elType":"container","settings":{"_title":"Tab #2","content_width":"full"},"elements":[{"id":"89e2c97","elType":"container","settings":{"flex_direction":"column"},"elements":[{"id":"5c63d828","elType":"widget","settings":{"shortcode":"[user_requests_table status=\"approved\" days=\"90\"]"},"elements":[],"widgetType":"shortcode"}],"isInner":true}],"isInner":true,"isLocked":true},{"id":"23a946f","elType":"container","settings":{"_title":"Tab #3","content_width":"full"},"elements":[{"id":"21fdc10c","elType":"container","settings":{"flex_direction":"column"},"elements":[{"id":"6a503403","elType":"widget","settings":{"shortcode":"[user_requests_table status=\"rejected\" days=\"90\"]"},"elements":[],"widgetType":"shortcode"}],"isInner":true}],"isInner":true,"isLocked":true},{"id":"6945997b","elType":"container","settings":{"_title":"Tab #4"},"elements":[{"id":"1d8fcbe","elType":"container","settings":{"flex_direction":"column","content_width":"full"},"elements":[{"id":"123a7ea7","elType":"widget","settings":{"shortcode":"[user_requests_table status=\"all\" days=\"90\"]"},"elements":[],"widgetType":"shortcode"}],"isInner":true}],"isInner":true,"isLocked":true}]}],"isInner":true}],"isInner":true}],"isInner":true}],"isInner":false},{"id":"3b3636c1","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#FFFFFF"},"elements":[{"id":"329ea747","elType":"container","settings":{"background_background":"classic","background_color":"#063970","padding":{"unit":"px","top":"80","right":"80","bottom":"80","left":"80","isLinked":true},"content_width":"full"},"elements":[{"id":"51b5657f","elType":"widget","settings":{"title":"Need Help?","align":"center","typography_typography":"custom","title_color":"#FFFFFF","typography_font_weight":"700"},"elements":[],"widgetType":"heading"},{"id":"395f0baa","elType":"widget","settings":{"editor":"<p>Check the internal documentation for guidance on using the Manager Dashboard.<\/p>","align":"center","text_color":"#FFFFFF","_background_color":"#063970","typography_typography":"custom","typography_font_size":{"unit":"px","size":16,"sizes":[]},"typography_font_weight":"400"},"elements":[],"widgetType":"text-editor"},{"id":"1241411b","elType":"widget","settings":{"text":"View Documentation","align":"center","button_text_color":"#063970","background_background":"gradient","background_color":"#FFFFFF","background_color_b":"#FFFFFF","button_box_shadow_box_shadow_type":"yes","button_box_shadow_box_shadow":{"horizontal":0,"vertical":0,"blur":10,"spread":0,"color":"#3498DB"},"border_radius":{"unit":"px","top":"50","right":"50","bottom":"50","left":"50","isLinked":true},"_background_background":"classic","__globals__":{"background_color_b":""},"link":{"url":"#help","is_external":"","nofollow":"","custom_attributes":""}},"elements":[],"widgetType":"button"}],"isInner":true}],"isInner":false},{"id":"427b9bf4","elType":"container","settings":{"flex_direction":"column","background_background":"classic","background_color":"#FFFFFF"},"elements":[{"id":"76069864","elType":"container","settings":{"content_width":"full","background_background":"classic","background_color":"#ECECEC","_flex_align_self":"center"},"elements":[{"id":"45165bbf","elType":"widget","settings":{"view":"inline","icon_list":[{"text":"GDPR Compliant","selected_icon":{"value":"fas fa-check-circle","library":"fa-solid"},"_id":"9a89f04"},{"text":"Secure & Reliable","selected_icon":{"value":"fas fa-lock","library":"fa-solid"},"_id":"5a7d4e9"},{"text":"Equal Opportunity","selected_icon":{"value":"fas fa-balance-scale","library":"fa-solid"},"_id":"c3bb0c0"},{"_id":"424c449","text":"Serving EU Markets","selected_icon":{"value":"fas fa-flag-checkered","library":"fa-solid"}}],"space_between":{"unit":"px","size":30,"sizes":[]},"icon_align":"center","icon_color":"#3498DB","icon_size":{"unit":"px","size":24,"sizes":[]},"icon_self_align":"center","icon_typography_typography":"custom","icon_typography_font_size":{"unit":"px","size":16,"sizes":[]},"text_color":"#898989","_flex_align_self":"center","_background_background":"classic","_background_color":"#ECECEC"},"elements":[],"widgetType":"icon-list"}],"isInner":true}],"isInner":false}]
+
+
