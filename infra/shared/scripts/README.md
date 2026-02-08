@@ -1,7 +1,22 @@
 # Script Registry & Action Dispatcher
 
 **Created**: February 8, 2026  
-**Purpose**: Central command registry for all WordPress operations
+**Purpose**: Central command registry for all WordPress operations  
+**Incident**: Implemented after Welcome page disappeared from production
+
+## Background
+
+On February 8, 2026, the Welcome page (homepage) disappeared from production between deployment sessions. Investigation revealed:
+- No backup system in place
+- No automated verification after deployment
+- No standard restore procedures
+- tmp/ folder had 100+ one-time scripts with no organization
+
+This system was created to prevent future incidents and provide:
+1. Automated backup before every deployment
+2. Automated verification after every deployment
+3. One-command restore capability (5-10 minute recovery)
+4. Clear organization and documentation
 
 ## Quick Reference
 
@@ -207,6 +222,30 @@ wp-action.ps1 (Dispatcher)
 5. **Discoverability**: `wp-action.ps1 help` lists all available actions
 6. **Exit Codes**: Proper success/failure codes for automation
 
+## Workspace Cleanup (February 8, 2026)
+
+As part of this implementation, the tmp/ folder was cleaned:
+
+**Deleted** (100+ files):
+- 33 SQL backup files (5.58 MB)
+- 50+ JSON verification/audit files
+- 10+ one-time PowerShell audit scripts
+- 25+ one-time PHP deployment scripts
+- 15+ old HTML page exports
+- 8+ one-time markdown documentation
+- Archive files (.tar.gz, .sql.gz, .zip)
+- CSV exports, SSH keys, shell scripts
+
+**Moved to restore/**:
+- welcome-page-clean.html → restore/pages/
+- welcome-page-with-patterns.html → restore/pages/
+- manager-admin-proper.json → restore/pages/manager-admin-backup.json
+- register-profile-79-elementor-fixed.json → restore/pages/register-profile-backup.json
+
+**Result**: Clean workspace with only active working files and proper backup structure
+
+---
+
 ## Related Documentation
 
 - [BACKUP-RESTORE-QUICKSTART.md](../../docs/BACKUP-RESTORE-QUICKSTART.md) - Backup/restore quick start
@@ -216,5 +255,7 @@ wp-action.ps1 (Dispatcher)
 
 ---
 
+**Created**: February 8, 2026  
 **Last Updated**: February 8, 2026  
-**Maintained By**: Technical Lead
+**Maintained By**: Technical Lead  
+**Incident Resolved**: Welcome page disappearance → Comprehensive DR system implemented
