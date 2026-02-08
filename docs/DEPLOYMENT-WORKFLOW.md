@@ -198,6 +198,18 @@ wordpress/
    ```
 
 5. **GitHub Actions deploys code automatically**
+   - Deploys `wp-content/` (themes, plugins, uploads)
+   - **Assets automatically included** (theme images, logos, SVGs)
+   - Shows manual steps for Elementor/database changes
+
+6. **Deploy assets if added new ones**
+   ```bash
+   # Assets are tracked in Git and auto-deploy with code
+   # Manual upload only if needed:
+   scp -i tmp/hostinger_deploy_key -P 65002 \
+     wp-content/themes/blocksy-child/assets/images/* \
+     u909075950@45.84.205.129:~/public_html/wp-content/themes/blocksy-child/assets/images/
+   ```
    - Themes and plugins deployed via SCP
    - Cache cleared
    - Manual Elementor deployment instructions shown
@@ -264,11 +276,43 @@ Kept for reference:
 
 1. **Create release notes** - Follow `RELEASE-NOTES-PROCESS.md`
 2. **Update manifest** - Edit `infra/shared/elementor-manifest.json` with new version
-3. **Export pages** - Run export script
-4. **Create release JSON** - Copy and modify `.github/releases/v3.1.0.json`
-5. **Commit and push** - GitHub Actions handles the rest
-6. **Complete manual steps** - Follow instructions in Actions output
-7. **Verify** - Use checklist from release instructions
+3. **Backup new assets** - Copy any new images/logos to `restore/assets/`
+4. **Export pages** - Run export script
+5. **Create release JSON** - Copy and modify `.github/releases/v3.1.0.json`
+6. **Commit and push** - GitHub Actions handles the rest (includes assets)
+7. **Complete manual steps** - Follow instructions in Actions output
+8. **Verify** - Use checklist from release instructions (including asset URLs)
+
+---
+
+## Asset Restoration After Issues
+
+If assets are missing or corrupted on production:
+
+### Quick Restore from Backup
+```bash
+# Restore single asset
+scp -i tmp/hostinger_deploy_key -P 65002 \
+  restore/assets/images/eu-logo.svg \
+  u909075950@45.84.205.129:~/public_html/wp-content/themes/blocksy-child/assets/images/
+
+# Restore all assets
+scp -i tmp/hostinger_deploy_key -P 65002 -r \
+  restore/assets/images/* \
+  u909075950@45.84.205.129:~/public_html/wp-content/themes/blocksy-child/assets/images/
+```
+
+### Restore from Git
+```bash
+# On production, pull latest assets from Git
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd public_html
+git checkout main -- wp-content/themes/blocksy-child/assets/
+```
+
+**See [restore/ASSETS-RESTORE.md](../restore/ASSETS-RESTORE.md) for complete asset restoration guide.**
+
+---
 
 ### Success Metrics
 

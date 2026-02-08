@@ -99,17 +99,22 @@ docs/
 1. Code feature that needs database migration
 2. Add migration steps to RELEASE-NOTES-NEXT.md
 3. Add verification steps
-4. Create backups before major changes:
+4. Add new assets (images/logos) to theme:
+   - Place in wp-content/themes/blocksy-child/assets/images/
+   - Backup to restore/assets/images/
+   - Document in RELEASE-NOTES-NEXT.md
+5. Create backups before major changes:
    pwsh infra/dev/backup-all-local.ps1
-5. Commit both code and release notes
+6. Commit both code, assets, and release notes
 ```
 
 **Key Actions:**
 - Add each manual step as work progresses
 - Include SQL scripts, WP Admin actions, config changes
+- **Document new assets** (images, logos, fonts) and their locations
 - Document verification queries
 - Update rollback procedures
-- **Backup before major changes** (database + pages + forms)
+- **Backup before major changes** (database + pages + forms + assets)
 
 **Team Collaboration:**
 - Multiple developers can contribute
@@ -132,11 +137,12 @@ docs/
    Get-ChildItem tmp/backups/local/ | Select-Object -First 1
    Get-ChildItem tmp/backups/pages/ -Directory | Select-Object -First 1
    Get-ChildItem tmp/backups/forms/ -Directory | Select-Object -First 1
+   Get-ChildItem restore/assets/images/ | Select-Object Name  # Verify asset backups
 
-3. Review all manual steps for accuracy
+3. Review all manual steps for accuracy (including asset deployment)
 4. Test entire deployment locally (dry run)
 5. Update timing estimates
-6. Confirm all prerequisites met
+6. Confirm all prerequisites met (including new assets in restore/)
 7. Get team sign-off
 ```
 
