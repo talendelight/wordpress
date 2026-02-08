@@ -15,6 +15,53 @@ add_action('wp_enqueue_scripts', function() {
     // Font Awesome now loaded via Better Font Awesome plugin (locally hosted)
 });
 
+// Register block patterns
+add_action('init', function() {
+    // Register block pattern category
+    register_block_pattern_category('talendelight', array(
+        'label' => __('TalenDelight', 'blocksy-child')
+    ));
+    
+    // Manually register patterns (WordPress 6.9 auto-registration seems incomplete)
+    $patterns_dir = get_stylesheet_directory() . '/patterns/';
+    $pattern_files = glob($patterns_dir . '*.php');
+    
+    foreach ($pattern_files as $pattern_file) {
+        $slug = basename($pattern_file, '.php');
+        
+        // Skip if already registered (avoid duplicates)
+        if (WP_Block_Patterns_Registry::get_instance()->is_registered('blocksy-child/' . $slug)) {
+            continue;
+        }
+        
+        // Get pattern content
+        ob_start();
+        include $pattern_file;
+        $content = ob_get_clean();
+        
+        // Extract metadata from PHP doc comment
+        $headers = get_file_data($pattern_file, array(
+            'title' => 'Title',
+            'slug' => 'Slug',
+            'description' => 'Description',
+            'categories' => 'Categories',
+        ));
+        
+        // Parse categories (comma-separated string to array)
+        $categories = array_map('trim', explode(',', $headers['categories']));
+        
+        // Register the pattern
+        if (!empty($headers['title']) && !empty($content)) {
+            register_block_pattern($headers['slug'] ?: 'blocksy-child/' . $slug, array(
+                'title' => $headers['title'],
+                'description' => $headers['description'] ?: '',
+                'content' => $content,
+                'categories' => $categories,
+            ));
+        }
+    }
+}, 9);
+
 // Redirect /register/ page to custom role selection page
 add_action('template_redirect', function() {
     global $post;

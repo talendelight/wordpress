@@ -9,6 +9,38 @@
 - [ ] SSH access to production configured (`ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129`)
 - [ ] WP-CLI available on production
 - [ ] Changes tested locally at http://localhost:8080
+- [ ] Assets backed up to `restore/assets/` (if new images/logos added)
+
+---
+
+## Asset Deployment
+
+**Assets are automatically deployed via Git** - themes, images, logos in `wp-content/themes/blocksy-child/assets/`
+
+### Quick Asset Backup Before Deployment
+```powershell
+# Backup any new assets to restore folder
+Copy-Item "wp-content/themes/blocksy-child/assets/images/*" "restore/assets/images/"
+```
+
+### Manual Asset Upload (Only if Git deployment fails)
+```bash
+# Upload specific asset
+scp -i tmp/hostinger_deploy_key -P 65002 \
+  wp-content/themes/blocksy-child/assets/images/eu-logo.svg \
+  u909075950@45.84.205.129:~/public_html/wp-content/themes/blocksy-child/assets/images/
+
+# Upload all assets
+scp -i tmp/hostinger_deploy_key -P 65002 -r \
+  wp-content/themes/blocksy-child/assets/ \
+  u909075950@45.84.205.129:~/public_html/wp-content/themes/blocksy-child/
+```
+
+### Verify Assets on Production
+```bash
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "ls -lh ~/public_html/wp-content/themes/blocksy-child/assets/images/"
+```
 
 ---
 
