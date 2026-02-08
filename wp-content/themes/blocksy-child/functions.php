@@ -15,6 +15,14 @@ add_action('wp_enqueue_scripts', function() {
     // Font Awesome now loaded via Better Font Awesome plugin (locally hosted)
 });
 
+// Register block patterns
+add_action('init', function() {
+    // Register block pattern category
+    register_block_pattern_category('talendelight', array(
+        'label' => __('TalenDelight', 'blocksy-child')
+    ));
+}, 9);
+
 // Redirect /register/ page to custom role selection page
 add_action('template_redirect', function() {
     global $post;
