@@ -188,9 +188,9 @@ input[type="submit"],
     font-family: var(--font-family-primary);
     font-size: var(--font-size-body);
     font-weight: var(--font-weight-semibold);
-    padding: 14px 48px;
-    min-width: 180px;
-    border-radius: var(--border-radius-button);
+    padding: 14px 48px !important;
+    min-width: 250px !important;
+    border-radius: 50px !important;
     border: none;
     cursor: pointer;
     transition: all var(--transition-base);
@@ -317,6 +317,13 @@ abbr[title="required"] {
 body.logged-in .menu-item-13,  /* Register */
 body.logged-in .menu-item-16 { /* Login */
     display: none !important;
+}
+
+/* Equal height cards in specialty section */
+.wp-block-group.has-gray-off-white-background-color .wp-block-group.is-style-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Hide Profile and Logout when logged out */

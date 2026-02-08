@@ -11,6 +11,8 @@ add_action('wp_enqueue_scripts', function() {
         array('blocksy-child-style'),
         '1.0.0'
     );
+    
+    // Font Awesome now loaded via Better Font Awesome plugin (locally hosted)
 });
 
 // Redirect /register/ page to custom role selection page
