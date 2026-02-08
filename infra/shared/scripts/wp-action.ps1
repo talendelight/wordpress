@@ -6,9 +6,9 @@
     Central registry mapping actions to their corresponding scripts.
     Use this as the single entry point for all WordPress deployment, backup, restore, and verification operations.
 .EXAMPLE
-    pwsh infra/shared/scripts/wp-action.ps1 backup
-    pwsh infra/shared/scripts/wp-action.ps1 verify
-    pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest
+    .\wp-action.ps1 backup
+    .\wp-action.ps1 verify
+    .\wp-action.ps1 restore -BackupTimestamp latest
 #>
 
 param(
@@ -33,32 +33,29 @@ $ErrorActionPreference = "Stop"
 $SCRIPT_REGISTRY = @{
     'backup' = @{
         script = 'backup-production.ps1'
-        description = 'Create timestamped backup of production (pages, options, theme, patterns, database)'
+        description = 'Create timestamped backup of production'
         usage = 'wp-action backup [-BackupDatabase $true] [-MaxBackups 10]'
         examples = @(
             'wp-action backup',
-            'wp-action backup -BackupDatabase $true',
-            'wp-action backup -MaxBackups 20'
+            'wp-action backup -BackupDatabase $true'
         )
     }
     
     'verify' = @{
         script = 'verify-production.ps1'
-        description = 'Verify production state matches expectations (pages, patterns, assets, settings, plugins)'
+        description = 'Verify production state matches expectations'
         usage = 'wp-action verify [-Fix]'
         examples = @(
-            'wp-action verify',
-            'wp-action verify -Fix'
+            'wp-action verify'
         )
     }
     
     'restore' = @{
         script = 'restore-production.ps1'
         description = 'Restore production from timestamped backup'
-        usage = 'wp-action restore -BackupTimestamp <timestamp|latest> [-RestorePages] [-RestoreOptions] [-RestoreTheme] [-RestoreDatabase] [-DryRun]'
+        usage = 'wp-action restore -BackupTimestamp TIMESTAMP [-RestorePages] [-DryRun]'
         examples = @(
             'wp-action restore -BackupTimestamp latest -RestorePages $true',
-            'wp-action restore -BackupTimestamp 20260208-1430 -RestorePages $true -RestoreOptions $true',
             'wp-action restore -BackupTimestamp latest -DryRun'
         )
     }
@@ -73,31 +70,10 @@ $SCRIPT_REGISTRY = @{
     }
     
     'deploy' = @{
-        script = $null  # Not a script, shows deployment workflow
-        description = 'Show deployment workflow (backup → push → verify)'
+        script = $null
+        description = 'Show deployment workflow'
         usage = 'wp-action deploy'
     }
-}
-
-# Color output helpers
-function Write-Action {
-    param([string]$Message)
-    Write-Host $Message -ForegroundColor Cyan
-}
-
-function Write-Success {
-    param([string]$Message)
-    Write-Host "✓ $Message" -ForegroundColor Green
-}
-
-function Write-Warning {
-    param([string]$Message)
-    Write-Host "⚠ $Message" -ForegroundColor Yellow
-}
-
-function Write-Error {
-    param([string]$Message)
-    Write-Host "✗ $Message" -ForegroundColor Red
 }
 
 # Help display
@@ -107,7 +83,7 @@ function Show-Help {
     if ($SpecificAction -and $SCRIPT_REGISTRY.ContainsKey($SpecificAction)) {
         $info = $SCRIPT_REGISTRY[$SpecificAction]
         
-        Write-Action "`n=== Action: $SpecificAction ==="
+        Write-Host "`n=== Action: $SpecificAction ===" -ForegroundColor Cyan
         Write-Host "`nDescription:" -ForegroundColor Yellow
         Write-Host "  $($info.description)"
         
@@ -121,65 +97,44 @@ function Show-Help {
         
         Write-Host "`nExamples:" -ForegroundColor Yellow
         foreach ($example in $info.examples) {
-            Write-Host "  pwsh infra/shared/scripts/$example" -ForegroundColor Gray
+            Write-Host "  .\wp-action.ps1 $example" -ForegroundColor Gray
         }
         
     } else {
-        Write-Action "`n=== WordPress Action Dispatcher ==="
-        Write-Host "`nCentral registry for all WordPress operations`n"
-        
-        Write-Host "Available Actions:" -ForegroundColor Yellow
+        Write-Host "`n=== WordPress Action Dispatcher ===" -ForegroundColor Cyan
+        Write-Host "`nAvailable Actions:" -ForegroundColor Yellow
         
         foreach ($key in $SCRIPT_REGISTRY.Keys | Sort-Object) {
             $info = $SCRIPT_REGISTRY[$key]
             Write-Host "`n  $key" -ForegroundColor Cyan
             Write-Host "    $($info.description)" -ForegroundColor Gray
-            
-            if ($info.script) {
-                Write-Host "    Script: infra/shared/scripts/$($info.script)" -ForegroundColor DarkGray
-            }
         }
         
         Write-Host "`nUsage:" -ForegroundColor Yellow
-        Write-Host "  pwsh infra/shared/scripts/wp-action.ps1 <action> [arguments...]`n"
+        Write-Host "  .\wp-action.ps1 ACTION [arguments...]`n"
         
         Write-Host "Examples:" -ForegroundColor Yellow
-        Write-Host "  pwsh infra/shared/scripts/wp-action.ps1 help backup" -ForegroundColor Gray
-        Write-Host "  pwsh infra/shared/scripts/wp-action.ps1 backup" -ForegroundColor Gray
-        Write-Host "  pwsh infra/shared/scripts/wp-action.ps1 verify" -ForegroundColor Gray
-        Write-Host "  pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages `$true`n"
-        
-        Write-Host "Documentation:" -ForegroundColor Yellow
-        Write-Host "  docs/BACKUP-RESTORE-QUICKSTART.md - Quick start guide"
-        Write-Host "  docs/DISASTER-RECOVERY-PLAN.md - Complete DR procedures"
-        Write-Host "  docs/DEPLOYMENT-WORKFLOW.md - Deployment process`n"
+        Write-Host "  .\wp-action.ps1 help backup" -ForegroundColor Gray
+        Write-Host "  .\wp-action.ps1 backup" -ForegroundColor Gray
+        Write-Host "  .\wp-action.ps1 verify`n" -ForegroundColor Gray
     }
 }
 
 # Show deployment workflow
 function Show-DeploymentWorkflow {
-    Write-Action "`n=== Deployment Workflow ==="
+    Write-Host "`n=== Deployment Workflow ===" -ForegroundColor Cyan
     
-    Write-Host "`n1. BACKUP (MANDATORY - Before deployment)" -ForegroundColor Yellow
-    Write-Host "   pwsh infra/shared/scripts/wp-action.ps1 backup" -ForegroundColor Gray
-    Write-Host "   Creates: restore/backups/yyyyMMdd-HHmm/`n"
+    Write-Host "`n1. BACKUP (MANDATORY)" -ForegroundColor Yellow
+    Write-Host "   .\wp-action.ps1 backup`n" -ForegroundColor Gray
     
-    Write-Host "2. DEPLOY (Push to production)" -ForegroundColor Yellow
-    Write-Host "   git checkout main" -ForegroundColor Gray
-    Write-Host "   git merge develop --no-edit" -ForegroundColor Gray
-    Write-Host "   git push origin main" -ForegroundColor Gray
-    Write-Host "   (Wait 30 seconds for Hostinger auto-deployment)`n"
+    Write-Host "2. DEPLOY" -ForegroundColor Yellow
+    Write-Host "   git push origin main`n" -ForegroundColor Gray
     
-    Write-Host "3. VERIFY (MANDATORY - After deployment)" -ForegroundColor Yellow
-    Write-Host "   pwsh infra/shared/scripts/wp-action.ps1 verify" -ForegroundColor Gray
-    Write-Host "   Checks: pages, patterns, assets, settings, plugins`n"
+    Write-Host "3. VERIFY (MANDATORY)" -ForegroundColor Yellow
+    Write-Host "   .\wp-action.ps1 verify`n" -ForegroundColor Gray
     
-    Write-Host "4. RESTORE (If verification fails)" -ForegroundColor Yellow
-    Write-Host "   pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages `$true`n"
-    
-    Write-Host "Documentation:" -ForegroundColor Cyan
-    Write-Host "  docs/BACKUP-RESTORE-QUICKSTART.md"
-    Write-Host "  docs/DEPLOYMENT-WORKFLOW.md`n"
+    Write-Host "4. RESTORE (if issues)" -ForegroundColor Yellow
+    Write-Host "   .\wp-action.ps1 restore -BackupTimestamp latest -RestorePages `$true`n" -ForegroundColor Gray
 }
 
 # Main execution
@@ -200,8 +155,8 @@ try {
     
     # Get script info
     if (-not $SCRIPT_REGISTRY.ContainsKey($Action)) {
-        Write-Error "Unknown action: $Action"
-        Write-Host "`nRun 'wp-action help' to see available actions`n" -ForegroundColor Yellow
+        Write-Host "Error: Unknown action: $Action" -ForegroundColor Red
+        Write-Host "`nRun '.\wp-action.ps1 help' to see available actions`n" -ForegroundColor Yellow
         exit 1
     }
     
@@ -209,41 +164,34 @@ try {
     $scriptPath = Join-Path $PSScriptRoot $scriptInfo.script
     
     if (-not (Test-Path $scriptPath)) {
-        Write-Error "Script not found: $scriptPath"
+        Write-Host "Error: Script not found: $scriptPath" -ForegroundColor Red
         exit 1
     }
     
-    # Execute the mapped script with forwarded arguments
-    Write-Action "Executing: $Action"
+    # Execute the mapped script
+    Write-Host "Executing: $Action" -ForegroundColor Cyan
     Write-Host "Script: $($scriptInfo.script)`n" -ForegroundColor Gray
     
-    # Build argument string
-    $argString = ""
+    # Execute with arguments
     if ($RemainingArgs.Count -gt 0) {
-        $argString = $RemainingArgs -join " "
-    }
-    
-    # Execute with splatting
-    if ($argString) {
-        $expression = "& '$scriptPath' $argString"
+        & $scriptPath @RemainingArgs
     } else {
-        $expression = "& '$scriptPath'"
+        & $scriptPath
     }
-    
-    Invoke-Expression $expression
     
     $exitCode = $LASTEXITCODE
+    if ($null -eq $exitCode) { $exitCode = 0 }
     
     if ($exitCode -eq 0) {
-        Write-Success "`nAction completed successfully"
+        Write-Host "`nAction completed successfully" -ForegroundColor Green
     } else {
-        Write-Error "`nAction completed with errors (exit code: $exitCode)"
+        Write-Host "`nAction completed with errors (exit code: $exitCode)" -ForegroundColor Red
     }
     
     exit $exitCode
     
 } catch {
-    Write-Error "Action failed: $_"
+    Write-Host "Error: Action failed - $($_.Exception.Message)" -ForegroundColor Red
     Write-Host $_.ScriptStackTrace -ForegroundColor Red
     exit 1
 }
