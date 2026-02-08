@@ -4,6 +4,14 @@ add_action('wp_enqueue_scripts', function() {
     // Main child theme stylesheet
     wp_enqueue_style('blocksy-child-style', get_stylesheet_uri());
     
+    // Custom color palette CSS
+    wp_enqueue_style(
+        'blocksy-child-colors',
+        get_stylesheet_directory_uri() . '/custom-colors.css',
+        array('blocksy-child-style'),
+        '1.0.1'
+    );
+    
     // WPUM form overrides (design system integration)
     wp_enqueue_style(
         'wpum-design-system', 
