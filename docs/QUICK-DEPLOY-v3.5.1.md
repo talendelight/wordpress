@@ -1,27 +1,33 @@
 # v3.5.1 Quick Deployment Guide
 
-**Copy-paste commands for fast deployment**
+**Copy-paste commands for fast deployment (14 minutes total)**
+
+**Changes in this release:**
+- Better Font Awesome plugin v2.0.4 (now in Git - auto-deploys)
+- Welcome page migrated to Gutenberg
+- Theme functions.php updated (CDN Font Awesome removed)
 
 ---
 
-## 1. Commit & Push (5 minutes)
+## 1. Push to Main (1 minute)
 
 ```powershell
 cd c:\data\lochness\talendelight\code\wordpress
 
-git add -A
+# Already committed? Just push:
+git push origin main
 git commit -m "v3.5.1: Migrate Welcome page to Gutenberg, install Better Font Awesome"
 git push origin main
 ```
 
-Wait 30 seconds for Hostinger auto-deployment.
+Wait 30 seconds for Hostinger auto-deployment (includes Better Font Awesome plugin).
 
 ---
 
-## 2. Install Plugin via SSH (2 minutes)
+## 2. Activate Plugin via SSH (1 minute)
 
 ```powershell
-ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd domains/talendelight.com/public_html && wp plugin install better-font-awesome --activate --allow-root"
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd domains/talendelight.com/public_html && wp plugin activate better-font-awesome --allow-root"
 ```
 
 ---

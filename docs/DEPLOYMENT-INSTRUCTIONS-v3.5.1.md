@@ -60,34 +60,35 @@ git push origin main
 
 **Expected Result:** Hostinger deploys wp-content/ changes in 10-30 seconds
 
-### Step 2: Install Better Font Awesome Plugin
+### Step 2: Verify Better Font Awesome Plugin Deployed
 
-**Via WP-CLI (Recommended):**
+**✅ Plugin is now in Git:** Better Font Awesome v2.0.4 deployed automatically via Hostinger Git integration.
+
+**Quick Verification:**
 
 ```powershell
 ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 `
-  "cd domains/talendelight.com/public_html && wp plugin install better-font-awesome --activate --allow-root"
+  "cd domains/talendelight.com/public_html && wp plugin list --name=better-font-awesome --allow-root"
 ```
 
 **Expected Output:**
 ```
-Installing Better Font Awesome (2.0.4)
-Downloading installation package...
-Unpacking the package...
-Installing the plugin...
-Plugin installed successfully.
-Activating 'better-font-awesome'...
-Plugin 'better-font-awesome' activated.
-Success: Installed 1 of 1 plugins.
+name                   status   version  update
+better-font-awesome    inactive 2.0.4    none
 ```
 
-**Alternative - Via hPanel (if WP-CLI fails):**
+**Activate the Plugin:**
 
-1. Download Better Font Awesome 2.0.4: https://wordpress.org/plugins/better-font-awesome/
-2. Log into Hostinger hPanel: https://hpanel.hostinger.com
-3. Navigate: Websites → talendelight.com → File Manager
-4. Upload to: public_html/wp-content/plugins/
-5. WordPress Admin → Plugins → Activate "Better Font Awesome"
+```powershell
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 `
+  "cd domains/talendelight.com/public_html && wp plugin activate better-font-awesome --allow-root"
+```
+
+**Expected Output:**
+```
+Plugin 'better-font-awesome' activated.
+Success: Activated 1 of 1 plugins.
+```
 
 ### Step 3: Update Welcome Page Content
 
