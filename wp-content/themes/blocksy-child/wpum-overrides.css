@@ -1,0 +1,216 @@
+/*
+ * WPUM Form Styling - Design System Integration
+ * Applies design tokens to WP User Manager forms for consistent UX
+ */
+
+/* ============================================================================
+   WPUM LOGIN FORM
+   ========================================================================== */
+
+.wpum-template-login {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Form Container */
+.wpum-form {
+    background-color: var(--color-gray-off-white);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-2xl) var(--space-xl);
+    box-shadow: var(--shadow-md);
+}
+
+/* Form Rows */
+.wpum-form .wpum-form-row {
+    margin-bottom: var(--space-lg);
+}
+
+.wpum-form .wpum-form-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Labels */
+.wpum-form label {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-dark);
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+/* Inputs */
+.wpum-form input[type="text"],
+.wpum-form input[type="email"],
+.wpum-form input[type="password"],
+.wpum-form input[type="url"],
+.wpum-form textarea,
+.wpum-form select {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    padding: 12px 16px;
+    border: var(--border-width) solid var(--color-gray-light);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-gray-off-white);
+    color: var(--color-gray-dark);
+    width: 100%;
+    transition: border-color var(--transition-fast);
+}
+
+.wpum-form input:focus,
+.wpum-form textarea:focus,
+.wpum-form select:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Buttons */
+.wpum-form input[type="submit"],
+.wpum-form button[type="submit"] {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    padding: 14px 36px;
+    border-radius: var(--border-radius-button);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: inline-block;
+    text-align: center;
+    background-color: var(--color-navy);
+    color: var(--color-gray-off-white);
+    width: 100%;
+}
+
+.wpum-form input[type="submit"]:hover,
+.wpum-form button[type="submit"]:hover {
+    background-color: var(--color-blue);
+    box-shadow: var(--shadow-md);
+}
+
+/* Remember Me Checkbox */
+.wpum-form input[type="checkbox"] {
+    margin-right: var(--space-xs);
+}
+
+.wpum-form .wpum-form-row-rememberme label {
+    display: inline;
+    font-weight: var(--font-weight-normal);
+    cursor: pointer;
+}
+
+/* Form Links */
+.wpum-form a {
+    color: var(--color-blue);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.wpum-form a:hover {
+    color: var(--color-navy);
+    text-decoration: underline;
+}
+
+/* Password Reset Link */
+.wpum-form .wpum-password-reset-link {
+    display: block;
+    margin-top: var(--space-sm);
+    text-align: center;
+    font-size: var(--font-size-small);
+}
+
+/* ============================================================================
+   WPUM MESSAGES (Success, Error, Info)
+   ========================================================================== */
+
+.wpum-message {
+    padding: var(--space-md);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--space-lg);
+    font-size: var(--font-size-body);
+}
+
+/* Success Messages */
+.wpum-message.success,
+.wpum-message.updated {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid var(--color-success);
+    color: var(--color-success);
+}
+
+/* Error Messages */
+.wpum-message.error {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-left: 4px solid var(--color-error);
+    color: var(--color-error);
+}
+
+/* Info Messages */
+.wpum-message.info {
+    background-color: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid var(--color-info);
+    color: var(--color-info);
+}
+
+/* Warning Messages */
+.wpum-message.warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid var(--color-warning);
+    color: #856404; /* Darker yellow for readability */
+}
+
+/* ============================================================================
+   WPUM REGISTRATION FORM
+   ========================================================================== */
+
+.wpum-template-registration .wpum-form {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ============================================================================
+   WPUM PROFILE/ACCOUNT FORMS
+   ========================================================================== */
+
+.wpum-template-profile .wpum-form,
+.wpum-template-account .wpum-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Profile Avatar Upload */
+.wpum-form .wpum-avatar-upload {
+    margin-bottom: var(--space-lg);
+}
+
+.wpum-form .wpum-avatar-upload img {
+    border-radius: var(--border-radius-full);
+    max-width: 150px;
+    height: auto;
+}
+
+/* ============================================================================
+   WPUM PASSWORD RESET
+   ========================================================================== */
+
+.wpum-template-password-reset .wpum-form {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVENESS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .wpum-form {
+        padding: var(--space-xl) var(--space-lg);
+    }
+    
+    .wpum-template-login,
+    .wpum-template-password-reset .wpum-form {
+        max-width: 100%;
+        padding: 0 var(--space-md);
+    }
+}

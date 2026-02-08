@@ -99,7 +99,9 @@ docs/
 1. Code feature that needs database migration
 2. Add migration steps to RELEASE-NOTES-NEXT.md
 3. Add verification steps
-4. Commit both code and release notes
+4. Create backups before major changes:
+   pwsh infra/dev/backup-all-local.ps1
+5. Commit both code and release notes
 ```
 
 **Key Actions:**
@@ -107,6 +109,7 @@ docs/
 - Include SQL scripts, WP Admin actions, config changes
 - Document verification queries
 - Update rollback procedures
+- **Backup before major changes** (database + pages + forms)
 
 **Team Collaboration:**
 - Multiple developers can contribute
@@ -121,11 +124,20 @@ docs/
 
 ```bash
 # Final review and preparation
-1. Review all manual steps for accuracy
-2. Test entire deployment locally (dry run)
-3. Update timing estimates
-4. Confirm all prerequisites met
-5. Get team sign-off
+1. Create comprehensive backups:
+   pwsh infra/dev/backup-all-local.ps1        # Database + Pages + Forms + Config + Plugins
+   pwsh infra/shared/scripts/backup-prod-db.ps1  # Production database
+
+2. Verify backups:
+   Get-ChildItem tmp/backups/local/ | Select-Object -First 1
+   Get-ChildItem tmp/backups/pages/ -Directory | Select-Object -First 1
+   Get-ChildItem tmp/backups/forms/ -Directory | Select-Object -First 1
+
+3. Review all manual steps for accuracy
+4. Test entire deployment locally (dry run)
+5. Update timing estimates
+6. Confirm all prerequisites met
+7. Get team sign-off
 ```
 
 **Checklist:**

@@ -34,26 +34,39 @@ This document tracks all manual deployment steps required for the **next product
   - ✅ Unblocks PENG-054 (endpoint hardening)
   - ✅ Guides Phase 1-2 registration and approval workflows
 
-**PENG-001: CandidateID Strategy (Complete - January 25, 2026)**
+**PENG-001: Record ID Strategy v2.0 (Complete - January 30, 2026)**
 - **Purpose:** Define unique, stable identifier system for all users across WordPress, Excel, and future Person app
-- **Deliverable:** [docs/PENG-001-CANDIDATEID-STRATEGY.md](PENG-001-CANDIDATEID-STRATEGY.md)
-- **Format:** TD-YYYY-NNNN (e.g., TD-2026-0001)
+- **Deliverables:** 
+  - [docs/PENG-001-CANDIDATEID-STRATEGY-V2.md](PENG-001-CANDIDATEID-STRATEGY-V2.md) - Comprehensive v2.0 strategy
+  - [infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql](../infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql) - Database migration
+- **Format:** Dual ID system (simplified format without zero-padding)
+  - **Request ID:** USRQ-YYMMDD-N (generated on submission for all requests, e.g., USRQ-260131-1, USRQ-260131-42)
+  - **Record ID:** PRSN/CMPY-YYMMDD-N (assigned post-approval, e.g., PRSN-260131-1, CMPY-260131-8)
+    - PRSN = Person (candidate, scout, operator, manager, employee)
+    - CMPY = Company (employer)
+- **Major Simplification (v1.0 → v2.0):**
+  - ❌ v1.0: 5 role-specific prefixes (TD/TE/TS/TO/TM)
+  - ✅ v2.0: 2 entity-type prefixes (PRSN/CMPY)
+  - ❌ v1.0: Zero-padded 4-digit sequences (0001, 0042)
+  - ✅ v2.0: Natural sequence numbers (1, 42)
+  - Reduced complexity: 60% fewer ID types to maintain
 - **Scope:**
-  - Multi-role prefixes: TD/TE/TS/TO/TM for Candidate/Employer/Scout/Operator/Manager
-  - Storage strategy: Add `td_user_id` column to `td_user_data_change_requests` table
-  - Generation: Auto-assign on form submission with year-based sequences
+  - Storage: `request_id` and `record_id` columns in `td_user_data_change_requests`
+  - Generation: Auto-assign request_id on submission, record_id on approval
+  - Entity-based categorization (not role-based)
   - Migration path: WordPress → Excel → Person app via external_id mapping
-  - Rebrand strategy: Hard cutover from TD- to HA- prefixes on rebrand date
+  - Rebrand-proof: PRSN/CMPY prefixes are not brand-specific (no TD→HA migration needed)
 - **Benefits:**
+  - ✅ Simpler system: 2 entity types vs 5 role types
+  - ✅ Future-proof: New roles automatically map to PRSN or CMPY
+  - ✅ Clearer semantics: Entity-based, not role-based
+  - ✅ Easier maintenance and communication
   - ✅ Stable reference ID independent of email/phone changes
-  - ✅ Cross-system tracking capability
-  - ✅ Operator-friendly format for verbal communication
-  - ✅ Chronological ordering for operational efficiency
 - **Next:** PENG-016 implementation in Phase 1
 
 **COPS-001: CV Lifecycle Policy (Complete - January 25, 2026)**
 - **Purpose:** Define CV storage, archiving, and deletion policies for GDPR compliance
-- **Deliverable:** [docs/COPS-001-CV-LIFECYCLE-POLICY.md](COPS-001-CV-LIFECYCLE-POLICY.md)
+- **Deliverable:** [Documents/deliverables/COPS-001-CV-LIFECYCLE-POLICY.md](../../../Documents/deliverables/COPS-001-CV-LIFECYCLE-POLICY.md)
 - **Scope:**
   - CV storage location and naming conventions
   - Retention periods aligned with GDPR requirements
@@ -81,6 +94,74 @@ This document tracks all manual deployment steps required for the **next product
   - ✅ Audit trail for access attempts
 - **Testing:** Manual testing required (see [PENG-053 documentation](PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md#7-testing-checklist))
 - **Deployment:** Plugin v1.1.0 must be deployed to production
+
+**PENG-016: Record ID Generation Implementation (Complete - January 31, 2026)**
+- **Purpose:** Implement automatic ID generation for request_id and record_id columns
+- **Deliverables:**
+  - [infra/shared/db/260131-1300-add-id-sequences-table.sql](../infra/shared/db/260131-1300-add-id-sequences-table.sql) - Helper table for atomic sequence management
+  - [wp-content/mu-plugins/record-id-generator.php](../wp-content/mu-plugins/record-id-generator.php) - Generation functions (new file, ~250 lines)
+  - Modified: [wp-content/mu-plugins/forminator-custom-table.php](../wp-content/mu-plugins/forminator-custom-table.php) - Generate request_id on submission
+  - Modified: [wp-content/mu-plugins/user-requests-display.php](../wp-content/mu-plugins/user-requests-display.php) - Generate record_id on approval
+- **Scope:**
+  - Helper table `td_id_sequences` with composite primary key (entity_type, date_str) for daily-reset sequences
+  - 3 entity types: USRQ (user requests), PRSN (persons), CMPY (companies)
+  - `td_generate_request_id()` - Called on every form submission
+  - `td_generate_record_id($role)` - Called only on first approval
+  - Atomic sequence increment using `ON DUPLICATE KEY UPDATE`
+  - Transaction safety with START TRANSACTION / COMMIT / ROLLBACK
+  - Format: Natural sequences without zero-padding (USRQ-260131-1, PRSN-260131-42)
+- **Business Logic:**
+  - request_id: Generated on every submission (new registrations AND updates), tracks audit trail
+  - record_id: Generated once on first approval, becomes permanent user identifier
+  - Resubmissions: New request_id, same record_id
+- **Benefits:**
+  - ✅ Automatic ID assignment - no manual intervention
+  - ✅ Race-condition safe with database-level locking
+  - ✅ Daily reset for manageable sequence numbers
+  - ✅ Complete audit trail of all submission attempts
+  - ✅ Stable permanent IDs for approved users
+- **Testing Status:** Ready for testing (not yet tested with real form submissions)
+- **Deployment Requirements:**
+  - Apply both SQL migrations: 260131-1200 and 260131-1300
+  - Deploy new mu-plugin: record-id-generator.php
+  - Deploy modified mu-plugins: forminator-custom-table.php, user-requests-display.php
+
+**RESTful URL Restructure (Complete - January 31, 2026)**
+- **Purpose:** Implement standard RESTful URL hierarchy for registration pages
+- **Breaking Change:** URL paths changed, requires page updates in production
+- **Old URLs:**
+  - `/select-role/` - Role selection
+  - `/register-profile/` - Person registration form
+- **New URLs:**
+  - `/roles/select/` - Role selection (ID 379, parent 657)
+  - `/persons/register/` - Person registration form (ID 365, parent 659)
+  - `/companies/register/` - Company registration placeholder (ID 656, parent 658)
+- **Parent Pages Created:**
+  - `/roles/` (ID 657) - Parent for role-related pages
+  - `/persons/` (ID 659) - Parent for person-related pages
+  - `/companies/` (ID 658) - Parent for company-related pages
+- **Modified Files:**
+  - [wp-content/themes/blocksy-child/page-role-selection.php](../wp-content/themes/blocksy-child/page-role-selection.php) - Updated routing logic
+  - [wp-content/themes/blocksy-child/functions.php](../wp-content/themes/blocksy-child/functions.php) - Fixed redirect to not intercept child pages
+- **Routing Logic:**
+  - Employer role → `/companies/register/?td_user_role=employer`
+  - All other roles → `/persons/register/?td_user_role={role}`
+- **Bug Fixes:**
+  - Fixed: Form submission preventing redirect (changed `<form>` to `<div>`)
+  - Fixed: `is_page('register')` matching child pages (added `post_parent == 0` check)
+- **Benefits:**
+  - ✅ Standard RESTful convention
+  - ✅ Clear organizational hierarchy
+  - ✅ Future-proof for additional resources (e.g., `/roles/list/`, `/persons/profile/`)
+  - ✅ Separates company and person workflows
+- **Deployment Requirements:**
+  - Create 3 parent pages: roles, persons, companies
+  - Update existing pages with new slugs and parent relationships
+  - Update page ID 379 (select-role): slug='select', parent=657
+  - Update page ID 365 (person-register): slug='register', parent=659
+  - Update page ID 656 (company-register): slug='register', parent=658
+  - Flush permalinks after page updates
+  - Deploy theme changes: page-role-selection.php, functions.php
 
 **2. Design System Compliance Audit (Complete - January 22-23, 2026)**
 - **Purpose:** Ensure all Elementor pages follow consistent design standards for mobile responsiveness
@@ -110,6 +191,67 @@ This document tracks all manual deployment steps required for the **next product
 **3. Content Updates**
 - Manager Admin page title/form updated: "User Request Approvals" → "User Registration Request Approvals"
 - Manager Admin sub-heading updated to reflect: Users, Roles, and System Settings
+
+**4. Manager Admin Interface Enhancements (February 1, 2026)**
+
+**PENG-055: Undo Approve Functionality**
+- **Purpose:** Allow Administrators to reverse mistaken approvals, matching Undo Reject capability
+- **File Modified:** [wp-content/mu-plugins/user-requests-display.php](../wp-content/mu-plugins/user-requests-display.php)
+- **Implementation:**
+  - New AJAX handler: `td_undo_approve_ajax()` - mirrors undo reject logic
+  - New button: "Undo Approve" (↶ icon, amber #ff9800) in Approved and All tabs
+  - Status flow: `approved` → `pending` (keeps `assigned_to`, updates `assigned_by` to current user)
+  - Permission: Administrator only (`manage_options` capability)
+  - Audit logging via `TD_Audit_Logger`
+- **Button Specifications:**
+  - Class: `.td-undo-approve-btn`
+  - Size: 28×28px, padding: 6px, line-height: 1
+  - Color: Amber #ff9800
+  - Icon: ↶ (Unicode U+21B6)
+  - Tooltip: "Undo Approval"
+- **Benefits:**
+  - ✅ Reversibility for all actions (approve, reject, assign)
+  - ✅ Maintains accountability (preserves original assignee)
+  - ✅ Administrator-only safeguard prevents misuse
+  - ✅ Full audit trail of undo operations
+
+**PENG-056: Direct Action Workflow (UX Improvement)**
+- **Purpose:** Streamline user actions by removing confirmation dialogs, relying on notifications only
+- **Changes:**
+  - Removed confirmation modals for approve/reject/undo actions
+  - Actions execute immediately on button click
+  - Success/failure feedback via floating notifications (`tdShowNotification()`)
+  - Assignment modal retained and improved (works well for multi-step process)
+- **Assignment Modal Improvements:**
+  - Fixed centering on long pages using absolute positioning: `top: 50%; left: 50%; transform: translate(-50%, -50%)`
+  - Added `width: 90%` for responsive mobile support
+  - Modal now centers in viewport, not page document
+  - Always visible regardless of scroll position
+- **Error Handling Improvements:**
+  - Added `.fail()` handlers to all AJAX calls for network error detection
+  - Fallback notification function if main system unavailable
+  - Console logging for debugging AJAX failures
+  - Null-safe error messages: `response.data ? response.data.message : 'Unknown error'`
+- **Benefits:**
+  - ✅ Faster workflow (one click vs two)
+  - ✅ More reliable (eliminates modal display issues)
+  - ✅ Better error visibility with console logging
+  - ✅ Graceful degradation with fallback alerts
+  - ✅ Assignment modal always visible on long tables
+  - ✅ Responsive across devices
+
+**Code Quality Improvements:**
+- CSS class consolidation: `.td-undo-btn` → `.td-undo-reject-btn` for clarity
+- JavaScript handlers aligned with semantic class names
+- Better error handling and fallback mechanisms
+- Console logging for debugging production issues
+
+**Testing Required:**
+- [ ] Test Undo Approve on approved requests
+- [ ] Verify Administrator-only access to undo actions
+- [ ] Test notification system on production environment
+- [ ] Verify AJAX error handling with network interruptions
+- [ ] Test modal centering on mobile devices
 
 *Add additional features here as development progresses.*
 

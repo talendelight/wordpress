@@ -1,7 +1,24 @@
 # TalenDelight User Navigation Flow
 
-**Last Updated:** January 2, 2026  
-**Status:** MVP - Homepage Complete with Smart CTA Routing, Other Pages Planned
+**Last Updated:** February 5, 2026  
+**Status:** MVP - Homepage Complete with Smart CTA Routing, Main Navigation Menu Created
+
+---
+
+## Main Navigation Menu
+
+**WordPress Menu:** "Main Navigation" (assigned to Header Menu 1 location)
+
+**Menu Items:**
+1. **Welcome** → `/` (Homepage)
+2. **Register** → `/register/` (User registration)
+3. **Profile** → `/profile/` (User profile management)
+4. **Help** → `/help/` (Help/support)
+5. **Login** → `/log-in/` (WP User Manager login page)
+6. **Logout** → `/logout/` (Logout action)
+
+**Menu ID:** 2  
+**Location:** Header Menu 1 (Blocksy theme primary navigation)
 
 ---
 
@@ -134,5 +151,6 @@ Homepage → Something else in mind? → Contact Form → Thank You
 
 | Date | Change | Author |
 |------|--------|--------|
+| Feb 5, 2026 | Created Main Navigation menu with 6 items (Welcome, Register, Profile, Help, Login, Logout) | System |
 | Dec 31, 2025 | Initial navigation diagram created | System |
 | Dec 31, 2025 | Homepage marked as complete | System |

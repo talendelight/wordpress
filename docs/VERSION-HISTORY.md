@@ -13,6 +13,10 @@
 
 **Theme:** Authentication, authorization, role-based access control, landing pages for all roles
 
+**Timeline Impact:** +10 days delay due to data loss on February 5, 2026 (Podman volume corruption)
+- Original v3.6.0 MVP target: April 5, 2026
+- Adjusted v3.6.0 MVP target: April 15, 2026
+
 ---
 
 ### v3.0.0 - Custom Roles & RBAC Foundation
@@ -266,9 +270,9 @@ Add Manager Admin page with user registration request approvals, Forminator inte
 
 ### v3.5.0 - Environment Config Automation
 
-**Deployed:** TBD  
-**Status:** 🚧 In Development  
-**Branch:** develop
+**Deployed:** February 2, 2026  
+**Status:** ✅ Production  
+**Branch:** develop → main
 
 **Description:** Automate environment-specific configuration deployment by relocating env-config.php to mu-plugins for automatic Git-based deployment.
 
@@ -294,6 +298,75 @@ Add Manager Admin page with user registration request approvals, Forminator inte
 ```
 Automate environment config deployment via mu-plugins (v3.5.0)
 ```
+
+---
+
+### v3.5.1 - Welcome Page Gutenberg Migration
+
+**Deployed:** TBD  
+**Status:** 🚧 Ready for Deployment  
+**Branch:** develop → main
+
+**Description:** Migrate Welcome page from Elementor to Gutenberg blocks with improved design system application and Font Awesome icon integration.
+
+**Patch Features:**
+- Welcome page Gutenberg migration:
+  - Converted from Elementor to native Gutenberg blocks
+  - Deleted Elementor meta fields (_elementor_edit_mode, _elementor_data, _elementor_version)
+  - Preserved all original content and sections
+  - Applied design system styles consistently
+- Font Awesome integration:
+  - Installed Better Font Awesome plugin (v2.0.4) for local icon hosting
+  - Resolved CDN loading issues with self-signed SSL certificates
+  - 4 specialty card icons: cloud, globe, server, question mark
+  - Icons in single HTML blocks with titles for precise spacing control
+- Design refinements:
+  - Pill-shaped buttons (50px border-radius with !important overrides)
+  - Card spacing: 32px between cards, 16px between rows, 48px internal padding
+  - Equal-height cards via CSS flexbox
+  - Typography: 24px navy titles, 14px #666666 body text
+  - Icon-title spacing: 8px controlled spacing
+  - Section heading spacing: 48px margin-bottom
+
+**Benefits:**
+- ✅ Reduced page dependencies (1 less plugin used - Elementor on this page)
+- ✅ Faster page load (native blocks vs Elementor overhead)
+- ✅ Better mobile responsiveness (Gutenberg native)
+- ✅ Improved maintainability (standard WordPress editor)
+- ✅ Font Awesome icons work with self-signed SSL (local hosting)
+
+**Technical Changes:**
+- Plugin: Better Font Awesome (v2.0.4) installed and activated
+- Theme: blocksy-child/functions.php - removed CDN Font Awesome enqueue
+- Page: Welcome (ID 6) - migrated to Gutenberg blocks
+- Backup: restore/pages/welcome-6-gutenberg.html + welcome-6-gutenberg.json
+
+**Bug Fixes:**
+- Fixed Font Awesome icon display issue (rectangles showing instead of icons)
+- Fixed icon-title spacing (combined into single HTML blocks)
+- Fixed Gutenberg inline style overrides (used !important in CSS)
+
+**Lessons Learned:**
+- Self-signed SSL certificates block external CDN font downloads
+- Use WordPress plugins for local web font hosting
+- Gutenberg blocks add uncontrollable spacing between separate blocks
+- Combine related elements in single wp:html blocks for precise control
+- CSS variables don't always work in inline style attributes
+- Use !important to override Gutenberg inline styles
+
+**Migration Status:**
+- ✅ 1 of 23 pages migrated (Welcome page)
+- ⏸️ 22 pages remaining on Elementor
+
+**Git Commit:**
+```
+Migrate Welcome page to Gutenberg, install Better Font Awesome plugin, refine spacing and design (v3.5.1)
+```
+
+**Deployment Notes:**
+- Plugin installation required: Better Font Awesome (v2.0.4) must be uploaded to wp-content/plugins/
+- Use: `wp plugin install better-font-awesome --activate --allow-root`
+- Or manually upload via hPanel File Manager
 
 ---
 

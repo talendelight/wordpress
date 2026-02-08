@@ -1,4 +1,333 @@
 /*
 Theme Name: Blocksy Child
 Template: blocksy
+Version: 1.0.0
+Description: Custom child theme with unified design system for TalenDelight
 */
+
+/* ============================================================================
+   DESIGN SYSTEM - CSS CUSTOM PROPERTIES
+   ============================================================================
+   Based on: docs/DESIGN-SYSTEM.md, COMMON-UI-DESIGN.md, WORDPRESS-UI-DESIGN.md
+   Last Updated: February 7, 2026
+   ========================================================================== */
+
+:root {
+    /* === COLOR SYSTEM === */
+    
+    /* Primary Colors */
+    --color-navy: #063970;              /* Hero backgrounds, headings, primary button text */
+    --color-blue: #3498DB;              /* Icons, links, accents, hover states */
+    
+    /* Neutral Colors */
+    --color-gray-dark: #333333;         /* Primary body text, form labels */
+    --color-gray-medium: #898989;       /* Descriptions, secondary text */
+    --color-gray-light: #ECECEC;        /* Section backgrounds, borders */
+    --color-gray-off-white: #F8F9FA;    /* Primary background color, text on dark backgrounds, cards, form inputs */
+    --color-near-black: #1A1A1A;        /* Dark text on light backgrounds */
+    
+    /* Semantic Colors */
+    --color-success: #28A745;           /* Success messages */
+    --color-warning: #FFC107;           /* Warning messages */
+    --color-error: #DC3545;             /* Error messages, required indicators */
+    --color-info: #17A2B8;              /* Info messages */
+    
+    /* === TYPOGRAPHY === */
+    
+    /* Font Families */
+    --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 
+                          Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    
+    /* Font Sizes */
+    --font-size-h1: 48px;               /* Hero headings (36px mobile) */
+    --font-size-h2: 32px;               /* Section headings */
+    --font-size-h3: 24px;               /* Card titles, subsections */
+    --font-size-h4: 20px;               /* Small headings */
+    --font-size-h5: 18px;               /* Tiny headings */
+    --font-size-h6: 16px;               /* Smallest headings */
+    --font-size-body: 16px;             /* Base body text */
+    --font-size-small: 14px;            /* Small text, captions */
+    --font-size-tiny: 12px;             /* Legal text, fine print */
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Line Heights */
+    --line-height-tight: 1.2;           /* Headings */
+    --line-height-normal: 1.5;          /* Body text */
+    --line-height-relaxed: 1.7;         /* Long-form content */
+    
+    /* === SPACING === */
+    
+    /* Base Units */
+    --space-xs: 8px;
+    --space-sm: 16px;
+    --space-md: 24px;
+    --space-lg: 32px;
+    --space-xl: 48px;
+    --space-2xl: 64px;
+    --space-3xl: 80px;
+    
+    /* Section Padding */
+    --section-padding-y: 80px;          /* Hero/CTA sections vertical */
+    --section-padding-y-sm: 40px;       /* Content sections vertical */
+    --section-padding-x: 20px;          /* All sections horizontal */
+    
+    /* Container Padding */
+    --container-padding: 30px;          /* Cards, icon boxes */
+    --container-padding-sm: 20px;       /* Smaller containers */
+    
+    /* === LAYOUT === */
+    
+    /* Container Widths */
+    --container-max-width: 1200px;      /* Standard content width */
+    --container-narrow: 800px;          /* Narrow content (forms, articles) */
+    --container-wide: 1400px;           /* Wide content (galleries) */
+    
+    /* Grid Gaps */
+    --grid-gap: 24px;                   /* Standard grid gap */
+    --grid-gap-sm: 16px;                /* Smaller grid gap */
+    --grid-gap-lg: 32px;                /* Larger grid gap */
+    
+    /* === BORDERS === */
+    
+    --border-radius-sm: 4px;            /* Small elements, form inputs */
+    --border-radius-md: 12px;           /* Cards, large containers */
+    --border-radius-lg: 24px;           /* Extra large containers */
+    --border-radius-button: 50px;       /* Buttons (pill shape) */
+    --border-radius-full: 9999px;       /* Circular elements */
+    
+    --border-width: 1px;                /* Standard border */
+    --border-width-thick: 2px;          /* Emphasis borders */
+    
+    /* === SHADOWS === */
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    
+    /* Blue glow effect (used on welcome page) */
+    --shadow-glow-blue: 0 0 20px rgba(52, 152, 219, 0.5);
+    
+    /* === TRANSITIONS === */
+    
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 350ms ease;
+    
+    /* === Z-INDEX SCALE === */
+    
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+}
+
+/* === MOBILE BREAKPOINTS === */
+@media (max-width: 768px) {
+    :root {
+        --font-size-h1: 36px;           /* Smaller hero on mobile */
+        --section-padding-y: 60px;
+        --section-padding-y-sm: 32px;
+        --container-padding: 20px;
+        --grid-gap: 16px;
+    }
+}
+
+/* ============================================================================
+   BASE STYLES - APPLY DESIGN SYSTEM
+   ========================================================================== */
+
+body {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-normal);
+    color: var(--color-gray-dark);
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-navy);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    margin-bottom: var(--space-md);
+}
+
+h1 { font-size: var(--font-size-h1); }
+h2 { font-size: var(--font-size-h2); }
+h3 { font-size: var(--font-size-h3); }
+h4 { font-size: var(--font-size-h4); }
+h5 { font-size: var(--font-size-h5); }
+h6 { font-size: var(--font-size-h6); }
+
+/* Links */
+a {
+    color: var(--color-blue);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-navy);
+    text-decoration: underline;
+}
+
+/* Buttons - Base Styles */
+.wp-block-button__link,
+.wp-element-button,
+button,
+input[type="submit"],
+.button {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-semibold);
+    padding: 14px 48px !important;
+    min-width: 250px !important;
+    border-radius: 50px !important;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: inline-block;
+    text-align: center;
+}
+
+/* Primary Button */
+.wp-block-button.is-style-fill .wp-block-button__link,
+.button-primary {
+    background-color: var(--color-gray-off-white);
+    color: var(--color-navy);
+}
+
+.wp-block-button.is-style-fill .wp-block-button__link:hover,
+.button-primary:hover {
+    background-color: var(--color-gray-off-white);
+    box-shadow: var(--shadow-md);
+}
+
+/* Secondary Button */
+.wp-block-button.is-style-outline .wp-block-button__link,
+.button-secondary {
+    background-color: var(--color-navy);
+    color: var(--color-gray-off-white);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+.button-secondary:hover {
+    background-color: var(--color-blue);
+    color: var(--color-gray-off-white);
+}
+
+/* Form Styles */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="url"],
+textarea,
+select {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-body);
+    padding: 12px 16px;
+    border: var(--border-width) solid var(--color-gray-light);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--color-gray-off-white);
+    color: var(--color-gray-dark);
+    transition: border-color var(--transition-fast);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Form Labels */
+label {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-dark);
+    margin-bottom: var(--space-xs);
+    display: block;
+}
+
+/* Required Field Indicator */
+.required,
+abbr[title="required"] {
+    color: var(--color-error);
+}
+
+/* Cards */
+.wp-block-group.is-style-card,
+.card {
+    background-color: var(--color-gray-off-white);
+    border-radius: var(--border-radius-md);
+    padding: var(--container-padding);
+    box-shadow: var(--shadow-md);
+    transition: box-shadow var(--transition-base);
+}
+
+.wp-block-group.is-style-card:hover,
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Sections */
+.wp-block-group.has-navy-background-color,
+.section-hero,
+.section-cta {
+    background-color: var(--color-navy);
+    color: var(--color-gray-off-white);
+    padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+.wp-block-group.has-navy-background-color h1,
+.wp-block-group.has-navy-background-color h2,
+.wp-block-group.has-navy-background-color h3,
+.section-hero h1,
+.section-hero h2,
+.section-hero h3,
+.section-cta h1,
+.section-cta h2,
+.section-cta h3 {
+    color: var(--color-gray-off-white);
+}
+
+/* Alternating Section Backgrounds */
+.section-light {
+    background-color: var(--color-gray-off-white);
+}
+
+.section-gray {
+    background-color: var(--color-gray-light);
+}
+
+/* ============================================================================
+   MENU CONDITIONAL DISPLAY
+   ========================================================================== */
+
+/* Hide Register and Login when logged in */
+body.logged-in .menu-item-13,  /* Register */
+body.logged-in .menu-item-16 { /* Login */
+    display: none !important;
+}
+
+/* Equal height cards in specialty section */
+.wp-block-group.has-gray-off-white-background-color .wp-block-group.is-style-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Hide Profile and Logout when logged out */
+body:not(.logged-in) .menu-item-14,  /* Profile */
+body:not(.logged-in) .menu-item-17 { /* Logout */
+    display: none !important;
+}
