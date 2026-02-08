@@ -1,0 +1,36 @@
+/* TalenDelight Custom Color Palette */
+:root {
+  --wp--preset--color--navy: #063970;
+  --wp--preset--color--grey: #898989;
+  --wp--preset--color--gray-off-white: #F5F5F5;
+  --wp--preset--color--white: #FFFFFF;
+  --wp--preset--color--black: #000000;
+}
+
+.has-navy-background-color {
+  background-color: var(--wp--preset--color--navy) !important;
+}
+
+.has-navy-color {
+  color: var(--wp--preset--color--navy) !important;
+}
+
+.has-grey-background-color {
+  background-color: var(--wp--preset--color--grey) !important;
+}
+
+.has-gray-off-white-background-color {
+  background-color: var(--wp--preset--color--gray-off-white) !important;
+}
+
+.has-white-background-color {
+  background-color: var(--wp--preset--color--white) !important;
+}
+
+.has-black-color {
+  color: var(--wp--preset--color--black) !important;
+}
+
+.has-gray-off-white-color {
+  color: var(--wp--preset--color--gray-off-white) !important;
+}
