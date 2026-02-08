@@ -1,9 +1,9 @@
 <?php
 /**
- * Title: Specialty Cards Grid (4 cards)
- * Slug: blocksy-child/specialty-grid-4
+ * Title: Card Grid 3+1
+ * Slug: blocksy-child/card-grid-3+1
  * Categories: cards, grid, features
- * Description: 4-column grid of icon cards with equal heights
+ * Description: 4-column grid of icon cards with equal heights (3+1 layout pattern)
  */
 ?>
 

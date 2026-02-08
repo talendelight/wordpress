@@ -32,9 +32,9 @@ This pattern library contains 10 production-tested, reusable Gutenberg block pat
 
 ---
 
-#### 2. Specialty Cards Grid (4 cards)
-- **Slug:** `blocksy-child/specialty-grid-4`
-- **File:** `patterns/specialty-grid-4.php`
+#### 2. Card Grid 3+1
+- **Slug:** `blocksy-child/card-grid-3+1`
+- **File:** `patterns/card-grid-3+1.php`
 - **Categories:** cards, grid, features
 - **Use Cases:** Services overview, features grid, specialty showcase
 - **Features:**
@@ -275,7 +275,7 @@ All patterns use consistent design system values:
 
 **Solution:** Increased to 64px based on user feedback during Welcome page production deployment.
 
-**Where Used:** specialty-grid-4.php, how-it-works-3.php
+**Where Used:** card-grid-3+1.php, how-it-works-3.php
 
 ---
 
@@ -284,7 +284,7 @@ All patterns use consistent design system values:
 
 **Solution:** `min-height:100%` on card containers inside Column blocks.
 
-**Where Used:** icon-card.php, specialty-grid-4.php, how-it-works-3.php
+**Where Used:** icon-card.php, card-grid-3+1.php, how-it-works-3.php
 
 ---
 
