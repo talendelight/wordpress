@@ -180,16 +180,38 @@ jobs:
             exit 0
           fi
           
-          echo "Preparing database deployment..."
-          echo "database_deployed=true" >> $GITHUB_OUTPUT
-          
           # Extract SQL files from release config
           jq -r '.steps[] | select(.type == "deploy_database") | .config.sql_files[]' "$RELEASE_FILE" > db_files.txt
+          
+          # Check if any SQL files are actually specified
+          if [ ! -s db_files.txt ]; then
+            echo "No SQL files specified in release config - skipping database deployment"
+            exit 0
+          fi
+          
+          echo "Preparing database deployment..."
+          echo "database_deployed=true" >> $GITHUB_OUTPUT
           
           echo "SQL files to deploy:"
           cat db_files.txt
 
-      - name: Upload and Execute Database Changes
+      - name: Upload Database Changes
+        if: steps.deploy_database.outputs.database_deployed == 'true'
+        run: |
+          # Create staging directory
+          mkdir -p db-staging
+          
+          # Copy only files listed in db_files.txt
+          while IFS= read -r sql_file; do
+            if [ -f "$sql_file" ]; then
+              cp "$sql_file" db-staging/
+              echo "Staged: $sql_file"
+            else
+              echo "WARNING: File not found: $sql_file"
+            fi
+          done < db_files.txt
+
+      - name: Upload Staged Database Files to Production
         if: steps.deploy_database.outputs.database_deployed == 'true'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -197,9 +219,9 @@ jobs:
           username: ${{ secrets.HOSTINGER_USER }}
           key: ${{ secrets.HOSTINGER_SSH_KEY }}
           port: ${{ secrets.HOSTINGER_PORT }}
-          source: "infra/shared/db/*.sql"
+          source: "db-staging/*.sql"
           target: "~/db-deploy/"
-          strip_components: 3
+          strip_components: 1
 
       - name: Execute Database SQL Files
         if: steps.deploy_database.outputs.database_deployed == 'true'
