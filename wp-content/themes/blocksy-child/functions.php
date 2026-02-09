@@ -20,7 +20,15 @@ add_action('wp_enqueue_scripts', function() {
         '1.0.0'
     );
     
-    // Font Awesome now loaded via Better Font Awesome plugin (locally hosted)
+    // Font Awesome - fallback if Better Font Awesome plugin not active
+    if (!wp_style_is('font-awesome', 'enqueued') && !wp_style_is('font-awesome-official', 'enqueued')) {
+        wp_enqueue_style(
+            'font-awesome-cdn',
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
+            array(),
+            '6.5.1'
+        );
+    }
 });
 
 // Register block patterns
