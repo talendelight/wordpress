@@ -314,8 +314,8 @@ abbr[title="required"] {
    ========================================================================== */
 
 /* Hide Register and Login when logged in */
-body.logged-in .menu-item-17,  /* Register */
-body.logged-in .menu-item-19 { /* Login */
+body.logged-in .menu-item-8,  /* Register */
+body.logged-in .menu-item-10 { /* Login */
     display: none !important;
 }
 
