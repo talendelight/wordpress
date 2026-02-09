@@ -314,8 +314,8 @@ abbr[title="required"] {
    ========================================================================== */
 
 /* Hide Register and Login when logged in */
-body.logged-in .menu-item-13,  /* Register */
-body.logged-in .menu-item-16 { /* Login */
+body.logged-in .menu-item-17,  /* Register */
+body.logged-in .menu-item-19 { /* Login */
     display: none !important;
 }
 
@@ -326,8 +326,4 @@ body.logged-in .menu-item-16 { /* Login */
     height: 100%;
 }
 
-/* Hide Profile and Logout when logged out */
-body:not(.logged-in) .menu-item-14,  /* Profile */
-body:not(.logged-in) .menu-item-17 { /* Logout */
-    display: none !important;
-}
+/* Note: Profile and Logout menu items not yet created */
