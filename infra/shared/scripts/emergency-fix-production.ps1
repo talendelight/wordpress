@@ -269,8 +269,46 @@ if ([string]::IsNullOrWhiteSpace($permalinkCheck)) {
     Write-Host "  $([char]0x2713) Permalink structure: $permalinkCheck" -ForegroundColor Green
 }
 
-# Step 3.7: Verify homepage is set to Welcome page
-Write-Host "`n3.7. Checking homepage setting..." -ForegroundColor Cyan
+# Step 3.7: Verify and fix HTTPS redirect
+Write-Host "`n3.7. Checking HTTPS redirect..." -ForegroundColor Cyan
+
+$htaccessFix = @'
+# Force HTTPS - Must be first
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+'@
+
+if (Test-Path $SSH_KEY) {
+    $hasHttpsRedirect = ssh -i $SSH_KEY -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && head -10 .htaccess | grep -c 'Force HTTPS'"
+} else {
+    $hasHttpsRedirect = ssh -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && head -10 .htaccess | grep -c 'Force HTTPS'"
+}
+
+if ($hasHttpsRedirect -eq "0") {
+    Write-Host "  HTTPS redirect missing, adding..." -ForegroundColor Yellow
+    
+    $tempHtaccess = Join-Path $tempDir "htaccess-fix.txt"
+    Set-Content -Path $tempHtaccess -Value $htaccessFix -NoNewline
+    
+    if (Test-Path $SSH_KEY) {
+        scp -i $SSH_KEY -P $SSH_PORT $tempHtaccess "${SSH_USER}@${SSH_HOST}:~/htaccess-fix.txt"
+        ssh -i $SSH_KEY -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && cat ~/htaccess-fix.txt .htaccess > .htaccess.new && mv .htaccess.new .htaccess && rm ~/htaccess-fix.txt"
+    } else {
+        scp -P $SSH_PORT $tempHtaccess "${SSH_USER}@${SSH_HOST}:~/htaccess-fix.txt"
+        ssh -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && cat ~/htaccess-fix.txt .htaccess > .htaccess.new && mv .htaccess.new .htaccess && rm ~/htaccess-fix.txt"
+    }
+    
+    Write-Host "  $([char]0x2713) HTTPS redirect added to .htaccess" -ForegroundColor Green
+} else {
+    Write-Host "  $([char]0x2713) HTTPS redirect configured" -ForegroundColor Green
+}
+
+# Step 3.8: Verify homepage is set to Welcome page
+Write-Host "`n3.8. Checking homepage setting..." -ForegroundColor Cyan
 
 if (Test-Path $SSH_KEY) {
     $homepageCheck = ssh -i $SSH_KEY -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" @"
