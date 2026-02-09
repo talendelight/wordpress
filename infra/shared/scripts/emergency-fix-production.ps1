@@ -215,14 +215,14 @@ if (Test-Path $SSH_KEY) {
     $themeCheck = ssh -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && wp theme list --status=active --field=name --allow-root"
 }
 
-if ($themeCheck -notmatch "blocksy") {
-    Write-Host "  Wrong theme active ($themeCheck), activating Blocksy..." -ForegroundColor Yellow
+if ($themeCheck -notmatch "blocksy-child") {
+    Write-Host "  Wrong theme active ($themeCheck), activating Blocksy Child..." -ForegroundColor Yellow
     if (Test-Path $SSH_KEY) {
-        ssh -i $SSH_KEY -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && wp theme activate blocksy --allow-root && wp cache flush --allow-root"
+        ssh -i $SSH_KEY -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && wp theme activate blocksy-child --allow-root && wp cache flush --allow-root"
     } else {
-        ssh -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && wp theme activate blocksy --allow-root && wp cache flush --allow-root"
+        ssh -p $SSH_PORT "${SSH_USER}@${SSH_HOST}" "cd $PROD_PATH && wp theme activate blocksy-child --allow-root && wp cache flush --allow-root"
     }
-    Write-Host "  $([char]0x2713) Blocksy theme activated" -ForegroundColor Green
+    Write-Host "  $([char]0x2713) Blocksy Child theme activated" -ForegroundColor Green
 } else {
     Write-Host "  $([char]0x2713) Correct theme active: $themeCheck" -ForegroundColor Green
 }
