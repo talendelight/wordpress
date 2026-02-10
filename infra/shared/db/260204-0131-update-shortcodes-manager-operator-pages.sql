@@ -1,0 +1,2 @@
+-- Empty delta file (placeholder for future changes)
+-- This file is intentionally left empty
