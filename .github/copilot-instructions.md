@@ -4,6 +4,7 @@
 
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
 2. **Never make assumptions** - ask for clarification when requirements are ambiguous
+3. **Pattern usage is mandatory** - see [Pattern Usage Rules](#pattern-usage-rules) below
 
 ## Known Issues & Solutions
 
@@ -106,6 +107,52 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 - ✅ Forwards all arguments to underlying scripts
 
 **DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+
+## Pattern Usage Rules
+
+**⚠️ CRITICAL: Always use actual pattern code as template when creating new pages**
+
+**The Problem:** Pattern comments alone (e.g., `<!-- Pattern: blocksy-child/card-grid-3 -->`) are not enough. Writing HTML from memory causes missing styling attributes and design inconsistency.
+
+**Mandatory Workflow:**
+
+1. ✅ **Read the pattern file FIRST**
+   ```bash
+   cat wp-content/themes/blocksy-child/patterns/card-grid-3.php
+   ```
+
+2. ✅ **Copy the EXACT HTML structure** from the pattern file
+
+3. ✅ **Modify ONLY content** (headings, paragraphs, button text, icons)
+
+4. ✅ **Keep ALL styling attributes intact:**
+   - `"border":{"radius":"12px"}` → Rounded corners
+   - `"className":"is-style-card"` → Card styling
+   - `"padding":{"top":"var:preset|spacing|48",...}` → Consistent spacing
+   - `"dimensions":{"minHeight":"100%"}` → Equal card heights
+   - `margin-top:0;margin-bottom:0` → Zero-gap layout
+
+5. ✅ **Verify styling** before committing:
+   ```bash
+   grep "border-radius:12px" restore/pages/your-page.html
+   grep "is-style-card" restore/pages/your-page.html
+   ```
+
+**Never Do This:**
+- ❌ Write markup from memory
+- ❌ Assume you know the structure
+- ❌ Add pattern comment without using pattern code
+- ❌ Skip reading the pattern file
+
+**Available Patterns:** See [wp-content/themes/blocksy-child/patterns/](wp-content/themes/blocksy-child/patterns/)
+- `card-grid-3.php` - 3 cards in single row
+- `card-grid-2-2.php` - 2x2 grid (4 cards)
+- `card-grid-3+1.php` - 3 cards + 1 centered
+- `hero-single-cta.php` - Hero sections
+- `cta-primary.php` - CTA sections
+- `footer-trust-badges.php` - Footer badges
+
+**Full Lesson:** See [docs/lessons/pattern-usage-consistency.md](docs/lessons/pattern-usage-consistency.md) for detailed explanation with before/after examples.
 
 ## 
 ## Critical Developer Workflows
