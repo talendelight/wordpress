@@ -577,27 +577,8 @@ function talendelight_restrict_operators_page() {
     
     // If no access, redirect to 403 forbidden page
     if (!$has_access) {
-        $forbidden_page = get_page_by_path('403-forbidden');
-        if ($forbidden_page) {
-            wp_redirect(home_url('/403-forbidden/'));
-            exit;
-        } else {
-            // Fallback to styled wp_die
-            wp_die(
-                '<div style="font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; max-width: 600px; margin: 100px auto; padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h1 style="color: #dc3545; font-size: 48px; margin-bottom: 20px;">Access Denied</h1>
-                    <p style="font-size: 18px; color: #6c757d; margin-bottom: 30px;">You do not have permission to access the Operators Dashboard.</p>
-                    <p style="font-size: 16px; color: #495057; margin-bottom: 30px;">This page is restricted to Operators and Managers only.</p>
-                    <div style="margin: 30px 0;">
-                        <a href="' . home_url() . '" style="display: inline-block; background: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: 600; margin-right: 10px;">Go to Home Page</a>
-                        <a href="' . home_url('/account/') . '" style="display: inline-block; background: #6c757d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: 600;">Go to My Account</a>
-                    </div>
-                    <p style="font-size: 14px; color: #6c757d; margin-top: 40px;">Need help? Email <a href="mailto:support@talendelight.com" style="color: #0066cc;">support@talendelight.com</a></p>
-                </div>',
-                'Access Denied - TalenDelight Operators',
-                ['response' => 403]
-            );
-        }
+        wp_redirect(home_url('/403-forbidden/'));
+        exit;
     }
 }
 add_action('template_redirect', 'talendelight_restrict_operators_page', 5);
@@ -635,26 +616,124 @@ function talendelight_restrict_managers_page() {
     
     // If no access, redirect to 403 forbidden page
     if (!$has_access) {
-        $forbidden_page = get_page_by_path('403-forbidden');
-        if ($forbidden_page) {
-            wp_redirect(home_url('/403-forbidden/'));
-            exit;
-        } else {
-            wp_die(
-                '<div style="font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif; max-width: 600px; margin: 100px auto; padding: 40px; text-align: center; background: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                    <h1 style="color: #dc3545; font-size: 48px; margin-bottom: 20px;">Access Denied</h1>
-                    <p style="font-size: 18px; color: #6c757d; margin-bottom: 30px;">You do not have permission to access the Managers Dashboard.</p>
-                    <p style="font-size: 16px; color: #495057; margin-bottom: 30px;">This page is restricted to Managers only.</p>
-                    <div style="margin: 30px 0;">
-                        <a href="' . home_url() . '" style="display: inline-block; background: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: 600; margin-right: 10px;">Go to Home Page</a>
-                        <a href="' . home_url('/account/') . '" style="display: inline-block; background: #6c757d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: 600;">Go to My Account</a>
-                    </div>
-                    <p style="font-size: 14px; color: #6c757d; margin-top: 40px;">Need help? Email <a href="mailto:support@talendelight.com" style="color: #0066cc;">support@talendelight.com</a></p>
-                </div>',
-                'Access Denied - TalenDelight Managers',
-                ['response' => 403]
-            );
-        }
+        wp_redirect(home_url('/403-forbidden/'));
+        exit;
     }
 }
 add_action('template_redirect', 'talendelight_restrict_managers_page', 5);
+/**
+ * Page-specific access control: Employers page
+ * Only Employers and Administrators can access /employers/
+ */
+function talendelight_restrict_employers_page() {
+    // Only run on /employers/ page
+    if (!is_page('employers')) {
+        return;
+    }
+    
+    // Require login
+    if (!is_user_logged_in()) {
+        auth_redirect();
+        exit;
+    }
+    
+    // Get current user
+    $user = wp_get_current_user();
+    
+    // Define allowed roles for Employers page
+    $allowed_roles = ['td_employer', 'administrator'];
+    
+    // Check if user has at least one allowed role
+    $has_access = false;
+    foreach ($user->roles as $role) {
+        if (in_array($role, $allowed_roles)) {
+            $has_access = true;
+            break;
+        }
+    }
+    
+    // If no access, redirect to 403 forbidden page
+    if (!$has_access) {
+        wp_redirect(home_url('/403-forbidden/'));
+        exit;
+    }
+}
+add_action('template_redirect', 'talendelight_restrict_employers_page', 5);
+
+/**
+ * Page-specific access control: Candidates page
+ * Only Candidates and Administrators can access /candidates/
+ */
+function talendelight_restrict_candidates_page() {
+    // Only run on /candidates/ page
+    if (!is_page('candidates')) {
+        return;
+    }
+    
+    // Require login
+    if (!is_user_logged_in()) {
+        auth_redirect();
+        exit;
+    }
+    
+    // Get current user
+    $user = wp_get_current_user();
+    
+    // Define allowed roles for Candidates page
+    $allowed_roles = ['td_candidate', 'administrator'];
+    
+    // Check if user has at least one allowed role
+    $has_access = false;
+    foreach ($user->roles as $role) {
+        if (in_array($role, $allowed_roles)) {
+            $has_access = true;
+            break;
+        }
+    }
+    
+    // If no access, redirect to 403 forbidden page
+    if (!$has_access) {
+        wp_redirect(home_url('/403-forbidden/'));
+        exit;
+    }
+}
+add_action('template_redirect', 'talendelight_restrict_candidates_page', 5);
+
+/**
+ * Page-specific access control: Scouts page
+ * Only Scouts and Administrators can access /scouts/
+ */
+function talendelight_restrict_scouts_page() {
+    // Only run on /scouts/ page
+    if (!is_page('scouts')) {
+        return;
+    }
+    
+    // Require login
+    if (!is_user_logged_in()) {
+        auth_redirect();
+        exit;
+    }
+    
+    // Get current user
+    $user = wp_get_current_user();
+    
+    // Define allowed roles for Scouts page
+    $allowed_roles = ['td_scout', 'administrator'];
+    
+    // Check if user has at least one allowed role
+    $has_access = false;
+    foreach ($user->roles as $role) {
+        if (in_array($role, $allowed_roles)) {
+            $has_access = true;
+            break;
+        }
+    }
+    
+    // If no access, redirect to 403 forbidden page
+    if (!$has_access) {
+        wp_redirect(home_url('/403-forbidden/'));
+        exit;
+    }
+}
+add_action('template_redirect', 'talendelight_restrict_scouts_page', 5);
