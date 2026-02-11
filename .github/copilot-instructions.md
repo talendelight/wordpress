@@ -5,6 +5,7 @@
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
 2. **Never make assumptions** - ask for clarification when requirements are ambiguous
 3. **Pattern usage is mandatory** - see [Pattern Usage Rules](#pattern-usage-rules) below
+4. **Always return to develop branch after deployment** - After pushing to main, immediately switch back to develop branch
 
 ## Known Issues & Solutions
 
@@ -85,16 +86,20 @@ Action Dispatcher (Central Command Registry)
 pwsh infra/shared/scripts/wp-action.ps1 <action> [arguments]
 
 # Available actions:
-# - backup      → backup-production.ps1 (create timestamped backup)
-# - verify      → verify-production.ps1 (check production state)
-# - restore     → restore-production.ps1 (restore from backup)
+# - backup           → backup-production.ps1 (create timestamped backup)
+# - verify           → verify-production.ps1 (check production state)
+# - restore          → restore-production.ps1 (restore from backup)
 # - export-elementor → export-elementor-pages.ps1 (export Elementor pages)
-# - deploy      → show deployment workflow
-# - help        → show help for any action
+# - health-check     → verify-production-health.php (comprehensive health check)
+# - apply-sql        → apply-sql-change.ps1 (apply SQL migration to local DB)
+# - deploy           → show deployment workflow
+# - help             → show help for any action
 
 # Examples:
 pwsh infra/shared/scripts/wp-action.ps1 backup
 pwsh infra/shared/scripts/wp-action.ps1 verify
+pwsh infra/shared/scripts/wp-action.ps1 health-check -Verbose
+pwsh infra/shared/scripts/wp-action.ps1 apply-sql -SqlFilePath infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql
 pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true
 pwsh infra/shared/scripts/wp-action.ps1 help backup
 ```
