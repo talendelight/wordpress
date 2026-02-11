@@ -112,22 +112,37 @@ add_action('template_redirect', function() {
         return;
     }
     
-    $page_id = get_the_ID();
     $current_user = wp_get_current_user();
+    $is_logged_in = is_user_logged_in();
+    $current_url = $_SERVER['REQUEST_URI'];
     
-    // Manager-only pages (Dashboard, Admin, Actions)
-    $manager_pages = [386, 469, 670];
-    if (in_array($page_id, $manager_pages)) {
-        if (!array_intersect(['administrator', 'td_manager'], $current_user->roles)) {
-            wp_redirect(home_url('/403-forbidden/'));
-            exit;
+    // Role-specific landing pages and subpages (require login + specific role)
+    $role_pages = [
+        '/candidates/' => 'td_candidate',    // Candidates only (landing + subpages)
+        '/employers/' => 'td_employer',      // Employers only (landing + subpages)
+        '/scouts/' => 'td_scout',            // Scouts only (landing + subpages)
+        '/managers/' => 'td_manager',        // Managers only (landing + /managers/admin/, /managers/actions/, etc.)
+    ];
+    
+    foreach ($role_pages as $url_prefix => $required_role) {
+        if (strpos($current_url, $url_prefix) === 0) {
+            // Redirect to login if not authenticated
+            if (!$is_logged_in) {
+                wp_redirect(home_url('/log-in/?redirect_to=' . urlencode($current_url)));
+                exit;
+            }
+            
+            // Check if user has the required role (or is administrator)
+            if (!array_intersect(['administrator', $required_role], $current_user->roles)) {
+                wp_redirect(home_url('/403-forbidden/'));
+                exit;
+            }
         }
     }
     
-    // Operator pages (Dashboard, Actions)
-    $operator_pages = [299, 666];
-    if (in_array($page_id, $operator_pages)) {
-        if (!array_intersect(['administrator', 'td_operator'], $current_user->roles)) {
+    // Operator pages (accessible by Operators OR Managers)
+    if (strpos($current_url, '/operators/') === 0) {
+        if (!array_intersect(['administrator', 'td_operator', 'td_manager'], $current_user->roles)) {
             wp_redirect(home_url('/403-forbidden/'));
             exit;
         }
