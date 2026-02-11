@@ -546,7 +546,7 @@ add_action('admin_init', 'talendelight_add_admin_capabilities');
 
 /**
  * Page-specific access control: Operators page
- * Only Operators, Managers, and Administrators can access /operators/
+ * Only Operators and Administrators can access /operators/
  */
 function talendelight_restrict_operators_page() {
     // Only run on /operators/ page
@@ -564,7 +564,7 @@ function talendelight_restrict_operators_page() {
     $user = wp_get_current_user();
     
     // Define allowed roles for Operators page
-    $allowed_roles = ['td_operator', 'td_manager', 'administrator'];
+    $allowed_roles = ['td_operator', 'administrator'];
     
     // Check if user has at least one allowed role
     $has_access = false;
