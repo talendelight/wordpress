@@ -12,11 +12,219 @@ This document tracks all manual deployment steps required for the **next product
 
 ---
 
+## v3.6.0 Release Summary
+
+**Release Type:** Security & Infrastructure Improvements + Elementor Migration Completion  
+**Deploy Date:** TBD (February 2026)
+
+### Key Changes
+
+**1. URL-Based Access Control (BREAKING CHANGE)**
+- **What:** Migrate from page ID-based to URL pattern-based access control
+- **Why:** Page IDs differ between local/production and change on database resets
+- **Files:** `wp-content/themes/blocksy-child/functions.php`
+- **Benefits:** Environment-agnostic, survives database resets, more maintainable
+- **Impact:** No UI changes, improved reliability
+
+**2. Login Form UX Improvements**
+- **What:** Narrower login form (400px), centered button, improved styling
+- **Files:** `wp-content/themes/blocksy-child/wpum-overrides.css`
+- **Benefits:** Better visual consistency, matches hero button style
+- **Impact:** Improved user experience on login page
+
+**3. Managers Page Content Fix**
+- **What:** Updated links from `/manager-admin/` to `/managers/admin/`
+- **Files:** `restore/pages/managers-8.html`
+- **Benefits:** Consistent URL structure (parent-child pages)
+- **Impact:** Correct navigation links in Managers dashboard
+
+**4. Elementor Migration - Operators Page**
+- **What:** Migrated Operators dashboard from Elementor to Gutenberg blocks
+- **Files:** `restore/pages/operators-9.html` (17,518 bytes)
+- **Layout:** 2 rows with 3 cards each (Row 1: Needs Action, Manage Candidates, Manage Employers | Row 2: Manage Scouts, Performance, View Reports)
+- **Benefits:** Zero Elementor dependencies, consistent design, easier maintenance
+- **Impact:** Cleaner dashboard with better functional organization
+
+**5. Elementor Migration - 403 Forbidden Page**
+- **What:** Migrated 403 error page from Elementor to Gutenberg blocks
+- **Files:** `restore/pages/403-forbidden-44.html` (10,344 bytes)
+- **Benefits:** Zero Elementor dependencies, consistent styling
+- **Impact:** Professional error page with consistent branding
+
+**6. Record ID System (PENG-016)**
+- **What:** Automatic request_id and record_id generation
+- **Files:** `wp-content/mu-plugins/record-id-generator.php`, database migrations
+- **Benefits:** Unique stable identifiers for all users
+- **Impact:** Foundation for user tracking across systems
+
+**7. API Security Hardening (PENG-054) ⚠️ CRITICAL**
+- **What:** Comprehensive AJAX/REST API security enforcement
+- **Files:** `wp-content/mu-plugins/td-api-security.php` (new), `docs/API-SECURITY-PATTERNS.md` (new)
+- **Security Measures:**
+  - REST API authentication enforcement (blocks unauthenticated access)
+  - Custom role isolation (blocks access to WordPress admin API)
+  - AJAX request monitoring and logging
+  - XML-RPC disabled (common attack vector)
+  - File editing disabled in admin
+  - WordPress version hidden
+- **Verified:** All 5 existing AJAX endpoints secured with nonce + role checks
+- **Benefits:** Prevents privilege escalation, API abuse, unauthorized data access
+- **Impact:** Production-ready security posture for MVP launch
+
+**8. Plugin Removal**
+- **What:** Remove PublishPress Capabilities plugin (if installed)
+- **Why:** Access control now handled by custom code
+- **Impact:** Reduced dependencies, simpler maintenance
+
+### Files to Deploy
+
+**Theme Files:**
+- `wp-content/themes/blocksy-child/functions.php` (URL-based access control)
+- `wp-content/themes/blocksy-child/wpum-overrides.css` (login form styling)
+
+**MU-Plugins:**
+- `wp-content/mu-plugins/record-id-generator.php` (PENG-016 - new file)
+- `wp-content/mu-plugins/td-api-security.php` (PENG-054 - new file, CRITICAL)
+
+**Database Migrations:**
+- `infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql`
+- `infra/shared/db/260131-1300-add-id-sequences-table.sql`
+- `infra/shared/db/260131-1400-add-assigned-by-column.sql`
+- `infra/shared/db/260204-0131-update-shortcodes-manager-operator-pages.sql`
+
+**Page Content:**
+- `restore/pages/managers-8.html` (22,471 bytes - corrected links)
+- `restore/pages/operators-9.html` (17,518 bytes - NEW, migrated from Elementor)
+- `restore/pages/403-forbidden-44.html` (10,344 bytes - NEW, migrated from Elementor)
+
+### Testing Required
+
+- [ ] URL-based access control for all roles (Candidate, Employer, Scout, Operator, Manager)
+- [ ] Login form styling (desktop + mobile)
+- [ ] Managers page navigation links
+- [ ] Operators page layout and navigation
+- [ ] 403 error page display
+- [ ] **API Security (PENG-054):**
+  - [ ] AJAX endpoints require authentication (test unauthenticated request → 403)
+  - [ ] AJAX endpoints validate roles (test wrong role → 403)
+  - [ ] AJAX endpoints validate nonce (test invalid nonce → error)
+  - [ ] REST API blocks unauthenticated access (test public route)
+  - [ ] REST A65-80 minutes**
+
+| Step | Task | Time |
+|------|------|------|
+| 1 | Check/remove PublishPress plugin | 2-3 min |
+| 2 | Git push (auto-deploys wp-content/) | 5 min |
+| 3 | Deploy 4 database migrations | 8-10 min |
+| 4 | Update Managers page content | 3-4 min |
+| 5 | Deploy Operators page (NEW) | 3-4 min |
+| 6 | Deploy 403 page (NEW) | 3-4 min |
+| 7 | Verify access control (5 roles × 5 pages) | 10-12 min |
+| 8 | Test login form styling | 3-4 min |
+| 9 | Test page navigation and links | 5-6 min |
+| 10 | Verify record ID generation | 3-4 min |
+| 11 | **Test API security (PENG-054 - CRITICAL)** | 10-12 min |
+| 12 | Post-deployment health check | 5-6 min |
+
+**Breakdown:**
+- Pre-deployment: 2-3 min
+- Code deployment: 5 min (automated)
+- Database work: 8-10 min
+- Page updates: 9-12 min (3 pages)
+- Testing & verification: 41-50 min (includes API security tests)
+
+**Critical Path:** Database migrations → Page updates → Access control testing → **API security verification**
+**Breakdown:**
+- Pre-deployment: 2-3 min
+- Code deployment: 5 min (automated)
+- Database work: 8-10 min
+- Page updates: 9-12 min (3 pages)
+- Testing & verification: 26-32 min
+
+**Critical Path:** Database migrations → Page updates → Access control testing
+
+---
+
 ## Planned Features
 
-### v3.6.0 Features
+### v3.6.0 Features (In Development)
 
-**1. Phase 0 Business Foundations (January 23-25, 2026)**
+**URL-Based Access Control (Complete - February 10, 2026)**
+- **Purpose:** Replace page ID-based access control with environment-agnostic URL pattern matching
+- **Implementation:** [wp-content/themes/blocksy-child/functions.php](../wp-content/themes/blocksy-child/functions.php)
+- **Documentation:** [docs/PAGE-ACCESS-CONTROL.md](PAGE-ACCESS-CONTROL.md) v3.6.0
+- **Scope:**
+  - URL prefix matching: `/candidates/*`, `/employers/*`, `/scouts/*`, `/managers/*`, `/operators/*`
+  - Login redirect with return URL: `?redirect_to={original_url}`
+  - Manager oversight access to operator pages
+  - Environment-agnostic (works on local + production)
+  - Survives database resets (no page ID dependencies)
+- **Benefits:**
+  - ✅ No page ID mapping between environments
+  - ✅ More maintainable (URL patterns vs ID arrays)
+  - ✅ Automatic coverage of subpages
+  - ✅ Resilient to database resets
+
+**Login Form UX Improvements (Complete - February 10, 2026)**
+- **Purpose:** Improve login form visual consistency and user experience
+- **Implementation:** [wp-content/themes/blocksy-child/wpum-overrides.css](../wp-content/themes/blocksy-child/wpum-overrides.css)
+- **Scope:**
+  - Form width: Reduced from 480px to 400px
+  - Button width: Changed from 100% (full-width) to auto (min-width: 140px)
+  - Button centering: `display: block` + `margin: 0 auto`
+- **Benefits:**
+  - ✅ Matches welcome page hero button style
+  - ✅ More compact, professional appearance
+  - ✅ Better visual hierarchy
+
+**Managers Page Content Fix (Complete - February 10, 2026)**
+- **Purpose:** Update Managers dashboard with correct navigation links
+- **Implementation:** [restore/pages/managers-8.html](../restore/pages/managers-8.html)
+- **Scope:**
+  - Updated links from `/manager-admin/` to `/managers/admin/`
+  - Consistent parent-child URL structure
+  - 9 Quick Links for manager navigation
+- **Benefits:**
+  - ✅ Correct URL structure throughout site
+  - ✅ Functional dashboard navigation
+
+**Elementor Migration - Operators Page (Complete - February 11, 2026)**
+- **Purpose:** Migrate Operators dashboard from Elementor to Gutenberg blocks
+- **Implementation:** [restore/pages/operators-9.html](../restore/pages/operators-9.html)
+- **Scope:**
+  - Page ID 9: Operators landing page
+  - **Updated Layout:** 2 rows with 3 cards each (February 11 refinement)
+    - Row 1: Needs Action, Manage Candidates, Manage Employers
+    - Row 2: Manage Scouts, Performance, View Reports
+    - 32px spacer between rows for proper visual separation
+  - Hero, Quick Links (6 cards), CTA, Footer sections
+  - Content: 20,450 bytes (updated)
+- **Benefits:**
+  - ✅ No Elementor dependency
+  - ✅ Consistent with other landing pages
+  - ✅ Easier maintenance
+  - ✅ Better functional organization (people management in Row 1, operations in Row 2)
+
+**Elementor Migration - 403 Forbidden Page (Complete - February 11, 2026)**
+- **Purpose:** Migrate 403 error page from Elementor to Gutenberg blocks
+- **Implementation:** [restore/pages/403-forbidden-44.html](../restore/pages/403-forbidden-44.html)
+- **Scope:**
+  - Page ID 44: Access Restricted error page
+  - Hero with 403 message, information cards, CTA section
+  - Content: 10,344 bytes
+- **Benefits:**
+  - ✅ No Elementor dependency
+  - ✅ Consistent styling with other pages
+
+**Migration Summary:**
+- ✅ All 7 main pages migrated from Elementor to Gutenberg
+- ✅ Welcome (6), Employers (64), Candidates (7), Scouts (76), Managers (8), Operators (9), 403 Forbidden (44)
+- ✅ Zero Elementor dependencies
+- ✅ Consistent block-based architecture
+
+---
+
+### Phase 0 Business Foundations (Complete - January 23-31, 2026)
 
 **BMSL-001: Role Capabilities Matrix (Complete - January 24, 2026)**
 - **Purpose:** Define role capabilities and access boundaries for all custom roles
@@ -126,8 +334,9 @@ This document tracks all manual deployment steps required for the **next product
   - Deploy new mu-plugin: record-id-generator.php
   - Deploy modified mu-plugins: forminator-custom-table.php, user-requests-display.php
 
-**RESTful URL Restructure (Complete - January 31, 2026)**
+**RESTful URL Restructure (Complete - January 31, 2026 - Deployed in v3.5.0)**
 - **Purpose:** Implement standard RESTful URL hierarchy for registration pages
+- **Status:** ✅ Already deployed to production
 - **Breaking Change:** URL paths changed, requires page updates in production
 - **Old URLs:**
   - `/select-role/` - Role selection
@@ -163,8 +372,9 @@ This document tracks all manual deployment steps required for the **next product
   - Flush permalinks after page updates
   - Deploy theme changes: page-role-selection.php, functions.php
 
-**2. Design System Compliance Audit (Complete - January 22-23, 2026)**
+**Design System Compliance Audit (Complete - January 22-23, 2026 - Deployed in v3.5.0)**
 - **Purpose:** Ensure all Elementor pages follow consistent design standards for mobile responsiveness
+- **Status:** ✅ Already deployed to production
 - **Scope:** 10 Elementor-built pages audited and corrected
 - **Standards Applied:**
   - Hero H1 mobile typography: 42px (explicitly set via responsive controls)
@@ -188,7 +398,8 @@ This document tracks all manual deployment steps required for the **next product
   - ✅ Design standards documented and verified
   - ✅ Future page creation follows established patterns
 
-**3. Content Updates**
+**Content Updates (Complete - Deployed in v3.4.0 and v3.5.0)**
+- **Status:** ✅ Already deployed to production
 - Manager Admin page title/form updated: "User Request Approvals" → "User Registration Request Approvals"
 - Manager Admin sub-heading updated to reflect: Users, Roles, and System Settings
 
@@ -263,10 +474,38 @@ This document tracks all manual deployment steps required for the **next product
 - [ ] All code changes committed to `develop` branch
 - [ ] Local testing completed
 - [ ] Database migrations tested locally
-- [ ] `.github/releases/v3.5.0.json` created/updated with deployment steps
+- [ ] `.github/releases/v3.6.0.json` created/updated with deployment steps
 - [ ] **If new SQL files in `infra/shared/db/`:** Add filenames to `deploy_database.config.sql_files` array in release JSON
 - [ ] If Elementor pages: Run `pwsh infra/shared/scripts/export-elementor-pages.ps1`
 - [ ] If new plugins: Add to `deploy_plugins` step in release JSON
+
+### Critical Files to Deploy (v3.6.0)
+
+**Theme Files (wp-content/themes/blocksy-child/):**
+- [ ] `functions.php` - URL-based access control implementation (v3.6.0)
+- [ ] `wpum-overrides.css` - Login form styling improvements (v3.6.0)
+
+**Page Content (restore/pages/):**
+- [ ] `managers-8.html` - Functional dashboard with corrected `/managers/admin` links (v3.6.0)
+- [ ] `operators-9.html` - Migrated from Elementor, 6 Quick Links (v3.6.0 NEW)
+- [ ] `403-forbidden-44.html` - Migrated from Elementor, access denied page (v3.6.0 NEW)
+- [ ] `scouts-76.html` - Migrated from Elementor (if updated)
+
+**Database Migrations (infra/shared/db/):**
+- [ ] `260131-1200-add-record-id-prsn-cmpy.sql` - Record ID columns
+- [ ] `260131-1300-add-id-sequences-table.sql` - ID sequence tracking
+- [ ] `260131-1400-add-assigned-by-column.sql` - Assigned by tracking
+- [ ] `260204-0131-update-shortcodes-manager-operator-pages.sql` - Shortcode updates
+
+**MU-Plugins (wp-content/mu-plugins/):**
+- [ ] `record-id-generator.php` - PENG-016 implementation
+- [ ] `td-notifications.php` - Notification system (if updated)
+
+**Plugin Updates:**
+- [ ] `talendelight-roles/talendelight-roles.php` - PENG-053 wp-admin blocking
+
+**Plugin Removals:**
+- [ ] **Remove PublishPress Capabilities** (not installed locally, check production)
 
 ### Git Workflow
 ```bash
@@ -334,7 +573,7 @@ cat config/custom-css/td-page.css
   - [ ] Input fields consistent padding and borders
   - [ ] Submit button auto width, centered, blue styling
   - [ ] Required indicators red (#dc3545)
-- [ ] Manager Admin table at /manager-admin/: Name column font 13px (matches other cells)
+- [ ] Manager Admin table at /managers/admin/: Name column font 13px (matches other cells)
 
 **2. Deploy Manager Dashboard Page (v3.3.0 Backlog):**
 
@@ -461,7 +700,7 @@ wp db query "INSERT INTO td_user_data_change_requests (user_id, role, request_ty
 
 # Test via browser
 # - Login as manager
-# - Go to /manager-admin/
+# - Go to /managers/admin/
 # - Verify tabs work (Submitted, Approved, Rejected, All)
 # - Test approve/reject actions
 # - Check rejected tab for undo button
@@ -502,7 +741,7 @@ wp db query "SELECT * FROM td_audit_log ORDER BY changed_at DESC LIMIT 5;"
   - [ ] Submit button is blue, centered, auto width (not 100% wide)
   - [ ] Required indicators display in red
   - [ ] After successful submission, redirects to /welcome/
-- [ ] Manager Admin page (/manager-admin/):
+- [ ] Manager Admin page (/managers/admin/):
   - [ ] Name column font size matches other table cells (13px)
   - [ ] Tab switching works (Submitted, Approved, Rejected, All)
   - [ ] Approve/Reject actions work
@@ -677,7 +916,40 @@ If deployment fails:
 
 ## Deployment Steps
 
-### Step 1: Git Push
+### Step 1: Remove PublishPress Capabilities Plugin (Production Only)
+
+**Goal:** Remove PublishPress Capabilities plugin if installed (access control now handled by custom code)
+
+**SSH to production:**
+```bash
+ssh -i ~/.ssh/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd public_html
+```
+
+**Check if plugin exists:**
+```bash
+wp plugin list | grep -i publishpress
+# or
+wp plugin list | grep -i capability
+```
+
+**If plugin exists, deactivate and delete:**
+```bash
+wp plugin deactivate publishpress-capabilities --allow-root
+wp plugin delete publishpress-capabilities --allow-root
+```
+
+**Verify removal:**
+```bash
+wp plugin list | grep -i publishpress
+# Should return nothing
+```
+
+**Time:** 2-3 minutes
+
+---
+
+### Step 2: Git Push (Auto-Deploy wp-content/)
 
 ```bash
 git checkout main
@@ -685,15 +957,248 @@ git merge develop  # if using develop branch
 git push origin main
 ```
 
-**Result:** Hostinger automatically deploys `wp-content/` files
+**Result:** Hostinger automatically deploys `wp-content/` files including:
+- `themes/blocksy-child/functions.php` (URL-based access control)
+- `themes/blocksy-child/wpum-overrides.css` (login form styling)
+- `mu-plugins/record-id-generator.php` (PENG-016)
+- `plugins/talendelight-roles/` (PENG-053 updates if any)
 
 **⏱️ Wait 2-3 minutes for auto-deployment to complete**
 
-**Note:** v3.0.0 already deployed all plugins and infrastructure. This release only adds new pages.
+---
+
+### Step 3: Deploy Database Migrations
+
+**Goal:** Apply new database schema changes for Record ID system
+
+**SSH to production:**
+```bash
+ssh -i ~/.ssh/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd public_html
+```
+
+**Apply migrations (in order):**
+```bash
+# 1. Add record_id columns
+wp db query < infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql
+
+# 2. Add ID sequences table
+wp db query < infra/shared/db/260131-1300-add-id-sequences-table.sql
+
+# 3. Add assigned_by column
+wp db query < infra/shared/db/260131-1400-add-assigned-by-column.sql
+
+# 4. Update shortcodes (if needed)
+wp db query < infra/shared/db/260204-0131-update-shortcodes-manager-operator-pages.sql
+```
+
+**Verify migrations:**
+```bash
+# Check record_id columns exist
+wp db query "DESCRIBE td_user_data_change_requests" | grep record_id
+
+# Check sequences table exists
+wp db query "SHOW TABLES LIKE 'td_id_sequences'"
+
+# Check assigned_by column
+wp db query "DESCRIBE td_user_data_change_requests" | grep assigned_by
+```
+
+**Time:** 5-10 minutes
 
 ---
 
-### Step 2: Verify Pages Deployed via Git
+### Step 4: Update Managers Page Content
+
+**Goal:** Update Managers page with corrected `/managers/admin` links
+
+**From local machine:**
+```bash
+# Copy updated page content to production
+scp -i ~/.ssh/hostinger_deploy_key -P 65002 restore/pages/managers-8.html u909075950@45.84.205.129:~/
+```
+
+**SSH to production:**
+```bash
+ssh -i ~/.ssh/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
+cd public_html
+```
+
+**Update page content:**
+```bash
+# Get Managers page ID (should be 8 or similar)
+MANAGERS_PAGE_ID=$(wp post list --post_type=page --name=managers --field=ID)
+
+# Update page content
+cat ~/managers-8.html | wp post update $MANAGERS_PAGE_ID --post_content=-
+
+# Verify update
+wp post get $MANAGERS_PAGE_ID --field=post_content | grep -o "/managers/admin"
+# Should show: /managers/admin (not /manager-admin)
+```
+
+**Time:** 3-5 minutes
+
+---
+
+### Step 5: Verify Manager Admin Page Slug
+
+**Goal:** Ensure Manager Admin page has correct parent-child URL structure
+
+**Check current structure:**
+```bash
+# Get Manager Admin page details
+wp post list --post_type=page --name=admin --fields=ID,post_title,post_name,post_parent --format=table
+
+# Verify parent is Managers page (ID 8)
+# Verify slug is "admin"
+# URL should be: /managers/admin/
+```
+
+**If parent is incorrect:**
+```bash
+ADMIN_PAGE_ID=<id from above command>
+MANAGERS_PAGE_ID=8  # or actual Managers page ID
+
+wp post update $ADMIN_PAGE_ID --post_parent=$MANAGERS_PAGE_ID
+```
+
+**Verify URL:**
+```bash
+curl -I https://talendelight.com/managers/admin/
+# Should return: HTTP/2 200
+```
+
+**Time:** 2-3 minutes
+
+---
+
+### Step 6: Test Access Control
+
+**Goal:** Verify URL-based access control works correctly on production
+
+**Test 1: Manager Access to /managers/**
+1. Login as Manager user
+2. Navigate to `https://talendelight.com/managers/` → ✅ Should load
+3. Navigate to `https://talendelight.com/managers/admin/` → ✅ Should load
+4. Navigate to `https://talendelight.com/operators/` → ✅ Should load (oversight access)
+
+**Test 2: Operator Access**
+1. Login as Operator user
+2. Navigate to `https://talendelight.com/operators/` → ✅ Should load
+3. Navigate to `https://talendelight.com/managers/` → ❌ Should redirect to `/403-forbidden/`
+
+**Test 3: Candidate/Employer/Scout Access**
+1. Login as Candidate → Navigate to `/candidates/` → ✅ Should load
+2. Login as Candidate → Navigate to `/employers/` → ❌ Should redirect to `/403-forbidden/`
+3. Repeat for Employer and Scout roles
+
+**Test 4: Unauthenticated Redirect**
+1. Logout completely
+2. Navigate to `https://talendelight.com/managers/` → ❌ Should redirect to `/log-in/?redirect_to=/managers/`
+3. Login → ✅ Should redirect back to `/managers/`
+
+**Time:** 10-15 minutes
+
+---
+
+### Step 7: Test Login Form Styling
+
+**Goal:** Verify login form has improved styling (narrower, centered button)
+
+**Visual Check:**
+1. Navigate to: `https://talendelight.com/log-in/`
+2. Verify form width is narrower (~400px)
+3. Verify login button is centered (not full-width)
+4. Verify button has minimum 140px width
+5. Check responsive behavior on mobile
+
+**Time:** 2-3 minutes
+
+---
+
+### Step 8: Test Record ID Generation
+
+**Goal:** Verify PENG-016 record ID generation works on production
+
+**Test Scenario:**
+1. Create a test user registration request
+2. Verify `request_id` is auto-generated (format: `USRQ-YYMMDD-N`)
+3. Approve request as Manager
+4. Verify `record_id` is auto-generated (format: `PRSN-YYMMDD-N` or `CMPY-YYMMDD-N`)
+
+**Check sequence tracking:**
+```bash
+ssh production
+wp db query "SELECT * FROM td_id_sequences ORDER BY last_updated DESC LIMIT 5"
+```
+
+**Time:** 5-10 minutes
+
+---
+
+### Step 9: Verify Manager Admin Page Links
+
+**Goal:** Ensure all internal links use correct `/managers/admin/` format
+
+**Pages to Check:**
+1. **Managers Dashboard** (`/managers/`):
+   - Hero "Go to Dashboard" button → Should link to `/managers/admin`
+   - CTA "Go to Dashboard" button → Should link to `/managers/admin`
+
+2. **Manager Admin** (`/managers/admin/`):
+   - Should load without errors
+   - Tabbed interface should work
+   - User registration requests table should display
+
+**Time:** 3-5 minutes
+
+---
+
+### Step 10: Post-Deployment Verification
+
+**Comprehensive Checks:**
+
+**✅ Plugin Status:**
+```bash
+wp plugin list | grep -E "(talendelight-roles|publishpress)"
+# Should show: talendelight-roles active
+# Should NOT show: publishpress-capabilities
+```
+
+**✅ Database Schema:**
+```bash
+wp db query "DESCRIBE td_user_data_change_requests" | grep -E "(request_id|record_id|assigned_by)"
+# Should show all three columns
+```
+
+**✅ Page URLs:**
+- `/managers/` → 200 OK
+- `/managers/admin/` → 200 OK
+- `/operators/` → 200 OK
+- `/candidates/` → 200 OK
+- `/employers/` → 200 OK
+- `/scouts/` → 200 OK
+
+**✅ Access Control:**
+- Manager can access `/managers/*` ✓
+- Manager can access `/operators/*` ✓ (oversight)
+- Operator CANNOT access `/managers/*` ✓
+- Unauthenticated users redirect to `/log-in/` ✓
+
+**✅ Theme Files:**
+```bash
+# Verify URL-based access control code exists
+grep -n "strpos(\$current_url" wp-content/themes/blocksy-child/functions.php
+
+# Should show URL pattern matching code
+```
+
+**Time:** 5-10 minutes
+
+**Total Deployment Time:** ~45-60 minutes
+
+---
 
 **Goal:** Confirm Candidates and Scouts pages are present in production
 
