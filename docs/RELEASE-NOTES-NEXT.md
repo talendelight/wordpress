@@ -53,6 +53,7 @@ This document tracks all manual deployment steps required for the **next product
 ### Prerequisites
 
 ✅ **Completed:**
+- [ ] Archive v3.6.1.json to archive folder: `Move-Item .github/releases/v3.6.1.json .github/releases/archive/v3.6.1.json`
 - [ ] All changes tested locally
 - [ ] Database migrations tested in isolation
 - [ ] Backup created: `pwsh infra/shared/scripts/wp-action.ps1 backup`
