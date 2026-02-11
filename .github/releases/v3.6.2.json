@@ -1,0 +1,19 @@
+{
+  "version": "3.6.2",
+  "release_date": "TBD",
+  "release_type": "feature",
+  "description": "Next planned release",
+  "changes": [],
+  "deployment": {
+    "pre_checks": [],
+    "steps": [],
+    "post_checks": []
+  },
+  "rollback": {
+    "steps": []
+  },
+  "notes": [
+    "This is a placeholder for the next release",
+    "Update with actual changes before deployment"
+  ]
+}

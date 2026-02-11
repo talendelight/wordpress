@@ -1,0 +1,72 @@
+{
+  "version": "3.6.1",
+  "release_date": "2026-02-11",
+  "release_type": "security",
+  "description": "Landing page access control improvements - consistent redirect behavior and role isolation",
+  "changes": [
+    {
+      "category": "security",
+      "description": "Add access control for all landing pages (employers, candidates, scouts)",
+      "files": ["wp-content/plugins/talendelight-roles/talendelight-roles.php"]
+    },
+    {
+      "category": "security",
+      "description": "Restrict operators page to operators only (remove manager access)",
+      "files": ["wp-content/plugins/talendelight-roles/talendelight-roles.php"]
+    },
+    {
+      "category": "fix",
+      "description": "Replace wp_die() fallbacks with consistent redirect to /403-forbidden/",
+      "files": ["wp-content/plugins/talendelight-roles/talendelight-roles.php"]
+    },
+    {
+      "category": "docs",
+      "description": "Update PAGE-ACCESS-CONTROL.md with new behavior and access matrix",
+      "files": ["docs/PAGE-ACCESS-CONTROL.md"]
+    },
+    {
+      "category": "docs",
+      "description": "Add rule to always return to develop branch after deployment",
+      "files": [".github/copilot-instructions.md"]
+    }
+  ],
+  "deployment": {
+    "pre_checks": [
+      "Verify all role-based test users exist (manager_test, operator_test, employer_test, candidate_test, scout_test)",
+      "Verify /403-forbidden/ page exists on production"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Deploy code",
+        "command": "git push origin main",
+        "automated": true
+      },
+      {
+        "step": 2,
+        "action": "Test access control",
+        "description": "Login as each test user and verify access restrictions work correctly",
+        "automated": false
+      }
+    ],
+    "post_checks": [
+      "Manager cannot access /operators/ (redirects to /403-forbidden/)",
+      "Operator cannot access /managers/, /employers/, /candidates/, /scouts/ (redirects to /403-forbidden/)",
+      "Each role can only access their designated landing page",
+      "All unauthorized access attempts redirect to /403-forbidden/ with URL change (no inline errors)"
+    ]
+  },
+  "rollback": {
+    "steps": [
+      "Revert commit on main branch",
+      "Push to origin main",
+      "Verify access control returns to previous behavior"
+    ]
+  },
+  "notes": [
+    "This release improves security isolation between roles",
+    "Operators page is now restricted to operators only (managers no longer have access)",
+    "Consistent user experience - all unauthorized access attempts redirect to /403-forbidden/",
+    "No breaking changes - only adds restrictions where they were missing"
+  ]
+}

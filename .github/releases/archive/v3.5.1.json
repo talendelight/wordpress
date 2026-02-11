@@ -1,0 +1,118 @@
+{
+  "version": "3.5.1",
+  "release_date": "TBD",
+  "status": "planned",
+  "description": "Database schema enhancements: Record ID tracking (PENG-016), assignment audit trail, ID sequences table",
+  "steps": [
+    {
+      "type": "deploy_database",
+      "config": {
+        "sql_files": [
+          "infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql",
+          "infra/shared/db/260131-1300-add-id-sequences-table.sql",
+          "infra/shared/db/260131-1400-add-assigned-by-column.sql"
+        ]
+      },
+      "description": "Apply database migrations for record ID system and assignment audit",
+      "notes": "Must be applied in order. Run via phpMyAdmin or SSH wp-cli"
+    },
+    {
+      "type": "verify_schema",
+      "verify_command": "wp db query 'DESCRIBE td_user_data_change_requests;' --allow-root",
+      "expected": "Columns: id, request_id, record_id, assigned_to, assigned_by visible"
+    },
+    {
+      "type": "verify_sequences",
+      "verify_command": "wp db query 'SELECT * FROM td_id_sequences;' --allow-root",
+      "expected": "Table exists with sequence tracking rows"
+    },
+    {
+      "type": "deploy_code",
+      "source": "wp-content",
+      "target": "public_html/wp-content",
+      "exclusions_file": ".hostingerignore",
+      "description": "Deploy record-id-generator.php mu-plugin",
+      "notes": "Enables automatic record ID generation on approval"
+    },
+    {
+      "type": "clear_cache",
+      "method": "litespeed",
+      "verify_command": "curl -I https://talendelight.com | grep 'x-litespeed-cache'"
+    }
+  ],
+  "features": [
+    {
+      "task_id": "PENG-016-DB",
+      "title": "Record ID Database Schema (PENG-001 v2.0)",
+      "description": "Add request_id and record_id columns for PRSN/CMPY tracking system",
+      "implementation": "infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql",
+      "documentation": "docs/PENG-001-CANDIDATEID-STRATEGY-V2.md",
+      "completed": "TBD",
+      "notes": "request_id = USRQ-YYMMDD-NNNN (on submission), record_id = PRSN/CMPY-YYMMDD-NNNN (on approval)"
+    },
+    {
+      "task_id": "INFR-SEQUENCES",
+      "title": "ID Sequences Table",
+      "description": "Create td_id_sequences table for managing record ID counters",
+      "implementation": "infra/shared/db/260131-1300-add-id-sequences-table.sql",
+      "completed": "TBD",
+      "notes": "Tracks PRSN, CMPY, USRQ sequence numbers by date"
+    },
+    {
+      "task_id": "AUDIT-ASSIGN",
+      "title": "Assignment Audit Trail",
+      "description": "Add assigned_by column to track who assigned requests",
+      "implementation": "infra/shared/db/260131-1400-add-assigned-by-column.sql",
+      "completed": "TBD",
+      "notes": "Audit trail for assignment actions"
+    },
+    {
+      "task_id": "PENG-016-CODE",
+      "title": "Record ID Generator (Code)",
+      "description": "Deploy record-id-generator.php mu-plugin for automatic ID generation",
+      "implementation": "wp-content/mu-plugins/record-id-generator.php",
+      "completed": "TBD",
+      "notes": "Already committed but not yet deployed to production"
+    }
+  ],
+  "verification": {
+    "steps": [
+      {
+        "description": "Verify request_id column exists",
+        "command": "wp db query 'SELECT request_id FROM td_user_data_change_requests LIMIT 1;' --allow-root"
+      },
+      {
+        "description": "Verify record_id column exists",
+        "command": "wp db query 'SELECT record_id FROM td_user_data_change_requests LIMIT 1;' --allow-root"
+      },
+      {
+        "description": "Verify assigned_by column exists",
+        "command": "wp db query 'SELECT assigned_by FROM td_user_data_change_requests LIMIT 1;' --allow-root"
+      },
+      {
+        "description": "Verify td_id_sequences table exists",
+        "command": "wp db query 'SELECT COUNT(*) FROM td_id_sequences;' --allow-root"
+      },
+      {
+        "description": "Test record ID generation",
+        "command": "Approve a test request → Check record_id is generated (PRSN-YYMMDD-NNNN format)"
+      }
+    ]
+  },
+  "rollback": {
+    "steps": [
+      {
+        "description": "Remove added columns if needed",
+        "command": "ALTER TABLE td_user_data_change_requests DROP COLUMN request_id, DROP COLUMN record_id, DROP COLUMN assigned_by;"
+      },
+      {
+        "description": "Drop sequences table if needed",
+        "command": "DROP TABLE IF EXISTS td_id_sequences;"
+      }
+    ]
+  },
+  "dependencies": {
+    "requires": ["v3.5.0"],
+    "blocks": []
+  }
+}

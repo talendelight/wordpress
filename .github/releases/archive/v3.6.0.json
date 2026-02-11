@@ -1,0 +1,145 @@
+{
+  "version": "3.6.0",
+  "release_date": null,
+  "status": "planned",
+  "description": "TBD - Next release features",
+  "steps": [
+    {
+      "type": "health_check_pre",
+      "script": "infra/shared/scripts/verify-production-health.php",
+      "description": "Pre-deployment health check to verify production baseline",
+      "notes": "Captures current state before deployment",
+      "continue_on_failure": true
+    },
+    {
+      "type": "deploy_code",
+      "source": "wp-content",
+      "target": "public_html/wp-content",
+      "exclusions_file": ".hostingerignore",
+      "description": "Deploy wp-content directory with automatic exclusions",
+      "notes": "Includes automated td-env-config.php deployment via mu-plugins location"
+    },
+    {
+      "type": "activate_plugins",
+      "plugins": [
+        {
+          "slug": "talendelight-roles",
+          "name": "TalenDelight Custom Roles",
+          "required": true
+        },
+        {
+          "slug": "wp-user-manager",
+          "name": "WP User Manager",
+          "required": true
+        },
+        {
+          "slug": "blocksy-companion",
+          "name": "Blocksy Companion",
+          "required": false
+        }
+      ],
+      "description": "Verify and activate required plugins",
+      "verify_command": "wp plugin list --field=name --status=active"
+    },
+    {
+      "type": "deploy_database",
+      "migrations": [
+        {
+          "file": "infra/shared/db/260117-1400-add-user-data-change-requests.sql",
+          "description": "Create td_user_data_change_requests table",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260118-1200-add-audit-log-table.sql",
+          "description": "Create td_audit_log table for compliance tracking",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260119-1400-add-role-and-audit-log.sql",
+          "description": "Add role column and update profile method values",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260120-1945-alter-add-approver-comments.sql",
+          "description": "Add approver_id and comments columns for approval tracking",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql",
+          "description": "Add request_id and record_id columns (PENG-001 v2.0)",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260131-1300-add-id-sequences-table.sql",
+          "description": "Create td_id_sequences table for ID generation",
+          "required": true
+        },
+        {
+          "file": "infra/shared/db/260131-1400-add-assigned-by-column.sql",
+          "description": "Add assigned_by column for assignment tracking",
+          "required": true
+        }
+      ],
+      "description": "Apply database migrations for v3.6.0 (all migrations from v3.4.0 onwards)",
+      "notes": "Includes user request system, audit logging, and Record ID system. Upload SQL files via SCP, then execute via wp db query in order.",
+      "verify_command": "wp db query 'SHOW TABLES LIKE \"td_id_sequences\";'"
+    },
+    {
+      "type": "clear_cache",
+      "method": "litespeed",
+      "verify_command": "curl -I https://talendelight.com | grep 'x-litespeed-cache'",
+      "additional_commands": [
+        "wp cache flush",
+        "wp rewrite flush"
+      ]
+    },
+    {
+      "type": "verify_env_config",
+      "file": "wp-content/mu-plugins/td-env-config.php",
+      "verify_command": "ls -la wp-content/mu-plugins/td-env-config.php && wp eval 'echo defined(\"TD_PERSON_REGISTRATION_FORM_ID\") ? \"OK\" : \"MISSING\";'",
+      "description": "Verify env config automatically loaded from mu-plugins"
+    },
+    {
+      "type": "health_check_post",
+      "script": "infra/shared/scripts/verify-production-health.php",
+      "description": "Post-deployment health check to verify all components",
+      "notes": "Must pass all checks for deployment to be considered successful",
+      "continue_on_failure": false
+    }
+  ],
+  "features": [
+    "PENG-054: API Security Hardening (XML-RPC disabled, REST API auth, AJAX monitoring)",
+    "Record ID System (PENG-001 v2.0): request_id, record_id columns, td_id_sequences table",
+    "Landing pages for all 5 roles (Employers, Candidates, Scouts, Managers, Operators)",
+    "Primary navigation menu with 7 items",
+    "Custom roles and login redirects"
+  ],
+  "verification": {
+    "automated": [
+      "Health check script (pre and post deployment)",
+      "Plugin activation verification",
+      "Database migration verification",
+      "Environment constants check"
+    ],
+    "manual": [
+      "Login as each test user (candidate_test, employer_test, scout_test, operator_test, manager_test)",
+      "Verify redirect to correct landing page for each role",
+      "Check all 7 menu items visible in navigation",
+      "Test Manager Admin page (approve/reject user requests)",
+      "Verify API security (REST API requires auth, XML-RPC disabled)"
+    ]
+  },
+  "rollback": {
+    "steps": [
+      {
+        "description": "Revert main branch to v3.5.1 tag if critical issues arise"
+      },
+      {
+        "description": "Restore database from latest backup if migrations cause issues"
+      },
+      {
+        "description": "Deactivate new plugins if they cause conflicts"
+      }
+    ]
+  }
+}
