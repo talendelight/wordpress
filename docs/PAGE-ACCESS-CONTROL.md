@@ -1,102 +1,77 @@
-# Page Access Control - PublishPress Capabilities
+# Page Access Control - URL-Based
 
-**Version:** v3.5.0  
-**Last Updated:** February 2, 2026  
-**Plugin:** PublishPress Capabilities v2.31.0  
-**Purpose:** Role-based page access restrictions for Manager and Operator dashboards
+**Version:** v3.6.1  
+**Last Updated:** February 11, 2026  
+**Implementation:** `wp-content/plugins/talendelight-roles/talendelight-roles.php`  
+**Purpose:** Role-based page access restrictions with consistent redirect behavior
 
 ---
 
 ## Overview
 
-This document describes how page-level access control is implemented using PublishPress Capabilities plugin to restrict Manager and Operator pages by role.
+Page-level access control is implemented using dedicated restriction functions in the `talendelight-roles` plugin. Each landing page has its own access control function with consistent redirect behavior.
 
 **Security Principle:** "Deny by default, allow by exception"
-- Manager pages are ONLY accessible to `administrator` and `td_manager` roles
-- Operator pages are ONLY accessible to `administrator` and `td_operator` roles
-- All other roles get 403 Access Denied redirect
+- Each role has access ONLY to their designated landing pages
+- Unauthorized access redirects to login (not authenticated) or `/403-forbidden/` (wrong role)
+- Administrators bypass all restrictions
+- **Consistent behavior:** All unauthorized access attempts redirect to `/403-forbidden/` with URL change (no inline error pages)
 
 ---
 
 ## Page Access Matrix
 
-| Page ID | Page Name | URL | Allowed Roles |
-|---------|-----------|-----|---------------|
-| **469** | Managers (Dashboard) | /managers/ | administrator, td_manager |
-| **386** | Manager Admin | /managers/admin/ | administrator, td_manager |
-| **670** | Manager Actions | /managers/actions/ | administrator, td_manager |
-| **299** | Operators (Dashboard) | /operators/ | administrator, td_operator |
-| **666** | Operator Actions | /operators/actions/ | administrator, td_operator |
+| URL Pattern | Allowed Roles | Description |
+|-------------|---------------|-------------|
+| `/candidates/` | `td_candidate`, `administrator` | Candidate landing page |
+| `/employers/` | `td_employer`, `administrator` | Employer landing page |
+| `/scouts/` | `td_scout`, `administrator` | Scout landing page |
+| `/managers/` | `td_manager`, `administrator` | Manager dashboard |
+| `/operators/` | `td_operator`, `administrator` | Operator dashboard (Managers NOT allowed) |
 
-**Access Denied Page:** ID 152 - `/403-forbidden/`
-
----
-
-## Configuration Steps (Manual - Production)
-
-### Step 1: Access Plugin Settings
-
-1. Login to WordPress admin as Administrator
-2. Navigate to **Users → Capabilities**
-3. Select the role to configure (e.g., "Manager")
-
-### Step 2: Configure Page Restrictions
-
-**For Manager Role:**
-1. Go to **Capabilities → Page Restrictions**
-2. Select pages to ALLOW access:
-   - ✅ Managers (ID 469)
-   - ✅ Manager Admin (ID 386)
-   - ✅ Manager Actions (ID 670)
-3. Set restriction mode: **"Allow only selected pages"**
-4. Save settings
-
-**For Operator Role:**
-1. Go to **Capabilities → Page Restrictions**
-2. Select pages to ALLOW access:
-   - ✅ Operators (ID 299)
-   - ✅ Operator Actions (ID 666)
-3. Set restriction mode: **"Allow only selected pages"**
-4. Save settings
-
-**For Other Roles (Candidate, Employer, Scout):**
-- No explicit page restrictions needed
-- These roles don't have access to admin pages by design
-- Already blocked by /wp-admin/ access control (PENG-053)
+**Access Denied Page:** `/403-forbidden/`  
+**Login Redirect:** Not authenticated → WordPress login with `auth_redirect()`
 
 ---
 
-## Alternative: Programmatic Configuration (Optional)
+## Implementation
 
-If PublishPress Capabilities supports programmatic configuration, add to MU-plugin:
+Access control is implemented in `wp-content/plugins/talendelight-roles/talendelight-roles.php` with dedicated functions for each landing page:
 
+- `talendelight_restrict_operators_page()` - Priority 5
+- `talendelight_restrict_managers_page()` - Priority 5
+- `talendelight_restrict_employers_page()` - Priority 5
+- `talendelight_restrict_candidates_page()` - Priority 5
+- `talendelight_restrict_scouts_page()` - Priority 5
+
+**Consistent Redirect Behavior:**
 ```php
-<?php
-/**
- * Plugin Name: TalenDelight Page Access Control
- * Description: Configure page restrictions via PublishPress Capabilities
- * Version: 1.0.0
- */
-
-add_action('init', function() {
-    if (function_exists('cme_update_page_restrictions')) {
-        
-        // Manager role restrictions
-        cme_update_page_restrictions('td_manager', [
-            'allowed_pages' => [469, 386, 670],
-            'mode' => 'whitelist',
-        ]);
-        
-        // Operator role restrictions
-        cme_update_page_restrictions('td_operator', [
-            'allowed_pages' => [299, 666],
-            'mode' => 'whitelist',
-        ]);
-    }
-});
+// All functions follow this pattern
+if (!$has_access) {
+    wp_redirect(home_url('/403-forbidden/'));
+    exit;
+}
 ```
 
-**Note:** Check PublishPress Capabilities documentation for actual API if available.
+**Key Benefits:**
+- ✅ **Consistent user experience**: All unauthorized access attempts redirect to `/403-forbidden/` with URL change
+- ✅ **No inline errors**: Eliminated `wp_die()` fallbacks that showed errors without URL change
+- ✅ **Clean separation**: Each landing page has its own restriction function
+- ✅ **Early execution**: Priority 5 ensures access checks run before page rendering
+- ✅ **Maintainable**: Clear function names and single responsibility
+
+---
+
+## Redirect Behavior
+
+### Before (v3.6.0 and earlier)
+- **Operators page:** Showed inline `wp_die()` error if `/403-forbidden/` page not found (URL stayed as `/operators/`)
+- **Other pages:** No access control - all users could access all landing pages
+
+### After (v3.6.1+)
+- **All landing pages:** Consistent redirect to `/403-forbidden/` with URL change
+- **No fallbacks:** Direct redirect without checking if `/403-forbidden/` exists
+- **Uniform experience:** Same behavior across all protected pages
 
 ---
 
@@ -118,73 +93,128 @@ add_action('init', function() {
 
 ## Testing Checklist
 
-### Test 1: Manager Page Access
-- [ ] Login as Manager → Navigate to `/managers/admin/` → ✅ Should load
-- [ ] Login as Manager → Navigate to `/managers/actions/` → ✅ Should load
-- [ ] Login as Operator → Navigate to `/managers/admin/` → ❌ Should redirect to `/403-forbidden/`
+### Test 1: Manager Role Access
+- [ ] **Login as Manager**
+  - Navigate to `/managers/` → ✅ Should load
+  - Navigate to `/operators/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+  - Navigate to `/employers/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+- [ ] **Not Logged In**
+  - Logout
+  - Navigate to `/managers/` → ❌ Should redirect to login page
+  - Login → ✅ Should access `/managers/`
 
-### Test 2: Operator Page Access
-- [ ] Login as Operator → Navigate to `/operators/` → ✅ Should load
-- [ ] Login as Operator → Navigate to `/operators/actions/` → ✅ Should load
-- [ ] Login as Manager → Navigate to `/operators/actions/` → ✅ Should load (Managers can access Operator pages)
+### Test 2: Operator Role Access
+- [ ] **Login as Operator**
+  - Navigate to `/operators/` → ✅ Should load
+  - Navigate to `/managers/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+  - Navigate to `/candidates/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
 
-### Test 3: Administrator Access
-- [ ] Login as Administrator → Navigate to any page → ✅ Should always load (full access)
+### Test 3: Employer/Candidate/Scout Access
+- [ ] **Login as Employer**
+  - Navigate to `/employers/` → ✅ Should load
+  - Navigate to `/candidates/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+  - Navigate to `/operators/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+- [ ] **Login as Candidate**
+  - Navigate to `/candidates/` → ✅ Should load
+  - Navigate to `/employers/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+- [ ] **Login as Scout**
+  - Navigate to `/scouts/` → ✅ Should load
+  - Navigate to `/managers/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
 
-### Test 4: Unauthorized Roles
-- [ ] Login as Candidate → Navigate to `/managers/admin/` → ❌ Should redirect to `/403-forbidden/`
-- [ ] Login as Employer → Navigate to `/operators/` → ❌ Should redirect to `/403-forbidden/`
-- [ ] Login as Scout → Navigate to `/managers/actions/` → ❌ Should redirect to `/403-forbidden/`
+### Test 4: Administrator Override
+- [ ] **Login as Administrator**
+  - Navigate to all protected URLs → ✅ All should load
+  - `/managers/`, `/operators/`, `/candidates/`, `/employers/`, `/scouts/`
 
----
-
-## Migration from Custom Code (v3.4.0 → v3.5.0)
-
-**Previous Implementation (v3.4.0):**
-```php
-// blocksy-child/functions.php
-add_action('template_redirect', function() {
-    // Custom hook with hardcoded page IDs and role checks
-});
-```
-
-**New Implementation (v3.5.0):**
-- ✅ PublishPress Capabilities plugin handles page restrictions
-- ✅ UI-based configuration (no code changes for new pages)
-- ✅ Professional features (audit log, bulk operations, role cloning)
-- ✅ Custom template_redirect hook removed
-
-**Benefits:**
-- Reduced maintenance burden (one less custom hook)
-- Better UX for permission management (UI vs code)
-- Community-tested security patterns
-- Audit trail for permission changes
+### Test 5: Consistent Redirect Behavior
+- [ ] **Login as Manager**
+  - Navigate to `/operators/` → ❌ Should redirect to `/403-forbidden/` (URL changes to `/403-forbidden/`)
+  - Verify no inline error page (no `wp_die()` error)
+  - Verify URL bar shows `/403-forbidden/` not `/operators/`
+- [ ] **Login as Operator**  
+  - Navigate to `/managers/` → ❌ Should redirect to `/403-forbidden/` (URL changes)
+  - Verify consistent behavior across all protected pages
 
 ---
 
 ## Troubleshooting
 
 ### Issue: Manager can't access their pages
-**Solution:** Check PublishPress Capabilities settings for `td_manager` role, ensure pages 469, 386, 670 are in allowed list
 
-### Issue: Operator sees empty dashboard
-**Solution:** This is a data filtering issue, not page access. Check `user-requests-display.php` data filtering logic
+**Symptoms:** Manager role redirected to `/403-forbidden/` when accessing `/managers/` pages
 
-### Issue: Administrator blocked from pages
-**Solution:** Administrator should NEVER be blocked. Check if page restrictions accidentally applied to Administrator role
+**Solution:**
+1. Verify user has `td_manager` role:
+   ```bash
+   wp user get {username} --field=roles
+   ```
+2. Check access control code in `functions.php` is active (search for `template_redirect`)
+3. Verify URL pattern matching: URLs should start with `/managers/`
+4. Test with administrator account to rule out page issues
+5. Check WordPress permalink structure is set correctly (Settings → Permalinks)
 
-### Issue: 403 page not showing properly
-**Solution:** Verify page ID 152 exists and is published. Check Elementor template is properly configured
+### Issue: Operator can access Manager pages
+
+**Symptoms:** Operator role can view `/managers/` pages (should be blocked)
+
+**Solution:**
+1. Verify URL pattern is `/managers/` (not `/manager-`)
+2. Check `$role_pages` array in `functions.php` for typos
+3. Clear browser cache and cookies
+4. Test in incognito mode
+
+### Issue: Login redirect loop
+
+**Symptoms:** Redirects between login page and protected page repeatedly
+
+**Solution:**
+1. Verify `/log-in/` page exists and is accessible to all users
+2. Check login page URL is NOT in protected patterns
+3. Clear WordPress cache (if using caching plugin)
+4. Check for conflicting plugins (try disabling temporarily)
+5. Clear browser cookies and session data
+
+### Issue: URL pattern not matching subpages
+
+**Symptoms:** `/managers/` loads but `/managers/admin/` redirects
+
+**Solution:**
+1. Verify pattern uses `strpos($current_url, '/managers/') === 0` (prefix match)
+2. Check for typos in URL (case-sensitive on some servers)
+3. Verify permalink structure matches expected URLs
+4. Check for URL rewrite conflicts in `.htaccess`
+
+### Issue: Administrator redirected
+
+**Symptoms:** Administrator account gets `/403-forbidden/` on protected pages
+
+**Solution:**
+1. Verify user has `administrator` role (not custom admin role)
+2. Check `array_intersect` logic includes `'administrator'` in allowed roles
+3. Clear all caches (WordPress, browser, server)
+4. Check for role conflicts from other plugins
+
+### Issue: Different behavior local vs production
+
+**Symptoms:** Access control works locally but not on production
+
+**Solution:**
+1. Verify `functions.php` deployed correctly to production
+2. Check PHP error logs for syntax errors
+3. Verify WordPress version compatibility (PHP 7.4+)
+4. Test URL patterns match production structure
+5. Check server configuration (mod_rewrite enabled)
 
 ---
 
-## Future Enhancements (Post-v3.5.0)
+## Future Enhancements
 
 **Planned Features:**
 - [ ] Audit logging integration (track who accessed which pages when)
 - [ ] Time-based access restrictions (e.g., Operators only access during business hours)
 - [ ] IP-based restrictions for sensitive Manager pages
 - [ ] Two-factor authentication for Manager role
+- [ ] Rate limiting for failed access attempts
 
 **Backlog Items:**
 - WP-04.4: Advanced capability management (beyond page access)
@@ -194,11 +224,9 @@ add_action('template_redirect', function() {
 
 ## References
 
-- **Plugin:** [PublishPress Capabilities](https://wordpress.org/plugins/capability-manager-enhanced/)
-- **Documentation:** [PublishPress Capabilities Docs](https://publishpress.com/knowledge-base/capabilities/)
 - **Related:** [PENG-053: Block /wp-admin/ access](PENG-053-WPADMIN-BLOCK-IMPLEMENTATION.md)
 - **Related:** [ROLE-CAPABILITIES-MATRIX.md](ROLE-CAPABILITIES-MATRIX.md)
-- **Backlog:** WP-04.3 (Replace custom template_redirect)
+- **Backlog:** [WORDPRESS-BACKLOG.md](../../Documents/WORDPRESS-BACKLOG.md)
 
 ---
 
@@ -206,4 +234,9 @@ add_action('template_redirect', function() {
 
 | Date | Version | Change | Author |
 |------|---------|--------|--------|
-| 2026-02-02 | 1.0.0 | Initial documentation - PublishPress Capabilities migration | System |
+| 2026-02-11 | v3.6.1 | Add access control for all landing pages with consistent redirect behavior (no wp_die fallbacks) | System |
+| 2026-02-11 | v3.6.1 | Remove manager access to operators page (operators only) | System |
+| 2026-02-10 | v3.6.0 | Migrate to URL-based access control (environment-agnostic) | System |
+| 2026-02-02 | v3.5.0 | Initial documentation - page access control system | System |
+
+---
