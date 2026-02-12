@@ -301,6 +301,87 @@ Automate environment config deployment via mu-plugins (v3.5.0)
 
 ---
 
+### v3.6.2 - Manager Actions Approval Workflow
+
+**Deployed:** February 13, 2026  
+**Status:** 🚧 Ready for Deployment  
+**Branch:** develop → main
+
+**Description:** Complete 5-tab approval workflow for Manager Actions page with functional AJAX-driven approve/reject/undo functionality and optimized UX.
+
+**Patch Features:**
+- Manager Actions page (/managers/actions/):
+  - 5-tab interface: New, Assigned, Approved, Rejected, All
+  - Color-coded backgrounds (blue, yellow, green, red, grey)
+  - Container width increased to 1400px for better data display
+  - Custom mu-plugin: manager-actions-display.php (557 lines)
+  - Shortcode: [manager_actions_table status="..." limit="..." days="..."]
+  - Status mapping:
+    - New = unassigned requests (status='new' OR status='pending' AND assigned_to IS NULL)
+    - Assigned = assigned requests (status='pending' AND assigned_to IS NOT NULL)
+    - Approved/Rejected = 90-day history
+  - Action buttons: Assign (➜), Approve (✓), Reject (✗), Undo (↶)
+  - Button design: 32px circles, navy/green/red/orange, border-radius 50%
+  - Fancy arrow symbol: ➜ (U+279C heavy round-tipped rightwards arrow)
+  - Non-blocking UX: No confirm/prompt dialogs, immediate execution
+  - Modal for assignment confirmation
+  - Column optimization: ID 6%, Name 18%, Email 20%, Actions 6%
+- Managers landing page updates:
+  - "Needs Action" card links to /managers/actions/
+  - Clickable navigation from dashboard
+- Manager Admin page refinements:
+  - Fixed horizontal padding (40% width cards, centered)
+  - Consistent spacing with Welcome page
+
+**Benefits:**
+- ✅ Complete approval workflow for all user types (Candidate, Employer, Scout, Operator, Manager)
+- ✅ Smooth UX without blocking alerts
+- ✅ Optimized table layout for long names/emails
+- ✅ Professional button design with accessibility compliance (32px touch targets)
+- ✅ Reuses existing AJAX handlers (no duplicate code)
+- ✅ Separate MU-plugin allows clean terminology adaptation
+
+**Technical Changes:**
+- MU-Plugin: `manager-actions-display.php` (v1.0.0, 557 lines)
+  - Shortcode handler: td_manager_actions_table_shortcode()
+  - Role check: Manager/Administrator only
+  - Context-aware action buttons per tab
+  - CSS with !important flags for theme override
+  - JavaScript AJAX handlers for all actions
+- Page Updates:
+  - manager-actions-84.html: All 5 tabs with functional shortcodes
+  - managers-8.html: Navigation link from "Needs Action" card
+- AJAX Integration:
+  - Reuses endpoints from user-requests-display.php
+  - td_approve_request, td_reject_request, td_undo_approve, td_undo_reject, td_assign_request
+- Documentation:
+  - docs/features/APPROVAL-WORKFLOW.md: Comprehensive feature documentation (15 sections)
+  - docs/SESSION-SUMMARY-FEB-12.md: Complete session record
+- Backups:
+  - restore/mu-plugins/manager-actions-display.php
+  - restore/pages/manager-actions-84-backup-{timestamp}.html
+  - restore/pages/managers-8-backup-{timestamp}.html
+
+**Deferred Features (Post-MVP):**
+- Email notifications (12 templates)
+- Rejection reason field (modal with textarea)
+- Export functionality (CSV reports)
+- User account creation backend integration
+
+**Lessons Learned:**
+- Use !important flags for button styling in complex themes
+- Non-blocking UX (modals/notifications) better than blocking alerts
+- Fancy Unicode symbols (➜) provide polish without icon libraries
+- 32px buttons meet WCAG 2.1 accessibility standards
+- Separate MU-plugins allow terminology adaptation without modifying existing code
+
+**Git Commit:**
+```
+Add Manager Actions approval workflow with 5-tab interface, action buttons, non-blocking UX (v3.6.2)
+```
+
+---
+
 ### v3.5.1 - Welcome Page Gutenberg Migration
 
 **Deployed:** TBD  
