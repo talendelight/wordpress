@@ -1,0 +1,5 @@
+﻿page_on_front=6
+show_on_front=page
+blogname=TalenDelight
+home=https://wp.local
+siteurl=https://wp.local

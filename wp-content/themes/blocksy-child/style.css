@@ -17,7 +17,7 @@ Description: Custom child theme with unified design system for TalenDelight
     
     /* Primary Colors */
     --color-navy: #063970;              /* Hero backgrounds, headings, primary button text */
-    --color-blue: #3498DB;              /* Icons, links, accents, hover states */
+    --color-blue: #0062e3;              /* Icons, links, accents, hover states */
     
     /* Neutral Colors */
     --color-gray-dark: #333333;         /* Primary body text, form labels */
@@ -207,8 +207,10 @@ input[type="submit"],
 
 .wp-block-button.is-style-fill .wp-block-button__link:hover,
 .button-primary:hover {
-    background-color: var(--color-gray-off-white);
+    background-color: var(--color-blue);
+    color: var(--color-gray-off-white);
     box-shadow: var(--shadow-md);
+    text-decoration: none;
 }
 
 /* Secondary Button */
@@ -222,6 +224,7 @@ input[type="submit"],
 .button-secondary:hover {
     background-color: var(--color-blue);
     color: var(--color-gray-off-white);
+    text-decoration: none;
 }
 
 /* Form Styles */

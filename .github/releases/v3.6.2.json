@@ -1,19 +1,178 @@
 {
   "version": "3.6.2",
   "release_date": "TBD",
-  "release_type": "feature",
-  "description": "Next planned release",
-  "changes": [],
+  "release_type": "migration",
+  "description": "Register Profile + Manager Admin pages migrated to Gutenberg + form styling standardization",
+  "changes": [
+    {
+      "type": "page_migration",
+      "description": "Migrated Register Profile page (ID 79) from Elementor to Gutenberg",
+      "files": [
+        "restore/pages/register-profile-79.html"
+      ]
+    },
+    {
+      "type": "page_migration",
+      "description": "Migrated Manager Admin page (ID 10) from Elementor to Gutenberg - 4-tile dashboard layout with footer",
+      "files": [
+        "restore/pages/manager-admin-10.html"
+      ]
+    },
+    {
+      "type": "page_migration",
+      "description": "Migrated Manager Actions page (ID 84) from Elementor to Gutenberg - tabbed interface with placeholders",
+      "files": [
+        "restore/pages/manager-actions-84.html"
+      ]
+    },
+    {
+      "type": "page_update",
+      "description": "Updated Managers page (ID 8) - Admin card now links to /managers/admin",
+      "files": [
+        "restore/pages/managers-8.html"
+      ]
+    },
+    {
+      "type": "form_enhancement",
+      "description": "Standardized Select Role and Login form styling (500px container, 40px padding, consistent button styles)",
+      "files": [
+        "wp-content/themes/blocksy-child/page-role-selection.php",
+        "config/custom-css/login.css",
+        "config/custom-css/forminator-forms.css"
+      ]
+    },
+    {
+      "type": "data_capture",
+      "description": "Added role parameter capture (td_user_role) to Forminator form via hidden-1 field",
+      "files": [
+        "restore/forms/forminator-form-80-post.sql",
+        "infra/shared/db/260211-2345-forminator-form-80-role-field.sql"
+      ]
+    },
+    {
+      "type": "ui_enhancement",
+      "description": "Updated button hover colors - all buttons (white, navy, auth) use #0062e3 on hover with white text",
+      "files": [
+        "wp-content/themes/blocksy-child/style.css",
+        "wp-content/themes/blocksy-child/wpum-overrides.css"
+      ]
+    },
+    {
+      "type": "plugin_cleanup",
+      "description": "Removed Elementor plugin - all pages migrated to Gutenberg",
+      "files": [
+        "infra/shared/db/260215-1030-cleanup-elementor-data.sql"
+      ]
+    }
+  ],
   "deployment": {
-    "pre_checks": [],
-    "steps": [],
-    "post_checks": []
+    "pre_checks": [
+      "Backup production database",
+      "Verify local Register Profile page displays correctly",
+      "Verify local Manager Admin page displays correctly",
+      "Test form submission flow locally",
+      "Verify role parameter capture in local database"
+    ],
+    "steps": [
+      "Push wp-content/ to main branch (triggers Hostinger auto-deploy)",
+      "Manually update Register Profile page content in production WordPress admin",
+      "Manually update Manager Admin page content in production WordPress admin",
+      "Update Forminator form 80 in production (add hidden-1 field with prefill=td_user_role)",
+      "Upload custom CSS files to config/custom-css/ on production",
+      "Delete Sample Page (ID 2) from production WordPress admin",
+      "Deactivate Elementor plugin in production WordPress admin",
+      "Delete Elementor plugin in production WordPress admin",
+      "Run cleanup SQL: infra/shared/db/260215-1030-cleanup-elementor-data.sql on production database",
+      "Clear LiteSpeed cache"
+    ],
+    "post_checks": [
+      "Verify Register Profile page loads at /register-profile/",
+      "Verify Manager Admin page loads at /admin",
+      "Test Select Role → Register Profile redirect with parameter",
+      "Test form submission and check database for hidden-1 field",
+      "Verify button styling (navy for Select Role, blue for Submit)",
+      "Verify admin dashboard tiles display correctly",
+      "Test responsive design on mobile/tablet",
+      "Verify Sample Page (ID 2) deleted - /sample-page/ should return 404"
+    ]
   },
   "rollback": {
-    "steps": []
+    "steps": [
+      "Restore Register Profile page from restore/pages/register-profile-79.html backup",
+      "Restore Manager Admin page from restore/pages/manager-admin-10.html backup",
+      "Revert CSS files from restore/pages/ backups",
+      "Remove hidden-1 field from Forminator form or restore from backup"
+    ]
   },
   "notes": [
-    "This is a placeholder for the next release",
-    "Update with actual changes before deployment"
+    "Register Profile page now uses Gutenberg with Forminator shortcode [forminator_form id=\"80\"]",
+    "Manager Admin page migrated to Gutenberg with 4-tile dashboard (User & Role Management, System Settings, Audit Logs, Platform Monitoring)",
+    "Manager Admin cards section horizontal padding fixed (40% column width, centered layout)",
+    "Manager Actions page migrated to Gutenberg with tabbed interface (Submitted, Approved, Rejected, All)",
+    "Manager Actions tabs show \"Under Development\" placeholders for future approval workflow",
+    "Managers page Admin card is now clickable and navigates to /managers/admin",
+    "Role capture uses dual approach: Forminator built-in prefill + JavaScript fallback",
+    "Form styling now consistent across Select Role, Login, and Register Profile pages",
+    "Sample Page (default WordPress content) removed - serves no purpose in production",
+    "All backups stored in restore/pages/ and restore/forms/ directories",
+    "Button hover color standardized to #0062e3 (was #3498DB) with white text and no underline",
+    "Logout functionality fixed - menu item now points to /wp-login.php?action=logout with dynamic nonce generation",
+    "Elementor plugin removed - all 16 pages migrated to Gutenberg (100% complete)",
+    "Elementor database cleanup removes all _elementor* postmeta, options, and usermeta",
+    "Migration completed 13 days ahead of schedule (Feb 15 vs Feb 28 target)"
+  ],
+  "backup_files": [
+    "restore/pages/register-profile-79.html",
+    "restore/pages/manager-admin-10.html",
+    "restore/pages/manager-actions-84.html",
+    "restore/pages/managers-8.html",
+    "restore/pages/welcome-6.html",
+    "restore/pages/candidates-7.html",
+    "restore/pages/employers-64.html",
+    "restore/pages/scouts-76.html",
+    "restore/pages/operators-9.html",
+    "restore/pages/403-forbidden-44.html",
+    "restore/pages/help-110.html",
+    "restore/pages/privacy-policy-3.html",
+    "restore/forms/forminator-form-80-post.sql",
+    "wp-content/themes/blocksy-child/functions.php",
+    "wp-content/themes/blocksy-child/style.css",
+    "wp-content/themes/blocksy-child/page-role-selection.php",
+    "wp-content/themes/blocksy-child/custom-css/forminator-forms-styling.css",
+    "wp-content/themes/blocksy-child/custom-css/manager-actions-tabs.css",
+    "wp-content/themes/blocksy-child/custom-css/manager-admin-dashboard.css",
+    "wp-content/themes/blocksy-child/custom-css/register-profile-form.css",
+    "wp-content/themes/blocksy-child/patterns/card-grid-3.php",
+    "wp-content/themes/blocksy-child/patterns/card-grid-2-2.php",
+    "wp-content/themes/blocksy-child/patterns/card-grid-3+1.php",
+    "wp-content/themes/blocksy-child/patterns/hero-single-cta.php",
+    "wp-content/themes/blocksy-child/patterns/cta-primary.php",
+    "wp-content/themes/blocksy-child/patterns/footer-trust-badges.php",
+    "wp-content/mu-plugins/audit-logger.php",
+    "wp-content/mu-plugins/forminator-custom-table.php",
+    "wp-content/mu-plugins/manager-actions-display.php",
+    "wp-content/mu-plugins/record-id-generator.php",
+    "wp-content/mu-plugins/td-api-security.php",
+    "wp-content/mu-plugins/td-env-config.php",
+    "wp-content/mu-plugins/td-notifications.php",
+    "wp-content/mu-plugins/user-requests-display.php",
+    "infra/shared/db/000000-0000-init-db.sql",
+    "infra/shared/db/251227-1149-update-theme-versions.sql",
+    "infra/shared/db/251227-2055-add-production-plugin-tables.sql",
+    "infra/shared/db/251230-2030-enable-elementor-blocksy.sql",
+    "infra/shared/db/260117-1400-add-user-data-change-requests.sql",
+    "infra/shared/db/260118-1200-add-audit-log-table.sql",
+    "infra/shared/db/260119-1400-add-role-and-audit-log.sql",
+    "infra/shared/db/260120-1945-alter-add-approver-comments.sql",
+    "infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql",
+    "infra/shared/db/260131-1300-add-id-sequences-table.sql",
+    "infra/shared/db/260131-1400-add-assigned-by-column.sql",
+    "infra/shared/db/260204-0131-update-shortcodes-manager-operator-pages.sql",
+    "infra/shared/db/260211-2345-forminator-form-80-role-field.sql",
+    "infra/shared/db/users-from-production-20260130.sql",
+    "infra/shared/db/usermeta-from-production-20260130.sql",
+    "config/wp-config.php",
+    "config/.htaccess",
+    "config/uploads.ini"
   ]
 }

@@ -25,7 +25,7 @@
 | 77  | Operators Dashboard | /operators/ | publish |
 | 78  | Select Role | /select-role/ | publish |
 | 79  | Register Profile | /register-profile/ | publish |
-| 86  | Manager Admin | /manager-admin/ | publish |
+| 86  | Manager Admin | /managers/admin/ | publish |
 | 90  | Managers | /managers/ | publish |
 
 ### Current Local - 5 Published Pages
@@ -36,7 +36,7 @@
 | 7   | Candidates | /candidates/ | publish |
 | 8   | Managers | /managers/ | publish |
 | 9   | Operators | /operators/ | publish |
-| 10  | Manager Admin | /manager-admin/ | publish |
+| 10  | Manager Admin | /managers/admin/ | publish |
 
 ---
 

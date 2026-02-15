@@ -1,6 +1,9 @@
-# Quick Reference: Elementor Page Deployment
+# Quick Reference: Deployment Commands
 
-**📚 See Also:** [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - How to handle IDs across environments
+**📚 See Also:** 
+- [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - How to handle IDs across environments
+- [Deployment Workflow](DEPLOYMENT-WORKFLOW.md) - Complete deployment process
+- [Post-Mortem v3.6.0](POST-MORTEM-V3.6.0-DEPLOYMENT-GAPS.md) - Lessons learned
 
 ---
 
@@ -10,6 +13,139 @@
 - [ ] WP-CLI available on production
 - [ ] Changes tested locally at http://localhost:8080
 - [ ] Assets backed up to `restore/assets/` (if new images/logos added)
+- [ ] Database migrations tested locally (if applicable)
+- [ ] Required plugins available in `wp-content/plugins/`
+
+---
+
+## Deployment Workflow (Standard)
+
+### 1. Pre-Deployment Health Check
+```powershell
+# Check production baseline before changes
+pwsh infra/shared/scripts/wp-action.ps1 health-check
+```
+
+### 2. Backup Production (MANDATORY)
+```powershell
+pwsh infra/shared/scripts/wp-action.ps1 backup
+```
+
+### 3. Deploy Code
+```bash
+# Push to main branch (triggers GitHub Actions auto-deploy)
+git push origin main
+```
+
+### 4. Deploy Database Migrations (if needed)
+
+**Note:** Check release JSON file (`.github/releases/vX.Y.Z.json`) for the specific migrations required for each release.
+
+**Available migrations** (in `infra/shared/db/`):
+- `260117-1400-add-user-data-change-requests.sql` - User requests table (v3.4.0)
+- `260118-1200-add-audit-log-table.sql` - Audit log table (v3.4.0)
+- `260119-1400-add-role-and-audit-log.sql` - Role column and profile methods (v3.4.0)
+- `260120-1945-alter-add-approver-comments.sql` - Approver tracking (v3.4.0)
+- `260131-1200-add-record-id-prsn-cmpy.sql` - Request ID and Record ID (v3.6.0)
+- `260131-1300-add-id-sequences-table.sql` - ID sequence generator (v3.6.0)
+- `260131-1400-add-assigned-by-column.sql` - Assignment tracking (v3.6.0)
+
+**Example for v3.6.0 (7 migrations):**
+```bash
+# Upload migration files
+scp -i tmp/hostinger_deploy_key -P 65002 \
+  infra/shared/db/260117-1400-add-user-data-change-requests.sql \
+  infra/shared/db/260118-1200-add-audit-log-table.sql \
+  infra/shared/db/260119-1400-add-role-and-audit-log.sql \
+  infra/shared/db/260120-1945-alter-add-approver-comments.sql \
+  infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql \
+  infra/shared/db/260131-1300-add-id-sequences-table.sql \
+  infra/shared/db/260131-1400-add-assigned-by-column.sql \
+  u909075950@45.84.205.129:~/db-migrations/
+
+# Execute migrations in order
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "cd domains/talendelight.com/public_html && \
+   for f in ~/db-migrations/*.sql; do \
+     echo \"Executing \$f...\"; \
+     wp db query < \"\$f\" --allow-root; \
+   done && \
+   rm -rf ~/db-migrations"
+```
+
+**Quick single file upload:**
+```bash
+# Upload one SQL file
+scp -i tmp/hostinger_deploy_key -P 65002 \
+  infra/shared/db/*.sql \
+  u909075950@45.84.205.129:~/db-migrations/
+```
+
+### 5. Activate New Plugins (if needed)
+```bash
+# Check plugin status
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "cd domains/talendelight.com/public_html && \
+   wp plugin list --allow-root"
+
+# Activate plugin
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "cd domains/talendelight.com/public_html && \
+   wp plugin activate PLUGIN_SLUG --allow-root"
+```
+
+### 6. Clear Caches
+```bash
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "cd domains/talendelight.com/public_html && \
+   wp cache flush --allow-root && \
+   wp rewrite flush --allow-root"
+```
+
+### 7. Post-Deployment Health Check (MANDATORY)
+```powershell
+# Verify all components after deployment
+pwsh infra/shared/scripts/wp-action.ps1 health-check -Verbose
+```
+
+### 8. Rollback (if issues detected)
+```powershell
+pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true
+```
+
+---
+
+## Health Check Commands
+
+### Quick Health Check
+```powershell
+# Check production health via wp-action dispatcher
+pwsh infra/shared/scripts/wp-action.ps1 health-check
+```
+
+### Verbose Health Check
+```powershell
+# Show all checks (passed and failed)
+pwsh infra/shared/scripts/wp-action.ps1 health-check -Verbose
+```
+
+### Direct SSH Health Check
+```bash
+# Run health check script directly on production
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
+  "cd domains/talendelight.com/public_html && \
+   wp eval-file ~/verify-production-health.php --verbose --allow-root"
+```
+
+**Health Check Verifies:**
+- ✅ Required pages exist (employers, candidates, scouts, managers, operators, help, welcome)
+- ✅ Required plugins active (talendelight-roles, wp-user-manager, blocksy-companion)
+- ✅ Required MU-plugins loaded (td-api-security, td-env-config, record-id-generator)
+- ✅ Custom roles exist (td_candidate, td_employer, td_scout, td_operator, td_manager)
+- ✅ Navigation menus configured
+- ✅ Database tables exist (td_user_data_change_requests, td_audit_log, td_id_sequences)
+- ✅ Security settings (XML-RPC disabled, file editing disabled)
+- ✅ Environment constants defined
 
 ---
 

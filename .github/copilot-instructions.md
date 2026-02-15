@@ -6,6 +6,15 @@
 2. **Never make assumptions** - ask for clarification when requirements are ambiguous
 3. **Pattern usage is mandatory** - see [Pattern Usage Rules](#pattern-usage-rules) below
 4. **Always return to develop branch after deployment** - After pushing to main, immediately switch back to develop branch
+5. **Update task tracking on completion/scope change** - When tasks complete, work ends, or scope changes:
+   - ✅ Update WORDPRESS-MVP-TASKS.csv (change status, dates, estimates)
+   - ✅ Update WORDPRESS-MVP-TASKS.md (sync with CSV)
+   - ✅ Update WORDPRESS-BACKLOG.md (when moving items to/from active work)
+   - ✅ Update/close GitHub issues (mark done, add completion notes)
+   - ✅ Update docs/PROJECT-TIMELINE.md (if milestones/dates/progress affected)
+   - ✅ Update docs/FUNCTIONAL-TEST-CASES.md (update test status when features implemented/tested)
+   - ⚠️ Ask user about updating: VERSION-HISTORY.md, feature docs (WP-*.md), SESSION-SUMMARY-*.md, OPEN-ACTIONS.md
+   - 🗑️ Delete docs/ELEMENTOR-TO-GUTENBERG-MIGRATION.md after migration complete (PENG-070)
 
 ## Known Issues & Solutions
 
@@ -397,25 +406,37 @@ ssh production "cd public_html && wp eval-file ~/elementor-exports/import-elemen
 - Direct database operations (bypasses WordPress API limitations)
 - Supports dry-run: `ELEMENTOR_DRY_RUN=true wp eval-file ...`
 
-**4. Post-Deployment Archiving (CRITICAL - Do Immediately):**
+**4. Post-Deployment Verification & Updates:**
+- NEVER archive immediately after deployment
+- Keep active release file (vX.Y.Z.json + RELEASE-NOTES-NEXT.md) for ongoing updates
+- Update release files during production testing and issue fixes
+- Archive ONLY when user explicitly confirms "this release is complete"
+
+**5. Release Completion & Next Release Planning (User Confirmation Required):**
 ```powershell
-# Archive human-readable MD
+# ONLY after user confirms "vX.Y.Z is complete"
+
+# 1. Archive completed release
 $timestamp = Get-Date -Format "yyyyMMdd-HHmm"
-Copy-Item docs/RELEASE-NOTES-NEXT.md ".github/releases/archive/RELEASE-NOTES-$timestamp.md"
+Move-Item .github/releases/v3.6.2.json .github/releases/archive/v3.6.2.json
+Move-Item docs/RELEASE-NOTES-NEXT.md ".github/releases/archive/RELEASE-NOTES-$timestamp.md"
 
-# Archive machine-readable JSON (e.g., v3.1.0 → v3.2.0)
-Move-Item .github/releases/v3.1.0.json .github/releases/archive/v3.1.0.json
+# 2. Discuss with user:
+#    - What should be included in next release?
+#    - Recommend version number based on scope:
+#      * Patch (3.6.3): Bug fixes, minor tweaks
+#      * Minor (3.7.0): New features, non-breaking changes
+#      * Major (4.0.0): Breaking changes, major overhaul
+#    - Get user confirmation on version number
 
-# Create next version
-Copy-Item .github/releases/archive/v3.1.0.json .github/releases/v3.2.0.json
+# 3. Create next release files (e.g., v3.6.3 confirmed)
 Copy-Item docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
+# Create new vX.Y.Z.json based on user's scope decisions
+# Update infra/shared/elementor-manifest.json version
 
-# Update manifest version
-# Edit infra/shared/elementor-manifest.json - change "version": "3.2.0"
-
-# Commit archive
-git add .github/releases/archive/ .github/releases/v3.2.0.json docs/RELEASE-NOTES-NEXT.md infra/shared/elementor-manifest.json
-git commit -m "Archive v3.1.0, prepare v3.2.0"
+# 4. Commit
+git add .github/releases/ docs/RELEASE-NOTES-NEXT.md infra/shared/elementor-manifest.json
+git commit -m "Archive v3.6.2 (complete), prepare v3.6.3"
 git push origin main
 ```
 
@@ -424,30 +445,34 @@ git push origin main
 **✅ Always Do:**
 - Read DEPLOYMENT-WORKFLOW.md before any release work
 - Use `podman cp` for Elementor exports (never pipe through PowerShell)
-- Follow RELEASE-NOTES-PROCESS.md workflow phases
-- Archive BOTH JSON and MD files after deployment
+- Keep updating active release files (vX.Y.Z.json + RELEASE-NOTES-NEXT.md) during planning, deployment, and production fixes
+- Archive ONLY when user explicitly confirms release is complete
+- Discuss next release scope and recommend version number before creating new files
 - Use dry-run mode before production imports
 - Update manifest version for each release
 
 **❌ Never Do:**
+- Archive immediately after deployment (keep active for updates)
+- Work on multiple releases in parallel (include hotfixes in current release)
+- Use 4-part version numbers (3.6.2.1) - always use 3-part semantic versioning
 - Pipe Elementor JSON through PowerShell (`wp ... > file.json` corrupts data)
-- Skip post-deployment archiving
 - Modify archived release files (they're historical records)
 - Forget to increment manifest version
-- Deviate from established workflows without documenting why
+- Create next release without user confirmation and scope discussion
 
 ### File Organization
 
 ```
 .github/releases/
-├── v3.2.0.json                 # Active next release (machine-readable)
+├── v3.6.2.json                 # Active release (keep updating until user confirms complete)
 ├── README.md                   # Archive documentation
 └── archive/
-    ├── v3.1.0.json             # Archived releases (machine-readable)
-    └── RELEASE-NOTES-20260113-1500.md  # Archived releases (human-readable)
+    ├── v3.6.1.json             # Archived completed releases
+    ├── v3.6.0.json
+    └── RELEASE-NOTES-20260213-2255.md  # Archived human-readable notes
 
 docs/
-├── RELEASE-NOTES-NEXT.md       # Active next release (human-readable)
+├── RELEASE-NOTES-NEXT.md       # Active release notes (keep updating until complete)
 ├── DEPLOYMENT-WORKFLOW.md      # Master workflow guide
 ├── RELEASE-NOTES-PROCESS.md    # Release lifecycle process
 ├── QUICK-REFERENCE-DEPLOYMENT.md   # Quick reference commands
@@ -455,6 +480,22 @@ docs/
 ├── lessons/                    # Permanent lessons learned
 │   ├── elementor-cli-deployment.md
 │   └── powershell-encoding-corruption.md
+└── templates/
+    └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
+
+infra/shared/
+├── elementor-manifest.json     # Page mappings, version metadata (update version with each release)
+└── scripts/
+    ├── export-elementor-pages.ps1      # Export script (PowerShell)
+    └── import-elementor-pages.php      # Import script (PHP)
+```
+
+**Release File Lifecycle:**
+1. Create `vX.Y.Z.json` + `RELEASE-NOTES-NEXT.md` when starting new release
+2. Keep updating same files during: planning, deployment, production testing, bug fixes
+3. Archive ONLY when user confirms "this release is complete"
+4. Discuss scope → recommend version → get confirmation → create next release files
+5. NEVER work on multiple releases in parallel (no 4-part versions, include hotfixes in current)
 └── templates/
     └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
 

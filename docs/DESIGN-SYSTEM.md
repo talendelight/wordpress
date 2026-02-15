@@ -1050,21 +1050,24 @@ Apply design system to Forminator forms via `config/custom-css/forminator-forms.
 ## Implementation Status
 
 ### Completed Pages (January 22, 2026)
-- ✅ **Homepage (Welcome)** - ID 20 - All design standards applied
+
+**Note:** Page IDs shown below are historical (from January 2026 database). Current environment uses different IDs. Use URLs for environment-agnostic references.
+
+- ✅ **Homepage (Welcome)** - `/welcome/` - All design standards applied
   - Hero H1 mobile: 42px ✓
   - CTA title mobile: 42px ✓
   - CTA outer padding: 20px all sides ✓
   - All 4 icon boxes: 48px/24px/700/16px ✓
   - Footer compliance: Mobile spacing 60px ✓
   
-- ✅ **Employers** - ID 93 - All design standards applied
+- ✅ **Employers** - `/employers/` - All design standards applied
   - Hero H1 mobile: 42px ✓
   - CTA title mobile: 42px ✓
   - CTA outer padding: 20px all sides ✓
   - All 7 icon boxes: 48px/24px/700/16px ✓
   - Footer compliance: Mobile spacing 60px ✓
 
-- ✅ **Candidates** - ID 229 - All design standards applied
+- ✅ **Candidates** - `/candidates/` - All design standards applied
   - Hero H1 mobile: 42px ✓
   - CTA title mobile: 42px ✓
   - CTA outer padding: 20px all sides ✓
@@ -1072,19 +1075,19 @@ Apply design system to Forminator forms via `config/custom-css/forminator-forms.
   - Footer compliance: Mobile spacing 60px ✓
   - Section backgrounds: White/Navy pattern ✓
 
-- ✅ **Scouts** - ID 248 - All design standards applied (January 22, 2026)
+- ✅ **Scouts** - `/scouts/` - All design standards applied (January 22, 2026)
   - Hero H1 mobile: 42px ✓
   - CTA title mobile: 42px ✓
   - CTA outer padding: 20px all sides ✓
   - All 10 icon boxes: 48px/24px/700/16px ✓
   - Footer compliance: Mobile spacing 60px ✓
 
-- ✅ **Operators Dashboard** - ID 299 - All design standards applied (January 22, 2026)
+- ✅ **Operators Dashboard** - `/operators/` - All design standards applied (January 22, 2026)
   - Hero H1 mobile: 42px ✓
   - All 5 icon boxes: 48px/24px/700/16px ✓
   - Footer compliance: Mobile spacing 60px ✓
 
-- ✅ **Managers Dashboard** - ID 469 - All design standards applied (January 22, 2026)
+- ✅ **Managers Dashboard** - `/managers/` - All design standards applied (January 22, 2026)
   - Hero H1 mobile: 42px ✓
   - All 9 icon boxes: 48px/24px/700/16px ✓
   - Footer compliance: Mobile spacing 60px ✓

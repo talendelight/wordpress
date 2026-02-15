@@ -4,6 +4,8 @@
 **Purpose:** Comprehensive UI consistency audit across all published pages in local WordPress environment  
 **Environment:** http://wp.local (Podman/Docker development)
 
+**Note:** This audit contains page IDs from the January 2026 database state. Page IDs may differ in current database after resets. Use URLs for environment-agnostic references.
+
 ---
 
 ## Pages to Audit
@@ -64,9 +66,9 @@
     - URL: http://wp.local/managers/
     - Access: Managers, Administrators
 
-13. **Manager Admin Operations** (`/manager-admin/`)
+13. **Manager Admin Operations** (`/managers/admin/`)
     - Status: Published
-    - URL: http://wp.local/manager-admin/
+    - URL: http://wp.local/managers/admin/
     - Access: Managers, Administrators
     - Features: Tabbed interface, user registration request approvals
 
@@ -75,6 +77,8 @@
 ## Automated Analysis Results (WP-CLI)
 
 ### Page Inventory
+
+**Note:** Page IDs shown below are from January 22, 2026 database state. Current database may have different IDs. Use URLs (slug column) for reliable page references.
 
 **Total Published Pages:** 16 pages analyzed  
 **Elementor Pages:** 13 pages (81%)  
@@ -90,7 +94,7 @@
 | 152 | Access Restricted | 403-forbidden | Elementor | 2026-01-06 |
 | 365 | Register Profile | register-profile | Elementor | 2026-01-16 |
 | 379 | Select Role | select-role | Elementor | 2026-01-17 |
-| 386 | Manager Admin | manager-admin | Elementor | 2026-01-19 |
+| 10 | Manager Admin | managers/admin | Elementor | 2026-01-19 |
 | 469 | Managers | managers | Elementor | 2026-01-20 |
 | 75 | Log In | log-in | WPUM | 2026-01-01 |
 | 76 | Password Reset | password-reset | WPUM | 2026-01-01 |

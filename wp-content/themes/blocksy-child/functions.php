@@ -99,11 +99,11 @@ add_action('init', function() {
     }
 });
 
-// Redirect WordPress logout to Welcome page (home page)
-add_action('wp_logout', function() {
-    wp_redirect(home_url('/'));
-    exit;
-});
+// Redirect after logout to Welcome page (home page)
+// Uses logout_redirect filter instead of wp_logout action to ensure proper redirect
+add_filter('logout_redirect', function($redirect_to, $requested_redirect_to, $user) {
+    return home_url('/');  // Welcome page is set as front page (ID 6)
+}, 10, 3);
 
 // Role-based page access control (MVP - Replace with plugin in v3.7.0+)
 // TODO v3.7.0: Migrate to PublishPress Capabilities or similar plugin
@@ -160,6 +160,11 @@ add_filter('wp_nav_menu_objects', function($items, $args) {
         $url = $item->url;
         error_log("Menu item: {$item->title} - URL: {$url}");
         
+        // Replace logout URL with proper nonce to skip confirmation page
+        if (strpos($url, 'action=logout') !== false) {
+            $item->url = wp_logout_url(home_url('/'));
+        }
+        
         // Hide Register and Login when logged in
         if ($logged_in && (strpos($url, '/register') !== false || strpos($url, '/log-in') !== false)) {
             error_log("Removing {$item->title} (logged in)");
@@ -175,3 +180,4 @@ add_filter('wp_nav_menu_objects', function($items, $args) {
     
     return $items;
 }, 10, 2);
+

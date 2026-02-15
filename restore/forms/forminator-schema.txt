@@ -1,0 +1,8 @@
+﻿Field	Type	Null	Key	Default	Extra
+entry_id	bigint(20) unsigned	NO	PRI	NULL	auto_increment
+entry_type	varchar(191)	NO	MUL	NULL	
+draft_id	varchar(12)	YES		NULL	
+form_id	bigint(20) unsigned	NO	MUL	NULL	
+is_spam	tinyint(1)	NO	MUL	0	
+date_created	datetime	NO		0000-00-00 00:00:00	
+status	enum('active','spam','draft','abandoned')	NO	MUL	active	

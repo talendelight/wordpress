@@ -18,6 +18,8 @@ param(
         'verify', 
         'restore',
         'export-elementor',
+        'health-check',
+        'apply-sql',
         'deploy',
         'help'
     )]
@@ -66,6 +68,25 @@ $SCRIPT_REGISTRY = @{
         usage = 'wp-action export-elementor'
         examples = @(
             'wp-action export-elementor'
+        )
+    }
+    
+    'health-check' = @{
+        script = 'verify-production-health.php'
+        description = 'Run comprehensive health check on production'
+        usage = 'wp-action health-check [-Verbose]'
+        examples = @(
+            'wp-action health-check',
+            'wp-action health-check -Verbose'
+        )
+    }
+    
+    'apply-sql' = @{
+        script = 'apply-sql-change.ps1'
+        description = 'Apply SQL migration file to local database'
+        usage = 'wp-action apply-sql -SqlFilePath <path-to-sql-file>'
+        examples = @(
+            'wp-action apply-sql -SqlFilePath infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql'
         )
     }
     
@@ -151,6 +172,27 @@ try {
     if ($Action -eq 'deploy') {
         Show-DeploymentWorkflow
         exit 0
+    }
+    
+    # Special handling for health-check (PHP script on production)
+    if ($Action -eq 'health-check') {
+        $scriptInfo = $SCRIPT_REGISTRY[$Action]
+        $verbose = if ($RemainingArgs -contains '-Verbose') { '--verbose' } else { '' }
+        
+        Write-Host "Executing health check on production...`n" -ForegroundColor Cyan
+        
+        $sshCommand = "ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 `"cd domains/talendelight.com/public_html && wp eval-file ~/verify-production-health.php $verbose --allow-root`""
+        
+        Invoke-Expression $sshCommand
+        $exitCode = $LASTEXITCODE
+        
+        if ($exitCode -eq 0) {
+            Write-Host "`n✅ Health check passed" -ForegroundColor Green
+        } else {
+            Write-Host "`n❌ Health check failed - see details above" -ForegroundColor Red
+        }
+        
+        exit $exitCode
     }
     
     # Get script info

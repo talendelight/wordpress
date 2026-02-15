@@ -56,14 +56,14 @@
     },
     {
       "name": "register-profile",
-      "local_id": "TBD",
+      "local_id": 79,
       "prod_id": 79,
       "slug": "register-profile",
-      "file": "register-profile.json",
+      "file": "register-profile.html",
       "title": "Register Profile",
       "url_local": "http://localhost:8080/register-profile/",
       "url_prod": "https://talendelight.com/register-profile/",
-      "notes": "Uses Forminator shortcode - requires form ID mapping"
+      "notes": "Migrated to Gutenberg Feb 11, 2026 - Uses Forminator shortcode, trust badges pattern"
     },
     {
       "name": "select-role",
@@ -98,14 +98,14 @@
       "notes": "v3.3.0 - Manager landing page deployed to production"
     },
     {
-      "name": "manager-admin",
-      "local_id": 386,
+      "name": "managers-admin",
+      "local_id": 10,
       "prod_id": 86,
-      "slug": "manager-admin",
-      "file": "manager-admin.json",
+      "slug": "managers/admin",
+      "file": "managers-admin.json",
       "title": "Manager Admin",
-      "url_local": "http://localhost:8080/manager-admin/",
-      "url_prod": "https://talendelight.com/manager-admin/",
+      "url_local": "http://localhost:8080/managers/admin/",
+      "url_prod": "https://talendelight.com/managers/admin/",
       "notes": "v3.4.0 - Admin operations hub with user registration request approvals, system settings, and other admin tasks"
     }
   ],

@@ -1,0 +1,183 @@
+/* ============================================
+   LOGIN PAGE STYLING - Match Elementor Pages
+   ============================================
+   
+   Purpose: Style WP User Manager login form to match
+            Elementor-created landing page aesthetics
+   
+   Usage: Add via Appearance → Customize → Additional CSS
+          or enqueue in theme/plugin
+   
+   Last Updated: January 11, 2026
+   ============================================ */
+
+/* Login Page Container */
+.wpum-template.wpum-login-form {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Form Title */
+.wpum-login-form h2 {
+    color: #063970;
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Form Fields */
+.wpum-form fieldset {
+    margin-bottom: 20px;
+}
+
+.wpum-form label {
+    color: #063970;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.wpum-form input[type="text"],
+.wpum-form input[type="email"],
+.wpum-form input[type="password"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.wpum-form input[type="text"]:focus,
+.wpum-form input[type="email"]:focus,
+.wpum-form input[type="password"]:focus {
+    outline: none;
+    border-color: #063970;
+    box-shadow: 0 0 0 3px rgba(6, 57, 112, 0.1);
+}
+
+/* Remember Me Checkbox */
+.wpum-form input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.wpum-form fieldset label:has(input[type="checkbox"]) {
+    font-weight: 400;
+    color: #898989;
+}
+
+/* Submit Button - Matches Access Restricted Page & Elementor Buttons */
+.wpum-form input[type="submit"] {
+    width: 100%;
+    background: #3498DB;
+    color: #FFFFFF;
+    border: none;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px 0 rgba(52, 152, 219, 0.5);
+}
+
+.wpum-form input[type="submit"]:hover {
+    background: #2980b9;
+    box-shadow: 0 0 15px 0 rgba(52, 152, 219, 0.7);
+    transform: translateY(-2px);
+}
+
+.wpum-form input[type="submit"]:active {
+    transform: translateY(0);
+    box-shadow: 0 0 8px 0 rgba(52, 152, 219, 0.6);
+}
+
+/* Action Links (Password Reset, Register) */
+.wpum-action-links {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+    text-align: center;
+}
+
+.wpum-action-links li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+.wpum-action-links a {
+    color: #3498DB;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.wpum-action-links a:hover {
+    color: #063970;
+    text-decoration: underline;
+}
+
+/* Success/Error Messages */
+.wpum-message {
+    padding: 15px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.wpum-message.success {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+.wpum-message.error {
+    background: #f8d7da;
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+}
+
+.wpum-message.notice {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+/* Required Field Indicator */
+.wpum-required {
+    color: #dc3545;
+    margin-left: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wpum-template.wpum-login-form {
+        margin: 30px 20px;
+        padding: 30px 20px;
+    }
+    
+    .wpum-login-form h2 {
+        font-size: 28px;
+    }
+    
+    .wpum-action-links li {
+        display: block;
+        margin: 10px 0;
+    }
+}
+
+/* Logged-in State (Already logged in message) */
+.wpum-template .wpum-notice {
+    background: #e7f3ff;
+    border-left: 4px solid #3498DB;
+    padding: 15px 20px;
+    border-radius: 4px;
+    color: #063970;
+}

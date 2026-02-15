@@ -176,3 +176,241 @@ podman exec wp wp option update show_on_front page --allow-root
 
 Write-Host "`n✅ Restoration complete! Verify the counts above." -ForegroundColor Green
 ```
+
+---
+
+## Option 4: Emergency Production Fix (URL Redirect + Missing Pages)
+
+**Use Case:** Production site redirecting to wrong URL (e.g., `:8080`) or critical pages missing
+
+**Requirements:**
+- SSH access to production (Hostinger)
+- Production WordPress at `/home/u909075950/domains/talendelight.com/public_html/`
+- Backup files in `restore/pages/`
+
+### Automated Fix Script
+
+**If SSH accessible:**
+```powershell
+.\infra\shared\scripts\emergency-fix-production.ps1
+```
+
+**SSH Connection Details:**
+- **Host:** 45.84.205.129
+- **Port:** 65002 (not default 22)
+- **User:** u909075950
+- **Key:** tmp/hostinger_deploy_key (if available)
+- **Password:** Available in Hostinger control panel
+
+**Connection Test:**
+```powershell
+# With SSH key
+ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "echo 'SSH OK'"
+
+# With password (interactive)
+ssh -p 65002 u909075950@45.84.205.129 "cd domains/talendelight.com/public_html && wp option get siteurl --allow-root"
+```
+
+### Manual Fix via Hostinger Control Panel
+
+**If SSH connection fails or times out:**
+
+#### Step 1: Log into Hostinger
+- URL: https://hpanel.hostinger.com
+- Navigate to your website → File Manager
+
+#### Step 2: Upload Fix Scripts
+
+Navigate to `/home/u909075950/` and create these files:
+
+**File: `fix-urls.php`**
+```php
+<?php
+require_once('/home/u909075950/domains/talendelight.com/public_html/wp-load.php');
+
+// Fix site URL and home URL
+update_option('siteurl', 'https://talendelight.com');
+update_option('home', 'https://talendelight.com');
+
+echo "URLs fixed:\n";
+echo "  siteurl: " . get_option('siteurl') . "\n";
+echo "  home: " . get_option('home') . "\n";
+
+// Flush caches
+wp_cache_flush();
+echo "Cache flushed\n";
+?>
+```
+
+**File: `restore-welcome.php`**
+```php
+<?php
+require_once('/home/u909075950/domains/talendelight.com/public_html/wp-load.php');
+
+$content = file_get_contents('/home/u909075950/welcome-content.html');
+if (!$content) {
+    echo "Error: Could not read welcome-content.html\n";
+    exit(1);
+}
+
+// Check if Welcome page exists
+$existing = get_page_by_path('welcome', OBJECT, 'page');
+
+if ($existing) {
+    // Update existing page
+    $result = wp_update_post(array(
+        'ID' => $existing->ID,
+        'post_content' => $content,
+    ));
+    
+    if (is_wp_error($result)) {
+        echo "Error updating page: " . $result->get_error_message() . "\n";
+        exit(1);
+    }
+    
+    $page_id = $existing->ID;
+    echo "Success: Welcome page updated (ID: $page_id)\n";
+} else {
+    // Create new page
+    $page_id = wp_insert_post(array(
+        'post_title' => 'Welcome',
+        'post_name' => 'welcome',
+        'post_content' => $content,
+        'post_status' => 'publish',
+        'post_type' => 'page',
+        'comment_status' => 'closed',
+        'ping_status' => 'closed',
+    ));
+    
+    if (is_wp_error($page_id)) {
+        echo "Error creating page: " . $page_id->get_error_message() . "\n";
+        exit(1);
+    }
+    
+    echo "Success: Welcome page created (ID: $page_id)\n";
+}
+
+// Set as homepage
+update_option('show_on_front', 'page');
+update_option('page_on_front', $page_id);
+
+echo "Set as homepage (page_on_front = $page_id)\n";
+
+// Flush caches
+wp_cache_flush();
+echo "Cache flushed\n";
+
+// Cleanup
+unlink('/home/u909075950/welcome-content.html');
+?>
+```
+
+**File: `welcome-content.html`**
+- Upload content from `restore/pages/welcome-page-clean.html`
+
+#### Step 3: Execute via Terminal
+
+In Hostinger File Manager, open Terminal and run:
+```bash
+cd ~
+php fix-urls.php
+php restore-welcome.php
+```
+
+#### Step 4: Verify Fix
+```bash
+cd domains/talendelight.com/public_html
+wp option get siteurl --allow-root
+wp option get home --allow-root
+wp option get page_on_front --allow-root
+wp post list --post_type=page --format=csv --fields=ID,post_title,post_name --allow-root
+```
+
+#### Step 5: Test Site
+- Visit: https://talendelight.com
+- Verify: No wrong port redirect
+- Verify: Welcome page displays as homepage
+
+#### Step 6: Cleanup
+```bash
+rm ~/fix-urls.php
+rm ~/restore-welcome.php
+```
+
+### Alternative: Via phpMyAdmin (Risky)
+
+**Only if File Manager method fails:**
+
+1. Open phpMyAdmin from Hostinger control panel
+2. Select WordPress database (`u909075950_GD9QX`)
+3. Run SQL:
+   ```sql
+   UPDATE wp_options SET option_value = 'https://talendelight.com' WHERE option_name = 'siteurl';
+   UPDATE wp_options SET option_value = 'https://talendelight.com' WHERE option_name = 'home';
+   ```
+4. For page restoration, use File Manager method above
+
+### Post-Fix Actions
+
+**After emergency fix complete:**
+
+1. **Verify Homepage Set to Welcome:**
+   ```powershell
+   ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd domains/talendelight.com/public_html && wp option get show_on_front --allow-root && wp option get page_on_front --allow-root && wp post list --post_type=page --name=welcome --format=csv --fields=ID,post_title --allow-root"
+   # show_on_front should be 'page'
+   # page_on_front should match Welcome page ID
+   # If not set: wp option update show_on_front page --allow-root && wp option update page_on_front <ID> --allow-root
+   ```
+
+2. **Verify Theme Active:**
+   ```powershell
+   ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd domains/talendelight.com/public_html && wp theme list --status=active --allow-root"
+   # Should show 'blocksy', if not: wp theme activate blocksy --allow-root
+   ```
+
+2. **Verify HTTPS Redirect:**
+   ```powershell
+   ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "curl -I http://talendelight.com 2>&1 | grep -i 'HTTP\|Location'"
+   # Should show: HTTP/1.1 301 Moved Permanently + Location: https://talendelight.com/
+   ```
+
+3. **Create Backup:**
+   ```powershell
+   .\infra\shared\scripts\wp-action.ps1 backup
+   ```
+
+4. **Verify Production:**
+   ```powershell
+   .\infra\shared\scripts\wp-action.ps1 verify
+   ```
+
+5. **Document Incident:**
+   - Update `docs/lessons/` with incident details
+   - Document root cause and resolution
+   - Update disaster recovery procedures if needed
+
+### Common Post-Restore Issues
+
+**Issue: Homepage showing posts instead of Welcome page**
+- **Cause:** `show_on_front` set to 'posts' or `page_on_front` not set to Welcome page ID
+- **Fix:** 
+  ```bash
+  WELCOME_ID=$(wp post list --post_type=page --name=welcome --field=ID --allow-root)
+  wp option update show_on_front page --allow-root
+  wp option update page_on_front $WELCOME_ID --allow-root
+  wp cache flush --allow-root
+  ```
+
+**Issue: Styles not loading**
+- **Cause:** Wrong theme active (twentytwentyfive instead of blocksy)
+- **Fix:** `wp theme activate blocksy --allow-root && wp cache flush --allow-root`
+
+**Issue: HTTP not redirecting to HTTPS**
+- **Cause:** .htaccess HTTPS rules missing or in wrong position
+- **Fix:** Ensure HTTPS redirect rules are at TOP of .htaccess (before LiteSpeed rules)
+
+**Issue: SSL certificate warning**
+- **Cause:** Certificate not installed or browser cache
+- **Fix:** Check Hostinger SSL settings, clear browser cache, flush DNS (ipconfig /flushdns)
+
+**See also:** [docs/EMERGENCY-FIX-MANUAL.md](../docs/EMERGENCY-FIX-MANUAL.md) for detailed emergency procedures

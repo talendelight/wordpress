@@ -83,18 +83,43 @@ jobs:
             echo "⚠️  Ensure Elementor exports are committed to repository"
           fi
       
-      - name: Check for Plugin Deployment
+      - name: Check for Plugin Activation
         id: check_plugins
         run: |
           RELEASE_FILE="${{ steps.release.outputs.release_file }}"
-          HAS_PLUGINS=$(jq '[.steps[] | select(.type == "deploy_plugins")] | length > 0' "$RELEASE_FILE")
+          HAS_PLUGINS=$(jq '[.steps[] | select(.type == "activate_plugins")] | length > 0' "$RELEASE_FILE")
           echo "has_plugins=$HAS_PLUGINS" >> $GITHUB_OUTPUT
           
           if [ "$HAS_PLUGINS" = "true" ]; then
-            echo "⚠️  This release includes new plugin deployment"
-            PLUGINS=$(jq -r '.steps[] | select(.type == "deploy_plugins") | .config.plugins[]' "$RELEASE_FILE")
-            echo "Plugins to deploy: $PLUGINS"
+            echo "⚠️  This release requires plugin activation"
+            PLUGIN_LIST=$(jq -r '.steps[] | select(.type == "activate_plugins") | .plugins[].slug' "$RELEASE_FILE")
+            echo "$PLUGIN_LIST" > plugin_list.txt
+            echo "Plugins to activate:"
+            cat plugin_list.txt
           fi
+
+      - name: Pre-Deployment Health Check
+        id: health_check_pre
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Running pre-deployment health check..."
+            
+            # Upload health check script if not exists
+            if [ ! -f ~/verify-production-health.php ]; then
+              echo "Health check script not found - will be uploaded with code deployment"
+            else
+              echo "Running existing health check..."
+              wp eval-file ~/verify-production-health.php --verbose || true
+            fi
+            
+            echo "Pre-deployment check complete"
 
       - name: Deploy Code (wp-content)
         id: deploy_code
@@ -167,51 +192,66 @@ jobs:
           strip_components: 1
           overwrite: true
 
-      - name: Deploy Database Changes
-        id: deploy_database
+      - name: Upload Health Check Script
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          source: "infra/shared/scripts/verify-production-health.php"
+          target: "~/"
+          strip_components: 3
+
+      - name: Check Database Migrations
+        id: check_database
         run: |
           RELEASE_FILE="${{ steps.release.outputs.release_file }}"
           
-          # Check if release has database deployment
+          # Check if release has database migrations
           HAS_DATABASE=$(jq '[.steps[] | select(.type == "deploy_database")] | length > 0' "$RELEASE_FILE")
           
           if [ "$HAS_DATABASE" = "false" ]; then
-            echo "No database deployment in this release"
+            echo "No database migrations in this release"
+            echo "has_database=false" >> $GITHUB_OUTPUT
             exit 0
           fi
           
-          # Extract SQL files from release config
-          jq -r '.steps[] | select(.type == "deploy_database") | .config.sql_files[]' "$RELEASE_FILE" > db_files.txt
+          # Extract migration files
+          jq -r '.steps[] | select(.type == "deploy_database") | .migrations[]?.file' "$RELEASE_FILE" > migration_files.txt
           
-          # Check if any SQL files are actually specified
-          if [ ! -s db_files.txt ]; then
-            echo "No SQL files specified in release config - skipping database deployment"
+          # Check if any migrations are specified
+          if [ ! -s migration_files.txt ]; then
+            echo "No migration files specified - skipping database deployment"
+            echo "has_database=false" >> $GITHUB_OUTPUT
             exit 0
           fi
           
-          echo "Preparing database deployment..."
-          echo "database_deployed=true" >> $GITHUB_OUTPUT
-          
-          echo "SQL files to deploy:"
-          cat db_files.txt
+          echo "Database migrations to deploy:"
+          cat migration_files.txt
+          echo "has_database=true" >> $GITHUB_OUTPUT
 
-      - name: Upload Database Changes
-        if: steps.deploy_database.outputs.database_deployed == 'true'
+      - name: Deploy Database Changes
+        id: deploy_database
+        if: steps.check_database.outputs.has_database == 'true'
         run: |
           # Create staging directory
           mkdir -p db-staging
           
-          # Copy only files listed in db_files.txt
+          # Copy migration files listed in migration_files.txt
           while IFS= read -r sql_file; do
             if [ -f "$sql_file" ]; then
               cp "$sql_file" db-staging/
               echo "Staged: $sql_file"
             else
-              echo "WARNING: File not found: $sql_file"
+              echo "ERROR: Migration file not found: $sql_file"
+              exit 1
             fi
-          done < db_files.txt
+          done < migration_files.txt
+          
+          echo "database_deployed=true" >> $GITHUB_OUTPUT
 
-      - name: Upload Staged Database Files to Production
+      - name: Upload Database Changes
         if: steps.deploy_database.outputs.database_deployed == 'true'
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -299,34 +339,99 @@ jobs:
             
             echo "Activating plugins..."
             
-            # Read plugins from release JSON
-            PLUGINS=$(cat <<'EOF'
-            ${{ steps.check_plugins.outputs.plugins || '' }}
-            EOF
-            )
-            
-            if [ -z "$PLUGINS" ]; then
-              # Fallback: get plugins from local release file
-              cd ~/
-              if [ -f ".github/releases/v${{ steps.release.outputs.version }}.json" ]; then
-                PLUGINS=$(jq -r '.steps[] | select(.type == "deploy_plugins") | .config.plugins[]' ".github/releases/v${{ steps.release.outputs.version }}.json")
+            # Read plugin slugs from staged file
+            while IFS= read -r plugin; do
+              if [ -z "$plugin" ]; then
+                continue
               fi
-            fi
-            
-            for plugin in $PLUGINS; do
-              echo "Activating plugin: $plugin"
-              if wp plugin is-installed "$plugin"; then
-                if wp plugin activate "$plugin"; then
-                  echo "✓ Plugin activated: $plugin"
-                else
-                  echo "✗ Plugin activation failed: $plugin"
-                fi
+              
+              echo "Processing plugin: $plugin"
+              
+              # Check if plugin exists
+              if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
+                echo "⚠️  Plugin not found: $plugin (may need to be installed first)"
+                continue
+              fi
+              
+              # Check if already active
+              if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
+                echo "✓ Plugin already active: $plugin"
+                continue
+              fi
+              
+              # Activate plugin
+              if wp plugin activate "$plugin" --allow-root; then
+                echo "✓ Plugin activated: $plugin"
               else
-                echo "⚠ Plugin not found: $plugin"
+                echo "❌ Plugin activation failed: $plugin"
               fi
-            done
+            done < ~/plugin_list.txt
+            
+            echo ""
+            echo "Final plugin status:"
+            wp plugin list --status=active --allow-root
             
             echo "Plugin activation complete"
+
+      - name: Upload Plugin List for Activation
+        if: steps.check_plugins.outputs.has_plugins == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          source: "plugin_list.txt"
+          target: "~/"
+
+      - name: Execute Plugin Activation
+        if: steps.check_plugins.outputs.has_plugins == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Activating plugins from list..."
+            
+            if [ ! -f ~/plugin_list.txt ]; then
+              echo "ERROR: plugin_list.txt not found"
+              exit 1
+            fi
+            
+            while IFS= read -r plugin; do
+              if [ -z "$plugin" ]; then
+                continue
+              fi
+              
+              echo "Processing plugin: $plugin"
+              
+              if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
+                echo "⚠️  Plugin not found: $plugin"
+                continue
+              fi
+              
+              if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
+                echo "✓ Already active: $plugin"
+                continue
+              fi
+              
+              if wp plugin activate "$plugin" --allow-root; then
+                echo "✓ Activated: $plugin"
+              else
+                echo "❌ Failed: $plugin"
+              fi
+            done < ~/plugin_list.txt
+            
+            echo ""
+            echo "Active plugins:"
+            wp plugin list --status=active --field=name --allow-root
+            
+            # Cleanup
+            rm -f ~/plugin_list.txt
 
       - name: Deploy Elementor Pages
         if: steps.check_elementor.outputs.has_elementor == 'true'
@@ -380,8 +485,14 @@ jobs:
             
             echo "Clearing caches..."
             
+            # Clear WordPress cache
+            wp cache flush --allow-root && echo "✓ WordPress cache cleared" || echo "⚠ WordPress cache clear failed"
+            
+            # Flush rewrite rules
+            wp rewrite flush --allow-root && echo "✓ Rewrite rules flushed" || echo "⚠ Rewrite flush failed"
+            
             # Clear Elementor cache
-            if wp elementor flush_css 2>/dev/null; then
+            if wp elementor flush_css --allow-root 2>/dev/null; then
               echo "✓ Elementor cache cleared"
             else
               echo "⚠ Elementor cache clear failed or plugin not active"
@@ -389,13 +500,44 @@ jobs:
             
             # Clear LiteSpeed cache (if available)
             if command -v litespeed 2>/dev/null; then
-              wp litespeed-purge all 2>/dev/null && echo "✓ LiteSpeed cache cleared" || echo "⚠ LiteSpeed cache clear failed"
+              wp litespeed-purge all --allow-root 2>/dev/null && echo "✓ LiteSpeed cache cleared" || echo "⚠ LiteSpeed cache clear failed"
             fi
             
             # Clear WordPress transients
-            wp transient delete --all 2>/dev/null && echo "✓ WordPress transients cleared" || true
+            wp transient delete --all --allow-root 2>/dev/null && echo "✓ WordPress transients cleared" || true
             
             echo "Cache clearing complete"
+
+      - name: Post-Deployment Health Check
+        id: health_check_post
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}
+            
+            echo "Running post-deployment health check..."
+            echo "========================================"
+            
+            if [ -f ~/verify-production-health.php ]; then
+              if wp eval-file ~/verify-production-health.php --allow-root; then
+                echo ""
+                echo "✅ All health checks passed!"
+                exit 0
+              else
+                echo ""
+                echo "❌ Some health checks failed - review output above"
+                echo "⚠️  Deployment may need attention"
+                exit 1
+              fi
+            else
+              echo "⚠️  Health check script not found"
+              echo "Manual verification required"
+              exit 0
+            fi
 
       - name: Deployment Summary
         if: always()
@@ -412,32 +554,52 @@ jobs:
           echo "Code deployed: ${{ steps.deploy_code.outputs.code_deployed || 'false' }}"
           echo "Database deployed: ${{ steps.deploy_database.outputs.database_deployed || 'false' }}"
           echo "Theme activated: ${{ steps.activate_theme.outputs.theme_activated || 'false' }}"
-          echo "Plugins deployed: ${{ steps.check_plugins.outputs.has_plugins || 'false' }}"
-          echo "Elementor pages: ${{ steps.check_elementor.outputs.has_elementor }}"
+          echo "Plugins activated: ${{ steps.check_plugins.outputs.has_plugins || 'false' }}"
+          echo "Elementor pages: ${{ steps.check_elementor.outputs.has_elementor || 'false' }}"
+          echo "Health check: ${{ steps.health_check_post.outcome || 'not_run' }}"
           echo "=========================================="
           echo ""
-          if [ "${{ steps.check_elementor.outputs.has_elementor }}" = "true" ]; then
-            echo "⚠️  MANUAL ELEMENTOR DEPLOYMENT REQUIRED - See above for instructions"
+          
+          # Show features deployed
+          if [ -f "$RELEASE_FILE" ]; then
+            echo "Features deployed:"
+            jq -r '.features[]' "$RELEASE_FILE" 2>/dev/null | sed 's/^/  - /' || echo "  (none specified)"
             echo ""
           fi
-          echo "Manual Verification Steps:"
-          jq -r '.steps[] | select(.type == "manual") | .config.instructions[]' "$RELEASE_FILE" 2>/dev/null || echo "  None specified"
+          
+          # Show manual verification steps
+          echo "Manual Verification Required:"
+          if [ -f "$RELEASE_FILE" ]; then
+            jq -r '.verification.manual[]' "$RELEASE_FILE" 2>/dev/null | sed 's/^/  - /' || echo "  (none specified)"
+          fi
           echo ""
+          
+          if [ "${{ steps.check_elementor.outputs.has_elementor }}" = "true" ]; then
+            echo "=========================================="
+            echo "⚠️  MANUAL ELEMENTOR DEPLOYMENT REQUIRED"
+            echo "=========================================="
+            echo "See Elementor deployment instructions above"
+            echo ""
+          fi
+          
+          if [ "${{ steps.health_check_post.outcome }}" = "failure" ]; then
+            echo "=========================================="
+            echo "⚠️  HEALTH CHECK FAILURES DETECTED"
+            echo "=========================================="
+            echo "Review health check output above for details"
+            echo "Some components may not be properly configured"
+            echo ""
+          fi
+          
           echo "=========================================="
-          echo "⏸️  DEPLOYMENT PAUSED FOR REVIEW"
+          echo "Next Steps"
           echo "=========================================="
+          echo "1. Review deployment summary above"
+          echo "2. Complete manual verification steps"
+          echo "3. Test production site functionality"
+          echo "4. Check for any errors in production logs"
           echo ""
-          echo "Please review the production deployment:"
-          echo "  1. Visit production site and test all deployed features"
-          echo "  2. Verify all manual verification steps above"
-          echo "  3. Check for any errors in production logs"
+          echo "Production URL: https://talendelight.com"
           echo ""
-          echo "After successful review, run the post-deployment workflow:"
-          echo "  gh workflow run post-deploy.yml -f version=$VERSION"
-          echo ""
-          echo "Or manually archive the release:"
-          echo "  1. Move .github/releases/v$VERSION.json to .github/releases/archive/"
-          echo "  2. Update docs/RELEASE-NOTES-NEXT.md for next release"
-          echo "  3. Commit changes to develop branch"
-          echo ""
-          echo "Deployment complete - awaiting review!"
+          echo "Deployment workflow complete!"
+

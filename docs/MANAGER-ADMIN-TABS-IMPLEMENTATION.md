@@ -1,7 +1,7 @@
 # Manager Admin Page - Tabbed Interface Implementation Guide
 
 **Feature:** User Registration Request Approvals Tabbed Interface  
-**Page:** Manager Admin (/manager-admin/)  
+**Page:** Manager Admin (/managers/admin/)  
 **Updated:** January 19, 2026
 
 ---

@@ -1,0 +1,5 @@
+﻿Tables_in_wordpress (wp_frmt%)
+wp_frmt_form_entry
+wp_frmt_form_entry_meta
+wp_frmt_form_reports
+wp_frmt_form_views

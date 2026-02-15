@@ -89,6 +89,7 @@
 .wpum-form button[type="submit"]:hover {
     background-color: var(--color-blue);
     box-shadow: var(--shadow-md);
+    text-decoration: none;
 }
 
 /* Remember Me Checkbox */
