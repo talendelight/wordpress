@@ -5,8 +5,9 @@
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
 2. **Never make assumptions** - ask for clarification when requirements are ambiguous
 3. **Pattern usage is mandatory** - see [Pattern Usage Rules](#pattern-usage-rules) below
-4. **Always return to develop branch after deployment** - After pushing to main, immediately switch back to develop branch
-5. **Update task tracking on completion/scope change** - When tasks complete, work ends, or scope changes:
+4. **Page updates follow structured workflow** - see [Page Update & Deployment Workflow](#page-update--deployment-workflow) below
+5. **Always return to develop branch after deployment** - After pushing to main, immediately switch back to develop branch
+6. **Update task tracking on completion/scope change** - When tasks complete, work ends, or scope changes:
    - ✅ Update WORDPRESS-MVP-TASKS.csv (change status, dates, estimates)
    - ✅ Update WORDPRESS-MVP-TASKS.md (sync with CSV)
    - ✅ Update WORDPRESS-BACKLOG.md (when moving items to/from active work)
@@ -27,6 +28,15 @@ If user encounters `PSSecurityException: UnauthorizedAccess` error when running 
 3. Confirm with `Y`, then re-run and confirm with `A`
 
 This is a Windows security restriction and requires manual Administrator access. Cannot be automated.
+
+### Hostinger Production Environment
+
+See [docs/HOSTINGER.md](docs/HOSTINGER.md) for complete production environment details including:
+- SSH access configuration and connection examples
+- Database server details and management URLs
+- FTP access information
+- WordPress root paths and directory structure
+- GitHub Actions secrets configuration
 
 ## Project Overview
 
@@ -122,6 +132,69 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 
 **DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
 
+## Page Update & Deployment Workflow
+
+**⚠️ CRITICAL: All WordPress page updates must follow this workflow to prevent content corruption**
+
+### Standard Process
+
+1. **Develop in Local Environment**
+   - Make all changes at https://wp.local/
+   - Never edit production pages directly
+   - Test thoroughly (buttons, links, styling, hover states)
+
+2. **User Review & Approval**
+   - User tests page in local
+   - Get explicit confirmation: "This looks good, proceed to production"
+   - Do NOT deploy without approval
+
+3. **Create/Update Backup**
+   ```powershell
+   # Backup local page to restore/pages/
+   podman exec wp bash -c "wp post get <LOCAL_ID> --field=post_content --allow-root 2>/dev/null" | Out-File -Encoding utf8 restore\pages\<page-name>-<LOCAL_ID>.html
+   
+   # Verify backup (should be >10KB, >200 lines for typical landing page)
+   Get-Item restore\pages\<page-name>-<LOCAL_ID>.html | Select-Object Name, Length
+   ```
+
+4. **Deploy Complete Page to Production**
+   ```powershell
+   # Use PHP script method (NEVER use wp-cli stdin)
+   scp -P 65002 -i "tmp\hostinger_deploy_key" "restore\pages\<page-name>-<LOCAL_ID>.html" u909075950@45.84.205.129:/tmp/candidates-local.html
+   
+   scp -P 65002 -i "tmp\hostinger_deploy_key" "tmp\restore-page-<PROD_ID>.php" u909075950@45.84.205.129:/home/u909075950/domains/talendelight.com/public_html/
+   
+   ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && php restore-page-<PROD_ID>.php && rm restore-page-<PROD_ID>.php && wp cache flush"
+   ```
+
+5. **Verify Deployment**
+   - Check line count matches local (±5 lines acceptable)
+   - Visual inspection on production URL
+   - Test buttons and hover states
+   - Verify footer elements
+
+### Critical Rules
+
+**✅ DO:**
+- ✅ Always develop in local first
+- ✅ Get user approval before production deployment
+- ✅ Use complete page replacement (not partial updates)
+- ✅ Use PHP scripts for page content updates (see restore-page-7.php template)
+- ✅ Use `-Encoding utf8` in PowerShell
+- ✅ Keep backups in restore/pages/
+
+**❌ DON'T:**
+- ❌ Never make changes directly in production
+- ❌ Never use `wp post update --post_content=-` with stdin (causes corruption)
+- ❌ Never use bash `echo` or `cat` pipes for large HTML
+- ❌ Never deploy without user approval
+- ❌ Never skip backup creation
+- ❌ Never use partial page updates or sed replacements
+
+**See [docs/PAGE-UPDATE-WORKFLOW.md](docs/PAGE-UPDATE-WORKFLOW.md) for complete workflow documentation**
+
+**DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+
 ## Pattern Usage Rules
 
 **⚠️ CRITICAL: Always use actual pattern code as template when creating new pages**
@@ -179,7 +252,7 @@ podman-compose up -d
 ```
 
 Services exposed:
-- WordPress: http://localhost:8080
+- WordPress: https://wp.local
 - phpMyAdmin: http://localhost:8180  
 - MariaDB: localhost:3306
 
@@ -416,23 +489,23 @@ ssh production "cd public_html && wp eval-file ~/elementor-exports/import-elemen
 ```powershell
 # ONLY after user confirms "vX.Y.Z is complete"
 
-# 1. Archive completed release
+# 1. Archive completed release (with timestamp)
 $timestamp = Get-Date -Format "yyyyMMdd-HHmm"
-Move-Item .github/releases/v3.6.2.json .github/releases/archive/v3.6.2.json
-Move-Item docs/RELEASE-NOTES-NEXT.md ".github/releases/archive/RELEASE-NOTES-$timestamp.md"
+Move-Item .github/releases/vX.Y.Z.json .github/releases/archive/vX.Y.Z.json -Force
+Move-Item .github/releases/RELEASE-NOTES-vX.Y.Z.md ".github/releases/archive/RELEASE-NOTES-vX.Y.Z-$timestamp.md" -Force
 
 # 2. Discuss with user:
 #    - What should be included in next release?
 #    - Recommend version number based on scope:
-#      * Patch (3.6.3): Bug fixes, minor tweaks
-#      * Minor (3.7.0): New features, non-breaking changes
-#      * Major (4.0.0): Breaking changes, major overhaul
+#      * Patch (X.Y.Z+1): Bug fixes, minor tweaks, styling corrections
+#      * Minor (X.Y+1.0): New features, non-breaking changes
+#      * Major (X+1.0.0): Breaking changes, major overhaul
 #    - Get user confirmation on version number
 
-# 3. Create next release files (e.g., v3.6.3 confirmed)
-Copy-Item docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
-# Create new vX.Y.Z.json based on user's scope decisions
-# Update infra/shared/elementor-manifest.json version
+# 3. Create next release files in .github/releases/ (e.g., v3.6.4 confirmed)
+# Create new .github/releases/vX.Y.Z.json (machine-readable)
+# Create new .github/releases/RELEASE-NOTES-vX.Y.Z.md (human-readable)
+# Both files stay in .github/releases/ until that release is complete
 
 # 4. Commit
 git add .github/releases/ docs/RELEASE-NOTES-NEXT.md infra/shared/elementor-manifest.json
@@ -444,44 +517,52 @@ git push origin main
 
 **✅ Always Do:**
 - Read DEPLOYMENT-WORKFLOW.md before any release work
-- Use `podman cp` for Elementor exports (never pipe through PowerShell)
-- Keep updating active release files (vX.Y.Z.json + RELEASE-NOTES-NEXT.md) during planning, deployment, and production fixes
+- Keep updating active release files (vX.Y.Z.json + RELEASE-NOTES-vX.Y.Z.md in .github/releases/) during planning, deployment, and production fixes
 - Archive ONLY when user explicitly confirms release is complete
 - Discuss next release scope and recommend version number before creating new files
-- Use dry-run mode before production imports
-- Update manifest version for each release
+- Create both vX.Y.Z.json AND RELEASE-NOTES-vX.Y.Z.md in .github/releases/ for new releases
+- Use 3-part semantic versioning (X.Y.Z)
 
 **❌ Never Do:**
 - Archive immediately after deployment (keep active for updates)
 - Work on multiple releases in parallel (include hotfixes in current release)
 - Use 4-part version numbers (3.6.2.1) - always use 3-part semantic versioning
-- Pipe Elementor JSON through PowerShell (`wp ... > file.json` corrupts data)
+- Create release notes in docs/ folder (they belong in .github/releases/)
 - Modify archived release files (they're historical records)
-- Forget to increment manifest version
 - Create next release without user confirmation and scope discussion
 
 ### File Organization
 
 ```
 .github/releases/
-├── v3.6.2.json                 # Active release (keep updating until user confirms complete)
-├── README.md                   # Archive documentation
+├── v3.6.3.json                     # Active release machine-readable (keep updating until complete)
+├── RELEASE-NOTES-v3.6.3.md         # Active release human-readable (keep updating until complete)
+├── README.md                       # Archive documentation
 └── archive/
-    ├── v3.6.1.json             # Archived completed releases
-    ├── v3.6.0.json
-    └── RELEASE-NOTES-20260213-2255.md  # Archived human-readable notes
+    ├── v3.6.2.json                 # Archived completed releases
+    ├── v3.6.1.json
+    ├── RELEASE-NOTES-v3.6.2-20260217-1840.md  # Archived with timestamp
+    └── RELEASE-NOTES-20260213-2255.md
 
 docs/
-├── RELEASE-NOTES-NEXT.md       # Active release notes (keep updating until complete)
-├── DEPLOYMENT-WORKFLOW.md      # Master workflow guide
-├── RELEASE-NOTES-PROCESS.md    # Release lifecycle process
+├── DEPLOYMENT-WORKFLOW.md          # Master workflow guide
+├── RELEASE-NOTES-PROCESS.md        # Release lifecycle process
 ├── QUICK-REFERENCE-DEPLOYMENT.md   # Quick reference commands
-├── RELEASE-INSTRUCTIONS-FORMAT.md  # JSON schema docs
-├── lessons/                    # Permanent lessons learned
-│   ├── elementor-cli-deployment.md
-│   └── powershell-encoding-corruption.md
+├── PAGE-UPDATE-WORKFLOW.md         # Page deployment workflow
+├── lessons/                        # Permanent lessons learned
+│   ├── css-version-cache-busting.md
+│   ├── powershell-encoding-corruption.md
+│   └── pattern-usage-consistency.md
 └── templates/
     └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
+```
+
+**Release File Lifecycle:**
+1. Create `vX.Y.Z.json` + `RELEASE-NOTES-vX.Y.Z.md` **in .github/releases/** when starting new release
+2. Keep updating same files during: planning, deployment, production testing, bug fixes
+3. Archive ONLY when user confirms "this release is complete"
+4. Discuss scope → recommend version → get confirmation → create next release files **in .github/releases/**
+5. NEVER work on multiple releases in parallel (no 4-part versions, include hotfixes in current)
 
 infra/shared/
 ├── elementor-manifest.json     # Page mappings, version metadata (update version with each release)

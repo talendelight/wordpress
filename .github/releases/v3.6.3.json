@@ -1,0 +1,82 @@
+{
+  "version": "3.6.3",
+  "release_date": "2026-02-17",
+  "type": "patch",
+  "status": "deployed",
+  "description": "Landing pages button hover styling and footer emoji fixes with CSS cache busting",
+  "changes": {
+    "pages": [
+      {
+        "name": "Welcome",
+        "local_id": 6,
+        "prod_id": 6,
+        "changes": ["Fixed button hover styling", "Fixed footer emojis"]
+      },
+      {
+        "name": "Candidates",
+        "local_id": 7,
+        "prod_id": 17,
+        "changes": ["Fixed button hover styling", "Fixed footer emojis", "Fixed CTA button format"]
+      },
+      {
+        "name": "Scouts",
+        "local_id": 76,
+        "prod_id": 18,
+        "changes": ["Fixed button hover styling", "Fixed footer emojis", "Fixed CTA button format", "Added is-style-fill class"]
+      },
+      {
+        "name": "Employers",
+        "local_id": 64,
+        "prod_id": 16,
+        "changes": ["Verified button format correct"]
+      }
+    ],
+    "css": [
+      {
+        "file": "wp-content/themes/blocksy-child/style.css",
+        "version": "1.0.0 → 1.0.3",
+        "changes": ["Changed var(--color-blue) to #0062e3", "Added !important to button hover rules"]
+      }
+    ],
+    "documentation": [
+      {
+        "file": "docs/lessons/css-version-cache-busting.md",
+        "type": "new",
+        "purpose": "Document CSS cache busting strategy"
+      },
+      {
+        "file": "docs/PAGE-UPDATE-WORKFLOW.md",
+        "type": "updated",
+        "changes": ["Added Step 7: CSS version bump", "Added Step 10: Cache clearing", "Updated step numbers"]
+      }
+    ]
+  },
+  "deployment": {
+    "method": "PHP restoration scripts + CSS deployment",
+    "workflow": "PAGE-UPDATE-WORKFLOW.md",
+    "commands": [
+      "scp CSS to production",
+      "PHP script execution",
+      "Cache clearing (WordPress + LiteSpeed + file cache)"
+    ],
+    "verification": [
+      "Button hover blue (#0062e3) on all pages",
+      "Footer emojis (🔒 ✓ 🤝) render correctly",
+      "CSS version 1.0.3 loaded in DevTools"
+    ]
+  },
+  "backups": {
+    "css": "restore/css/blocksy-child-style.css",
+    "pages": [
+      "restore/pages/welcome-6.html",
+      "restore/pages/candidates-7.html",
+      "restore/pages/scouts-76.html"
+    ]
+  },
+  "issues_fixed": [
+    "Button hover not working due to CSS variable issue",
+    "CSS changes not reflecting due to browser cache",
+    "CTA button using wrong format (backgroundColor vs is-style-fill)",
+    "Footer emoji UTF-8 corruption"
+  ]
+}
