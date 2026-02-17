@@ -1,6 +1,6 @@
 ﻿{
-  "version": "3.5.0",
-  "exported_at": "TBD",
+  "version": "3.6.3",
+  "exported_at": "2026-02-17",
   "description": "ID mapping manifest for pages, forms, and content synchronization",
   "strategy": "Use slugs for lookups, maintain ID mappings for cross-references",
   "pages": [
@@ -11,7 +11,7 @@
       "slug": "homepage",
       "file": "homepage.json",
       "title": "Homepage (Welcome)",
-      "url_local": "http://localhost:8080/",
+      "url_local": "https://wp.local/",
       "url_prod": "https://talendelight.com/"
     },
     {
@@ -21,7 +21,7 @@
       "slug": "employers",
       "file": "employers.json",
       "title": "Employers",
-      "url_local": "http://localhost:8080/employers/",
+      "url_local": "https://wp.local/employers/",
       "url_prod": "https://talendelight.com/employers/"
     },
     {
@@ -31,7 +31,7 @@
       "slug": "candidates",
       "file": "candidates.json",
       "title": "Candidates",
-      "url_local": "http://localhost:8080/candidates/",
+      "url_local": "https://wp.local/candidates/",
       "url_prod": "https://talendelight.com/candidates/"
     },
     {
@@ -41,7 +41,7 @@
       "slug": "scouts",
       "file": "scouts.json",
       "title": "Scouts",
-      "url_local": "http://localhost:8080/scouts/",
+      "url_local": "https://wp.local/scouts/",
       "url_prod": "https://talendelight.com/scouts/"
     },
     {
@@ -51,7 +51,7 @@
       "slug": "403-forbidden",
       "file": "access-restricted.json",
       "title": "Access Restricted",
-      "url_local": "http://localhost:8080/403-forbidden/",
+      "url_local": "https://wp.local/403-forbidden/",
       "url_prod": "https://talendelight.com/403-forbidden/"
     },
     {
@@ -61,7 +61,7 @@
       "slug": "register-profile",
       "file": "register-profile.html",
       "title": "Register Profile",
-      "url_local": "http://localhost:8080/register-profile/",
+      "url_local": "https://wp.local/register-profile/",
       "url_prod": "https://talendelight.com/register-profile/",
       "notes": "Migrated to Gutenberg Feb 11, 2026 - Uses Forminator shortcode, trust badges pattern"
     },
@@ -72,7 +72,7 @@
       "slug": "select-role",
       "file": null,
       "title": "Select Role",
-      "url_local": "http://localhost:8080/select-role/",
+      "url_local": "https://wp.local/select-role/",
       "url_prod": "https://talendelight.com/select-role/",
       "notes": "Custom PHP template, no Elementor data"
     },
@@ -83,7 +83,7 @@
       "slug": "operators",
       "file": "operators.json",
       "title": "Operators Dashboard",
-      "url_local": "http://localhost:8080/operators/",
+      "url_local": "https://wp.local/operators/",
       "url_prod": "https://talendelight.com/operators/"
     },
     {
@@ -93,7 +93,7 @@
       "slug": "managers",
       "file": "managers.json",
       "title": "Managers Dashboard",
-      "url_local": "http://localhost:8080/managers/",
+      "url_local": "https://wp.local/managers/",
       "url_prod": "https://talendelight.com/managers/",
       "notes": "v3.3.0 - Manager landing page deployed to production"
     },
@@ -104,7 +104,7 @@
       "slug": "managers/admin",
       "file": "managers-admin.json",
       "title": "Manager Admin",
-      "url_local": "http://localhost:8080/managers/admin/",
+      "url_local": "https://wp.local/managers/admin/",
       "url_prod": "https://talendelight.com/managers/admin/",
       "notes": "v3.4.0 - Admin operations hub with user registration request approvals, system settings, and other admin tasks"
     }
