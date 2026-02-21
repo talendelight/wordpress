@@ -1,9 +1,9 @@
 {
   "version": "3.6.3",
-  "release_date": "2026-02-17",
-  "type": "patch",
-  "status": "deployed",
-  "description": "Landing pages button hover styling and footer emoji fixes with CSS cache busting",
+  "release_date": "2026-02-22",
+  "type": "minor",
+  "status": "ready-for-deployment",
+  "description": "Complete user registration system with production-grade validation, JavaScript externalization (registration form + manager actions), deployment verification workflow, nonce security, retry logic, and loading states",
   "changes": {
     "pages": [
       {
@@ -29,54 +29,560 @@
         "local_id": 64,
         "prod_id": 16,
         "changes": ["Verified button format correct"]
+      },
+      {
+        "name": "Managers",
+        "local_id": 8,
+        "prod_id": 19,
+        "changes": ["Added is-style-fill to second CTA button (bottom section)", "Fixed footer emojis (🔒 ✓ 🤝)"]
+      },
+      {
+        "name": "Operators",
+        "local_id": 9,
+        "prod_id": 20,
+        "changes": ["Added is-style-fill to second CTA button (bottom section)", "Fixed CTA paragraph spacing (40px bottom margin)", "Fixed footer emojis (🔒 ✓ 🤝)"]
+      },
+      {
+        "name": "Manager Actions",
+        "local_id": 36,
+        "prod_id": 36,
+        "changes": [
+          "Fixed footer icons: Replaced emoji characters with SVG images",
+          "Shield icon (shield-grey-border.svg) for GDPR Compliant",
+          "Padlock icon (padlock-lock-grey.svg) for Secure & Reliable", 
+          "Balance scale icon (balance-scale-yellow.svg) for Equal Opportunity",
+          "EU logo (eu-logo.svg) for Serving EU Markets",
+          "Changed from wp:paragraph blocks to wp:html blocks for footer badges",
+          "Improved responsive layout (removed fixed column widths)",
+          "Updated padding spacing:50 → spacing:48",
+          "ADDED Feb 21: Externalized JavaScript to separate file (manager-actions-tabs.js)",
+          "ADDED Feb 21: Created MU plugin for conditional script loading (td-manager-actions-assets.php)",
+          "ADDED Feb 21: Removed inline script from page content (17% size reduction: 12,662 → 10,510 bytes)",
+          "ADDED Feb 21: Tab switching logic now loaded via wp_enqueue_scripts (page 36 only)"
+        ]
+      },
+      {
+        "name": "Manager Admin",
+        "local_id": 38,
+        "prod_id": 38,
+        "changes": [
+          "Fixed footer icons: Replaced emoji characters with SVG images",
+          "Shield icon (shield-grey-border.svg) for GDPR Compliant",
+          "Padlock icon (padlock-lock-grey.svg) for Secure & Reliable",
+          "Balance scale icon (balance-scale-yellow.svg) for Equal Opportunity",
+          "EU logo (eu-logo.svg) for Serving EU Markets",
+          "Changed from wp:paragraph blocks to wp:html blocks for footer badges",
+          "Improved responsive layout (removed fixed column widths)"
+        ]
+      },
+      {
+        "name": "Register Profile",
+        "local_id": 21,
+        "prod_id": null,
+        "status": "new",
+        "url": "/register-profile/?td_user_role={role}",
+        "changes": [
+          "Created custom HTML registration form (replaces Forminator approach)",
+          "Two-checkbox implementation: 'I have a LinkedIn profile' + 'I have a CV to upload'",
+          "Conditional field display: LinkedIn URL shows when LinkedIn checkbox checked, CV upload shows when CV checkbox checked",
+          "Validation: At least one checkbox must be selected",
+          "Navy hero section with white heading",
+          "White card form container (800px max-width, 48px padding)",
+          "13 form fields: 5 personal info (first, middle, last, email, phone), 2 professional checkboxes + conditional fields, 2 identity docs + conditional residence ID, consent",
+          "Custom file upload buttons with navy gradient styling",
+          "Filename display after file selection",
+          "Trust badges footer (4 SVG icons: Secure, GDPR, Legal, EU Standards)",
+          "JavaScript: URL parameter reading, conditional toggles, validation logic",
+          "ADDED Feb 21: Dynamic nonce loading via AJAX with retry logic (3 attempts, exponential backoff 2s/4s/8s)",
+          "ADDED Feb 21: Loading spinner during nonce fetch with form disable",
+          "ADDED Feb 21: Comprehensive client-side validation (email regex, phone min 8 digits, LinkedIn URL format, file size 5MB max, file type checking)",
+          "ADDED Feb 21: Real-time validation on blur for email/phone/LinkedIn fields",
+          "ADDED Feb 21: File validation on selection with instant feedback and file size display",
+          "ADDED Feb 21: Visual feedback (red borders for errors, green for success, file size in KB)"
+        ]
+      },
+      {
+        "name": "Select Role",
+        "local_id": 49,
+        "prod_id": null,
+        "status": "new",
+        "url": "/select-role/",
+        "changes": [
+          "Role selection page (redirects to /register-profile/ with td_user_role parameter)",
+          "Temporary implementation (will be replaced with proper role cards)"
+        ]
+      },
+      {
+        "name": "Help",
+        "local_id": 21,
+        "prod_id": null,
+        "status": "new",
+        "url": "/help/",
+        "changes": [
+          "Help page backup created"
+        ]
+      },
+      {
+        "name": "Log In",
+        "local_id": 11,
+        "prod_id": null,
+        "status": "new",
+        "url": "/log-in/",
+        "changes": [
+          "Login page backup created"
+        ]
       }
     ],
-    "css": [
+    "code": [
+      {
+        "file": "wp-content/mu-plugins/td-registration-handler.php",
+        "type": "complete-rewrite",
+        "version": "1.0.0 → 2.0.0",
+        "lines": "157 → 204 (after refactoring: 183)",
+        "purpose": "AJAX handler for custom registration form - CHANGED: Now creates change requests instead of WordPress users",
+        "breaking_changes": [
+          "CRITICAL ARCHITECTURE CHANGE: Registration NO LONGER creates WordPress users",
+          "NEW: Inserts records into td_user_data_change_requests table",
+          "NEW: Generates unique request_id (USRQ-YYMMDD-NNNN format)",
+          "NEW: Files uploaded to /registration-pending/ directory (not media library)",
+          "NEW: Status set to 'new' (visible in Manager Actions immediately)",
+          "NEW: Request type set to 'register'",
+          "NEW: Uses td_generate_request_id() from record-id-generator.php",
+          "REMOVED: wp_insert_user() calls",
+          "REMOVED: WordPress usermeta updates",
+          "REMOVED: Media library file uploads"
+        ],
+        "workflow": [
+          "Registration → Change request record (status: 'new')",
+          "Manager approval → Status: 'approved'",
+          "User provisioning → External process (Epic WP-09.5)",
+          "NO WordPress users created at any stage"
+        ],
+        "features": [
+          "Processes td_process_registration AJAX action",
+          "Validates nonce and required fields",
+          "Checks at least one of LinkedIn/CV provided",
+          "Uploads files to /wp-content/uploads/registration-pending/ with .htaccess protection",
+          "Creates change request record with request_id, user data, file paths",
+          "Sets status='new' and request_type='register'",
+          "Visible in Manager Actions 'New' tab immediately",
+          "Returns JSON with request_id and status"
+        ]
+      },
+      {
+        "file": "wp-content/mu-plugins/manager-actions-display.php",
+        "type": "existing",
+        "lines": 28674,
+        "purpose": "Shortcode for displaying registration requests in Manager Actions page",
+        "features": [
+          "Queries td_user_data_change_requests table",
+          "Shows records where status='new' OR (status='pending' AND assigned_to IS NULL)",
+          "Displays request_id, name, email, role, submitted_date, action buttons"
+        ]
+      },
+      {
+        "file": "wp-content/mu-plugins/record-id-generator.php",
+        "type": "existing",
+        "lines": 7953,
+        "purpose": "Atomic ID sequence generation for USRQ/PRSN/CMPY IDs",
+        "features": [
+          "td_generate_request_id() function",
+          "Uses td_id_sequences table for daily-reset atomic sequences",
+          "Format: USRQ-YYMMDD-NNNN (e.g., USRQ-260220-0001)"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/page-role-selection.php",
+        "type": "modified",
+        "changes": [
+          "Updated role selection logic (temporary)"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/functions.php",
+        "type": "modified",
+        "changes": [
+          "Theme enhancements for custom forms"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/patterns/footer-trust-badges.php",
+        "type": "modified",
+        "changes": [
+          "Updated footer trust badge pattern"
+        ]
+      },
       {
         "file": "wp-content/themes/blocksy-child/style.css",
+        "type": "modified",
         "version": "1.0.0 → 1.0.3",
-        "changes": ["Changed var(--color-blue) to #0062e3", "Added !important to button hover rules"]
+        "changes": [
+          "Changed var(--color-blue) to #0062e3", 
+          "Added !important to button hover rules",
+          "Added custom styles for registration form elements"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/assets/js/registration-form.js",
+        "type": "new",
+        "size": "25,107 bytes",
+        "lines": 548,
+        "purpose": "Production-grade registration form JavaScript with validation, retry logic, and loading states",
+        "features": [
+          "Dynamic nonce fetch via AJAX endpoint (td_get_registration_nonce)",
+          "Exponential backoff retry logic (3 attempts: 2s, 4s, 8s delays)",
+          "Loading spinner with form disable during nonce fetch",
+          "Comprehensive client-side validation (email, phone, LinkedIn URL, file size/type)",
+          "Real-time field validation on blur",
+          "File validation on selection with instant feedback",
+          "Visual feedback (red errors, green success, file size display in KB)"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/assets/js/manager-actions-tabs.js",
+        "type": "new",
+        "size": "3,097 bytes",
+        "lines": 88,
+        "purpose": "Tab switching logic for Manager Actions page (externalized from inline script)",
+        "features": [
+          "5 tabs: New, Assigned, Approved, Rejected, All",
+          "Click handlers with error checking",
+          "Hover effects (blue underline + background color)",
+          "Console logging for debugging"
+        ]
+      },
+      {
+        "file": "wp-content/themes/blocksy-child/assets/css/registration-form.css",
+        "type": "new",
+        "purpose": "Registration form custom styles (loading spinner, validation states)"
+      },
+      {
+        "file": "wp-content/mu-plugins/td-manager-actions-assets.php",
+        "type": "new",
+        "size": "700 bytes",
+        "purpose": "Enqueues manager-actions-tabs.js only on page 36",
+        "features": [
+          "Conditional loading via is_page(36)",
+          "Version 1.0.0 for cache busting",
+          "Loads in footer for performance"
+        ]
+      }
+    ],
+    "assets": [
+      {
+        "type": "svg",
+        "files": [
+          "wp-content/themes/blocksy-child/assets/images/shield-grey-border.svg",
+          "wp-content/themes/blocksy-child/assets/images/padlock-lock-grey.svg",
+          "wp-content/themes/blocksy-child/assets/images/balance-scale-yellow.svg"
+        ],
+        "purpose": "Trust badge icons for registration form footer"
+      },
+      {
+        "type": "backup",
+        "files": [
+          "restore/assets/images/shield-grey-border.svg",
+          "restore/assets/images/padlock-lock-grey.svg",
+          "restore/assets/images/balance-scale-yellow.svg"
+        ],
+        "purpose": "Asset backups for disaster recovery"
+      },
+      {
+        "type": "form-export",
+        "file": "restore/forms/forminator-form-53-export.json",
+        "purpose": "Forminator form 53 export for reference (not used in production)"
+      }
+    ],
+    "scripts": [
+      {
+        "file": "infra/shared/scripts/verify-deployment-readiness.ps1",
+        "type": "new",
+        "size": "~6,500 bytes",
+        "lines": 201,
+        "purpose": "Pre-commit deployment verification - analyzes git changes and categorizes deployment requirements",
+        "usage": "powershell infra/shared/scripts/verify-deployment-readiness.ps1",
+        "features": [
+          "Analyzes new untracked files (git ls-files --others)",
+          "Analyzes modified tracked files (git diff --name-only HEAD)",
+          "Checks recent page backups (last 24 hours)",
+          "Categorizes: Auto-deploy vs Manual deployment",
+          "Provides review questions based on detected changes",
+          "Outputs summary with next steps",
+          "Exit codes: 0 (all auto-deployable), 1 (manual steps required)"
+        ],
+        "integrated_with": [
+          "TASK-REGISTRY.md (Task: Verify Deployment Readiness)",
+          "wp-action.ps1 dispatcher (check-deployment action)",
+          "DEPLOYMENT-WORKFLOW.md (Pre-Commit section)"
+        ]
       }
     ],
     "documentation": [
       {
-        "file": "docs/lessons/css-version-cache-busting.md",
+        "file": "docs/features/WP-02.1-user-registration-form.md",
+        "type": "major-rewrite",
+        "lines_added": 269,
+        "changes": [
+          "Updated from Forminator approach to custom HTML form",
+          "Added Business Requirements section (anonymous submission, minimal data capture, GDPR consent, email confirmation, unique user ID, database storage strategy)",
+          "Documented two-checkbox implementation (LinkedIn + CV)",
+          "Added field specifications with HTML IDs",
+          "Documented JavaScript validation logic",
+          "Added backend processing workflow (td-registration-handler.php)",
+          "Documented database storage strategy (users, user meta, media library)",
+          "Added deployment and restoration procedures",
+          "Updated status to 'Implemented' and target version to v3.6.3"
+        ]
+      },
+      {
+        "file": ".github/COMMAND-REGISTRY.md",
         "type": "new",
+        "purpose": "Centralized command reference for common WordPress operations"
+      },
+      {
+        "file": "docs/CUSTOM-ROLES-PERSISTENCE.md",
+        "type": "new",
+        "purpose": "Document custom role persistence strategy"
+      },
+      {
+        "file": "docs/QUICK-ANSWER-PAGE-ID-DEPENDENCY.md",
+        "type": "new",
+        "purpose": "Quick reference for page ID management"
+      },
+      {
+        "file": "docs/TOMORROW-FEB-17-CHECKLIST.md",
+        "type": "new",
+        "purpose": "Daily checklist (archived)"
+      },
+      {
+        "file": "docs/TOMORROW-FEB-18-CHECKLIST.md",
+        "type": "new",
+        "purpose": "Daily checklist (archived)"
+      },
+      {
+        "file": "docs/lessons/page-id-dependency-problem.md",
+        "type": "new",
+        "purpose": "Document page ID dependency problem and solutions"
+      },
+      {
+        "file": "docs/lessons/css-version-cache-busting.md",
+        "type": "existing",
         "purpose": "Document CSS cache busting strategy"
       },
       {
-        "file": "docs/PAGE-UPDATE-WORKFLOW.md",
+        "file": "WORDPRESS-BACKLOG.md",
+        "type": "updated",
+        "changes": [
+          "Added Epic WP-09.5: Post-approval user account creation in external system",
+          "Documented: WordPress approval process does NOT create WordPress users",
+          "User account provisioning is handled externally (Person app or other system)"
+        ],
+        "purpose": "Clarify registration workflow architecture - NO WordPress user creation"
+      },
+      {
+        "file": "docs/procedures/PAGE-UPDATE-WORKFLOW.md",
         "type": "updated",
         "changes": ["Added Step 7: CSS version bump", "Added Step 10: Cache clearing", "Updated step numbers"]
+      }
+    ],
+    "scripts": [
+      {
+        "file": "infra/shared/scripts/check-urls.php",
+        "type": "new",
+        "purpose": "URL checking utility"
+      },
+      {
+        "file": "infra/shared/scripts/get-page-ids.ps1",
+        "type": "new",
+        "purpose": "Extract page IDs from database"
+      },
+      {
+        "file": "infra/shared/scripts/purge-all-caches.php",
+        "type": "new",
+        "purpose": "Comprehensive cache purging utility"
+      },
+      {
+        "file": "infra/shared/scripts/rebuild-navigation-menu.ps1",
+        "type": "new",
+        "purpose": "Rebuild WordPress navigation menu programmatically"
+      },
+      {
+        "file": "infra/shared/scripts/verify-security.php",
+        "type": "new",
+        "purpose": "Security configuration verification"
+      },
+      {
+        "file": "infra/shared/scripts/wp-action.ps1",
+        "type": "modified",
+        "changes": [
+          "Added new actions to dispatcher registry"
+        ]
+      }
+    ],
+    "database": [
+      {
+        "file": "infra/shared/db/251227-1149-fix-theme-settings.sql",
+        "type": "new",
+        "replaces": "251227-1149-update-theme-versions.sql (moved to deprecated/)",
+        "purpose": "Correct theme settings SQL"
+      },
+      {
+        "file": "infra/shared/db/260127-1600-enable-permalinks.sql",
+        "type": "new",
+        "purpose": "Enable pretty permalinks"
+      },
+      {
+        "file": "infra/shared/db/260219-1600-create-core-pages.sql",
+        "type": "new",
+        "purpose": "Create core pages (select-role, register-profile, etc.)"
+      },
+      {
+        "file": "infra/shared/db/260219-1630-activate-core-plugins.sql",
+        "type": "new",
+        "purpose": "Activate core plugins"
+      },
+      {
+        "file": "infra/shared/db/260219-1640-create-test-users.sql",
+        "type": "new",
+        "purpose": "Create test users for development"
+      },
+      {
+        "file": "infra/shared/db/260219-2340-create-profile-logout-menu-items.sql",
+        "type": "new",
+        "purpose": "Add Profile and Logout menu items"
       }
     ]
   },
   "deployment": {
-    "method": "PHP restoration scripts + CSS deployment",
+    "method": "Page restoration + mu-plugin deployment + plugin cleanup + CSS deployment",
     "workflow": "PAGE-UPDATE-WORKFLOW.md",
     "commands": [
-      "scp CSS to production",
-      "PHP script execution",
-      "Cache clearing (WordPress + LiteSpeed + file cache)"
+      "STEP 0: Run pre-commit verification: powershell infra/shared/scripts/verify-deployment-readiness.ps1",
+      "STEP 1: Deploy code (auto): git add wp-content/ && git commit && git push origin main",
+      "STEP 2: Deploy Manager Actions page (ID 36) with JavaScript externalization",
+      "STEP 3: Deploy Manager Admin page (ID 38) with latest updates",
+      "STEP 4: Deploy register-profile page (ID 21) with nonce loading, retry logic, validation",
+      "STEP 5: Deploy td-registration-handler.php v2.0.0 to wp-content/mu-plugins/",
+      "STEP 6: Deploy manager-actions-display.php to wp-content/mu-plugins/",
+      "STEP 7: Deploy record-id-generator.php to wp-content/mu-plugins/",
+      "STEP 8: Deploy JavaScript files (registration-form.js, manager-actions-tabs.js)",
+      "STEP 9: Deploy td-manager-actions-assets.php MU plugin",
+      "STEP 10: Deploy SVG assets to wp-content/themes/blocksy-child/assets/images/",
+      "STEP 11: Deploy select-role page",
+      "STEP 12: Deploy CSS to production",
+      "STEP 13: Remove unwanted plugins: Forminator, WPForms Lite (no longer needed)",
+      "STEP 14: Verify td_user_data_change_requests table exists in production",
+      "STEP 15: Verify td_id_sequences table exists in production",
+      "STEP 16: Test registration flow end-to-end (nonce load, validation, submission)"
+    ],
+    "manual_steps": [
+      {
+        "step": "Remove Forminator plugin",
+        "reason": "No longer needed - registration uses custom HTML form instead of Forminator",
+        "method": "wp-cli (automated) OR WordPress Admin GUI (manual)",
+        "automated_command": "ssh -p 65002 -i 'tmp/hostinger_deploy_key' u909075950@45.84.205.129 'cd /home/u909075950/domains/talendelight.com/public_html && wp plugin deactivate forminator && wp plugin delete forminator'",
+        "manual_steps": [
+          "Login to WordPress Admin (https://talendelight.com/wp-admin/)",
+          "Navigate to Plugins → Installed Plugins",
+          "Find 'Forminator' plugin",
+          "Click 'Deactivate', then 'Delete'",
+          "Confirm deletion when prompted"
+        ],
+        "impact": "Safe to remove - Forms 53 export saved in restore/forms/ for reference"
+      },
+      {
+        "step": "Remove WPForms Lite plugin",
+        "reason": "Not being used - registration uses custom HTML form",
+        "method": "wp-cli (automated) OR WordPress Admin GUI (manual)",
+        "automated_command": "ssh -p 65002 -i 'tmp/hostinger_deploy_key' u909075950@45.84.205.129 'cd /home/u909075950/domains/talendelight.com/public_html && wp plugin deactivate wpforms-lite && wp plugin delete wpforms-lite'",
+        "manual_steps": [
+          "Login to WordPress Admin (https://talendelight.com/wp-admin/)",
+          "Navigate to Plugins → Installed Plugins",
+          "Find 'WPForms Lite' plugin",
+          "Click 'Deactivate', then 'Delete'",
+          "Confirm deletion when prompted"
+        ],
+        "impact": "Safe to remove - Never used in production"
+      }
     ],
     "verification": [
-      "Button hover blue (#0062e3) on all pages",
-      "Footer emojis (🔒 ✓ 🤝) render correctly",
+      "Manager Actions page: Verify all 4 SVG footer icons (shield, padlock, balance-scale, EU logo)",
+      "Manager Admin page: Verify all 4 SVG footer icons (shield, padlock, balance-scale, EU logo)",
+      "Visit /select-role/ → choose role → redirects to /register-profile/?td_user_role=td_candidate",
+      "Form displays with hero section and white card container",
+      "Check 'I have a LinkedIn profile' → LinkedIn URL field appears",
+      "Check 'I have a CV to upload' → CV file upload appears",
+      "Validation: Cannot submit without at least one checkbox selected",
+      "Submit form → Record created in td_user_data_change_requests table (status='new', request_type='register')",
+      "Verify request_id generated (USRQ-YYMMDD-NNNN format)",
+      "Files uploaded to /wp-content/uploads/registration-pending/ directory",
+      "Registration appears in Manager Actions 'New' tab immediately",
+      "Verify NO WordPress user created in wp_users table",
+      "Footer trust badges display correctly (4 SVG icons)",
+      "Button hover blue (#2872fa) on all pages",
+      "Footer emojis (🔒 ✓ 🤝) render correctly on landing pages",
       "CSS version 1.0.3 loaded in DevTools"
     ]
   },
   "backups": {
-    "css": "restore/css/blocksy-child-style.css",
     "pages": [
       "restore/pages/welcome-6.html",
       "restore/pages/candidates-7.html",
-      "restore/pages/scouts-76.html"
-    ]
+      "restore/pages/scouts-76.html",
+      "restore/pages/managers-8.html",
+      "restore/pages/operators-9.html",
+      "restore/pages/manager-actions-36.html (10,510 bytes - Feb 22 JavaScript externalized)",
+      "restore/pages/manager-admin-38.html (13,734 bytes - Feb 22 latest backup)",
+      "restore/pages/register-profile-21.html (17,165 bytes - Feb 22 with nonce loading, validation, retry logic)",
+      "restore/pages/select-role-49.html",
+      "restore/pages/help-21.html",
+      "restore/pages/log-in-11.html"
+    ],
+    "code": [
+      "restore/mu-plugins/td-registration-handler.php (8,823 bytes - v2.0.0)",
+      "restore/mu-plugins/manager-actions-display.php (28,674 bytes)",
+      "restore/mu-plugins/record-id-generator.php (7,953 bytes)"
+    ],
+    "assets": [
+      "restore/assets/images/*.svg (trust badge icons)"
+    ],
+    "css": "restore/css/blocksy-child-style.css (11,430 bytes)",
+    "patterns": [
+      "restore/patterns/*.php (14 theme pattern files)"
+    ],
+    "manifest": "restore/BACKUP-MANIFEST.md (created Feb 20, 2026)"
   },
-  "issues_fixed": [
+  "issues_addressed": [
+    "Manager Actions footer: Emoji characters (≡ƒöÆ, Γ£ô, ≡ƒñ¥) instead of SVG icons",
+    "Manager Admin footer: Same emoji corruption issue",
+    "Registration not appearing in Manager Actions: Handler was creating WordPress users instead of change request records",
+    "Wrong registration architecture: Creating WordPress users immediately instead of change requests",
+    "Function conflict: td_generate_request_id() declared in two places (registration handler + record-id-generator)",
     "Button hover not working due to CSS variable issue",
     "CSS changes not reflecting due to browser cache",
     "CTA button using wrong format (backgroundColor vs is-style-fill)",
-    "Footer emoji UTF-8 corruption"
+    "Footer emoji UTF-8 corruption",
+    "Managers page second button missing is-style-fill class",
+    "Operators page second button missing is-style-fill class",
+    "Operators page CTA spacing inconsistent with other landing pages",
+    "Manager Actions button font size larger than landing page buttons",
+    "Forminator form not rendering despite complete setup (tables, posts, metadata)",
+    "Forminator requires GUI-based initialization that doesn't work with programmatic creation",
+    "Need for custom validation: at least one of LinkedIn OR CV",
+    "User registration workflow with 'pending' status for approval",
+    "Professional information capture with flexibility (LinkedIn XOR CV)",
+    "File upload UI/UX improvements (custom buttons, filename display)",
+    "Form structure corruption in previous attempts",
+    "JavaScript validation for conditional required fields"
+  ],
+  "future_work": [
+    "External user provisioning system (Epic WP-09.5) - User account creation AFTER Manager approval in external system (Person app or other)",
+    "Email notification templates (user confirmation, admin notification)",
+    "Admin approval interface for pending registrations",
+    "Replace select-role page with proper role card design",
+    "Add reCAPTCHA integration for bot protection",
+    "Implement email verification before account activation",
+    "Add CV parsing/extraction functionality",
+    "Multi-language support for form fields"
   ]
 }

@@ -1,7 +1,7 @@
 /*
 Theme Name: Blocksy Child
 Template: blocksy
-Version: 1.0.0
+Version: 1.0.3
 Description: Custom child theme with unified design system for TalenDelight
 */
 
@@ -205,10 +205,20 @@ input[type="submit"],
     color: var(--color-navy);
 }
 
+/* All buttons hover - base rule */
+.wp-block-button__link:hover,
+.wp-element-button:hover {
+    background-color: #0062e3 !important;
+    color: var(--color-gray-off-white) !important;
+}
+
+/* Specific button hover overrides - more specific selectors come last */
 .wp-block-button.is-style-fill .wp-block-button__link:hover,
-.button-primary:hover {
-    background-color: var(--color-blue);
-    color: var(--color-gray-off-white);
+.button-primary:hover,
+.has-background.wp-block-button__link:hover,
+.has-white-background-color.wp-block-button__link:hover {
+    background-color: #0062e3 !important;
+    color: var(--color-gray-off-white) !important;
     box-shadow: var(--shadow-md);
     text-decoration: none;
 }
@@ -330,3 +340,14 @@ body.logged-in .menu-item-10 { /* Login */
 }
 
 /* Note: Profile and Logout menu items not yet created */
+
+/* CTA button ultra-specific override - for white background buttons */
+a.has-navy-color.has-white-background-color.wp-block-button__link:hover,
+a.has-background.has-text-color.wp-block-button__link:hover,
+.has-white-background-color.has-navy-color:hover,
+a.wp-block-button__link.has-white-background-color[href="/register"]:hover,
+.wp-block-button a[style*="border-radius"]:hover {
+    background-color: #0062e3 !important;
+    color: #F8F9FA !important;
+    border-color: #0062e3 !important;
+}

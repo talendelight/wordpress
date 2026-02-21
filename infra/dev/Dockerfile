@@ -1,8 +1,17 @@
 # Custom WordPress image with WP-CLI
-FROM wordpress:6.9.0-php8.3-apache
+FROM wordpress:6.9.1-php8.3-apache
+
+# Install OS packages needed to compile PHP extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libcurl4-openssl-dev \
+      pkg-config \
+      libxml2-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install curl dom json
+# - json is built into PHP 8.x (do NOT docker-php-ext-install json)
+# - dom typically works once libxml2-dev exists (often already enabled, but safe)
+RUN docker-php-ext-install curl dom
 
 # Note: libxml is included by default in PHP docker images
 # curl, dom, json, libxml extensions are now available

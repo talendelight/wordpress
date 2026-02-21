@@ -1,6 +1,6 @@
-# Quick Reference: Deployment Commands
+﻿# Quick Reference: Deployment Commands
 
-**📚 See Also:** 
+**ðŸ“š See Also:** 
 - [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - How to handle IDs across environments
 - [Deployment Workflow](DEPLOYMENT-WORKFLOW.md) - Complete deployment process
 - [Post-Mortem v3.6.0](POST-MORTEM-V3.6.0-DEPLOYMENT-GAPS.md) - Lessons learned
@@ -11,7 +11,7 @@
 - [ ] Local WordPress container running (`podman ps` shows `wp` container)
 - [ ] SSH access to production configured (`ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129`)
 - [ ] WP-CLI available on production
-- [ ] Changes tested locally at http://localhost:8080
+- [ ] Changes tested locally at https://wp.local
 - [ ] Assets backed up to `restore/assets/` (if new images/logos added)
 - [ ] Database migrations tested locally (if applicable)
 - [ ] Required plugins available in `wp-content/plugins/`
@@ -138,14 +138,14 @@ ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
 ```
 
 **Health Check Verifies:**
-- ✅ Required pages exist (employers, candidates, scouts, managers, operators, help, welcome)
-- ✅ Required plugins active (talendelight-roles, wp-user-manager, blocksy-companion)
-- ✅ Required MU-plugins loaded (td-api-security, td-env-config, record-id-generator)
-- ✅ Custom roles exist (td_candidate, td_employer, td_scout, td_operator, td_manager)
-- ✅ Navigation menus configured
-- ✅ Database tables exist (td_user_data_change_requests, td_audit_log, td_id_sequences)
-- ✅ Security settings (XML-RPC disabled, file editing disabled)
-- ✅ Environment constants defined
+- âœ… Required pages exist (employers, candidates, scouts, managers, operators, help, welcome)
+- âœ… Required plugins active (talendelight-roles, wp-user-manager, blocksy-companion)
+- âœ… Required MU-plugins loaded (td-api-security, td-env-config, record-id-generator)
+- âœ… Custom roles exist (td_candidate, td_employer, td_scout, td_operator, td_manager)
+- âœ… Navigation menus configured
+- âœ… Database tables exist (td_user_data_change_requests, td_audit_log, td_id_sequences)
+- âœ… Security settings (XML-RPC disabled, file editing disabled)
+- âœ… Environment constants defined
 
 ---
 
@@ -182,7 +182,7 @@ ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 \
 
 ## Export Pages (Local)
 
-**⚠️ CRITICAL:** Use `podman cp` method to avoid PowerShell encoding corruption.
+**âš ï¸ CRITICAL:** Use `podman cp` method to avoid PowerShell encoding corruption.
 
 ### Method 1: Automated Export (Recommended)
 
@@ -203,7 +203,7 @@ podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root > 
 podman cp wp:/tmp/page-export.json tmp/elementor-exports/page-name.json
 ```
 
-**❌ NEVER DO THIS (Corrupts JSON):**
+**âŒ NEVER DO THIS (Corrupts JSON):**
 ```powershell
 # DON'T: PowerShell redirection corrupts JSON with shortcodes
 podman exec wp bash -c "wp post meta get PAGE_ID _elementor_data --allow-root" > tmp/export.json
@@ -225,7 +225,7 @@ Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
     $isUTF16BE = ($bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF)
     
     if ($hasBOM -or $isUTF16LE -or $isUTF16BE) {
-        Write-Host " - ❌ ENCODING CORRUPTED" -ForegroundColor Red
+        Write-Host " - âŒ ENCODING CORRUPTED" -ForegroundColor Red
         return
     }
     
@@ -242,15 +242,15 @@ Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
             # Verify shortcode attributes are properly escaped
             $hasUnescapedQuotes = $content -match '"shortcode":"\[user_requests_table status=(?![\\"])'
             if ($hasUnescapedQuotes) {
-                Write-Host " - ❌ SHORTCODE QUOTES NOT ESCAPED" -ForegroundColor Red
+                Write-Host " - âŒ SHORTCODE QUOTES NOT ESCAPED" -ForegroundColor Red
                 return
             }
-            Write-Host " - ✓ OK ($elementCount sections, $($shortcodeMatches.Count) shortcodes)" -ForegroundColor Green
+            Write-Host " - âœ“ OK ($elementCount sections, $($shortcodeMatches.Count) shortcodes)" -ForegroundColor Green
         } else {
-            Write-Host " - ✓ OK ($elementCount sections)" -ForegroundColor Green
+            Write-Host " - âœ“ OK ($elementCount sections)" -ForegroundColor Green
         }
     } catch {
-        Write-Host " - ❌ INVALID JSON: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host " - âŒ INVALID JSON: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 ```
@@ -261,7 +261,7 @@ Get-ChildItem tmp/elementor-exports/*.json | ForEach-Object {
 
 ## Deploy to Production
 
-**⚠️ Important:** If pages reference forms or other content with IDs, use the [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) to handle ID replacements automatically.
+**âš ï¸ Important:** If pages reference forms or other content with IDs, use the [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) to handle ID replacements automatically.
 
 ### Step 1: Upload Exports
 ```bash
@@ -308,7 +308,7 @@ ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 "cd domains/ta
 For each page:
 - [ ] Page loads without errors
 - [ ] Compliance footer visible (4 trust badges)
-- [ ] Unicode characters render (✅ ❌ not u2705/u274c)
+- [ ] Unicode characters render (âœ… âŒ not u2705/u274c)
 - [ ] Buttons have correct styling
 - [ ] Links work correctly
 - [ ] Mobile responsive layout
@@ -354,7 +354,7 @@ Should be >5000 bytes
 
 ## Post-Deployment: Archive Release
 
-**⚠️ Do this IMMEDIATELY after successful deployment**
+**âš ï¸ Do this IMMEDIATELY after successful deployment**
 
 ```powershell
 # Windows PowerShell (run from repo root)
@@ -370,14 +370,10 @@ Move-Item .github/releases/v3.1.0.json .github/releases/archive/v3.1.0.json
 Copy-Item .github/releases/archive/v3.1.0.json .github/releases/v3.2.0.json
 Copy-Item docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
 
-# 4. Update manifest version
-# Edit infra/shared/elementor-manifest.json - change "version": "3.2.0"
-
-# 5. Commit and push
+# 4. Commit and push
 git add .github/releases/archive/
 git add .github/releases/v3.2.0.json
 git add docs/RELEASE-NOTES-NEXT.md
-git add infra/shared/elementor-manifest.json
 git commit -m "Archive v3.1.0, prepare v3.2.0"
 git push origin main
 ```
@@ -416,7 +412,7 @@ ssh -i tmp/hostinger_deploy_key -p 65002 u909075050@45.84.205.129 "cd /home/u909
 
 **Expected Output:**
 ```
-✓ Custom CSS deployed successfully
+âœ“ Custom CSS deployed successfully
 Theme: blocksy-child
 CSS length: XXXX bytes
 ```
@@ -431,7 +427,6 @@ CSS length: XXXX bytes
 |---------|----------|
 | Export script | `infra/shared/scripts/export-elementor-pages.ps1` |
 | Import script | `infra/shared/scripts/import-elementor-pages.php` |
-| Page mappings | `infra/shared/elementor-manifest.json` |
 | Export output | `tmp/elementor-exports/*.json` |
 | Lessons learned | `docs/lessons/*.md` |
 | Deployment template | `docs/templates/TEMPLATE-ELEMENTOR-DEPLOYMENT.md` |
@@ -441,13 +436,13 @@ CSS length: XXXX bytes
 
 ## PowerShell Commands to Remember
 
-### ❌ NEVER DO THIS
+### âŒ NEVER DO THIS
 ```powershell
 podman exec wp wp post meta get 248 _elementor_data > file.json  # Corrupts data
 podman exec wp wp post meta get 248 _elementor_data | Out-File file.json  # Corrupts data
 ```
 
-### ✅ ALWAYS DO THIS
+### âœ… ALWAYS DO THIS
 ```powershell
 podman exec wp bash -c "wp post meta get 248 _elementor_data > /tmp/file.json"
 podman cp wp:/tmp/file.json tmp/file.json

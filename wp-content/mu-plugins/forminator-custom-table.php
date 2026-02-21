@@ -10,8 +10,8 @@ add_action('forminator_form_after_save_entry', 'td_forminator_to_custom_table', 
 
 function td_forminator_to_custom_table($form_id, $response) {
     // 1) Only run for Person Registration Form
-    // Use environment-specific form ID from config
-    $target_form_id = defined('TD_PERSON_REGISTRATION_FORM_ID') ? TD_PERSON_REGISTRATION_FORM_ID : 364;
+    // Use environment-specific form ID from config or default to production form ID
+    $target_form_id = defined('TD_PERSON_REGISTRATION_FORM_ID') ? TD_PERSON_REGISTRATION_FORM_ID : 53;
     if ((int) $form_id !== (int) $target_form_id) {
         return;
     }

@@ -14,25 +14,31 @@
     <div class="wp-block-columns are-vertically-aligned-center">
         <!-- wp:column {"verticalAlignment":"center"} -->
         <div class="wp-block-column is-vertically-aligned-center">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-            <p class="has-text-align-center" style="font-size:14px;font-weight:600">🔒 GDPR Compliant</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;">
+                <img src="/wp-content/themes/blocksy-child/assets/images/shield-grey-border.svg" alt="GDPR" style="height:18px;vertical-align:middle;margin-right:8px;"/>GDPR Compliant
+            </div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 
         <!-- wp:column {"verticalAlignment":"center"} -->
         <div class="wp-block-column is-vertically-aligned-center">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-            <p class="has-text-align-center" style="font-size:14px;font-weight:600">✓ Secure &amp; Reliable</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;">
+                <img src="/wp-content/themes/blocksy-child/assets/images/padlock-lock-grey.svg" alt="Secure" style="height:18px;vertical-align:middle;margin-right:8px;"/>Secure &amp; Reliable
+            </div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 
         <!-- wp:column {"verticalAlignment":"center"} -->
         <div class="wp-block-column is-vertically-aligned-center">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-            <p class="has-text-align-center" style="font-size:14px;font-weight:600">🤝 Equal Opportunity</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;">
+                <img src="/wp-content/themes/blocksy-child/assets/images/balance-scale-yellow.svg" alt="Equal Opportunity" style="height:18px;vertical-align:middle;margin-right:8px;"/>Equal Opportunity
+            </div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 

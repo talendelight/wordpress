@@ -18,8 +18,16 @@ param(
         'verify', 
         'restore',
         'export-elementor',
+        'export-users',
+        'get-page-ids',
+        'rebuild-menu',
+        'purge-caches',
+        'check-urls',
+        'check-deployment',
+        'verify-security',
         'health-check',
         'apply-sql',
+        'cleanup-themes',
         'deploy',
         'help'
     )]
@@ -71,6 +79,73 @@ $SCRIPT_REGISTRY = @{
         )
     }
     
+    'export-users' = @{
+        script = 'export-users.ps1'
+        description = 'Export WordPress users and roles to SQL files'
+        usage = 'wp-action export-users'
+        examples = @(
+            'wp-action export-users'
+        )
+    }
+    
+    'get-page-ids' = @{
+        script = 'get-page-ids.ps1'
+        description = 'Get page IDs from production by URL or slug'
+        usage = 'wp-action get-page-ids [-RelativeUrl <url>] [-Slug <slug>] [-ListAll]'
+        examples = @(
+            'wp-action get-page-ids -RelativeUrl "/welcome/"',
+            'wp-action get-page-ids -Slug "welcome"',
+            'wp-action get-page-ids -ListAll'
+        )
+    }
+    
+    'rebuild-menu' = @{
+        script = 'rebuild-navigation-menu.ps1'
+        description = 'Rebuild WordPress navigation menu with standard items'
+        usage = 'wp-action rebuild-menu [-Environment <local|production>] [-MenuSlug <slug>] [-DryRun]'
+        examples = @(
+            'wp-action rebuild-menu -Environment production',
+            'wp-action rebuild-menu -DryRun',
+            'wp-action rebuild-menu -MenuSlug "primary-menu" -ThemeLocation "primary"'
+        )
+    }
+    
+    'purge-caches' = @{
+        script = 'purge-all-caches.php'
+        description = 'Purge all caches (WordPress, LiteSpeed, transients)'
+        usage = 'wp-action purge-caches'
+        examples = @(
+            'wp-action purge-caches'
+        )
+    }
+    
+    'check-urls' = @{
+        script = 'check-urls.php'
+        description = 'Verify WordPress URL configuration'
+        usage = 'wp-action check-urls'
+        examples = @(
+            'wp-action check-urls'
+        )
+    }
+    
+    'check-deployment' = @{
+        script = 'verify-deployment-readiness.ps1'
+        description = 'Pre-commit deployment verification (analyzes git changes)'
+        usage = 'wp-action check-deployment'
+        examples = @(
+            'wp-action check-deployment'
+        )
+    }
+    
+    'verify-security' = @{
+        script = 'verify-security.php'
+        description = 'Run security configuration checks'
+        usage = 'wp-action verify-security'
+        examples = @(
+            'wp-action verify-security'
+        )
+    }
+    
     'health-check' = @{
         script = 'verify-production-health.php'
         description = 'Run comprehensive health check on production'
@@ -87,6 +162,17 @@ $SCRIPT_REGISTRY = @{
         usage = 'wp-action apply-sql -SqlFilePath <path-to-sql-file>'
         examples = @(
             'wp-action apply-sql -SqlFilePath infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql'
+        )
+    }
+    
+    'cleanup-themes' = @{
+        script = 'cleanup-themes.ps1'
+        description = 'Remove unused WordPress default themes (twentytwenty*)'
+        usage = 'wp-action cleanup-themes -Environment <local|production> [-DryRun]'
+        examples = @(
+            'wp-action cleanup-themes -Environment local',
+            'wp-action cleanup-themes -Environment production -DryRun',
+            'wp-action cleanup-themes -Environment production'
         )
     }
     

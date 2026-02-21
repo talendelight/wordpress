@@ -7,6 +7,10 @@ Release instructions are defined in two formats:
 1. **Human-readable** (Markdown in `.github/releases/archive/`) - For developer reference (archived releases)
 2. **Machine-readable** (JSON in `.github/releases/`) - For GitHub Actions automation
 
+**Templates:**
+- [templates/vX.Y.Z.json](../templates/vX.Y.Z.json) - Copy this to create new release metadata
+- [templates/RELEASE-NOTES-vX.Y.Z.md](../templates/RELEASE-NOTES-vX.Y.Z.md) - Copy this to create new release notes
+
 ## File Naming Convention
 
 - Human: `.github/releases/archive/RELEASE-vX.Y.Z.md`
@@ -94,17 +98,16 @@ Deploys themes/plugins via rsync
 }
 ```
 
-### 2. deploy_elementor
-Deploys Elementor page exports
+### 2. deploy_pages
+Deploys WordPress pages using restoration scripts
 
 ```json
 {
-  "type": "deploy_elementor",
-  "description": "Import updated Elementor pages",
+  "type": "deploy_pages",
+  "description": "Deploy updated landing pages",
   "config": {
-    "manifest": "infra/shared/elementor-manifest.json",
-    "export_dir": "tmp/elementor-exports/",
-    "import_script": "infra/shared/scripts/import-elementor-pages.php"
+    "pages_dir": "restore/pages/",
+    "restore_script": "infra/shared/scripts/restore-page.php"
   }
 }
 ```
@@ -144,9 +147,9 @@ Clears various caches
 ```json
 {
   "type": "clear_cache",
-  "description": "Clear LiteSpeed and Elementor caches",
+  "description": "Clear LiteSpeed and WordPress caches",
   "config": {
-    "cache_types": ["litespeed", "elementor", "wordpress", "opcache"]
+    "cache_types": ["litespeed", "wordpress", "opcache"]
   }
 }
 ```
@@ -207,12 +210,11 @@ Requires manual intervention
       }
     },
     {
-      "type": "deploy_elementor",
+      "type": "deploy_pages",
       "description": "Import updated pages with compliance footer",
       "config": {
-        "manifest": "infra/shared/elementor-manifest.json",
-        "export_dir": "tmp/elementor-exports/",
-        "import_script": "infra/shared/scripts/import-elementor-pages.php"
+        "pages_dir": "restore/pages/",
+        "restore_script": "infra/shared/scripts/restore-page.php"
       }
     },
     {
@@ -227,7 +229,7 @@ Requires manual intervention
       "type": "clear_cache",
       "description": "Clear all caches",
       "config": {
-        "cache_types": ["litespeed", "elementor"]
+        "cache_types": ["litespeed", "wordpress"]
       }
     },
     {
@@ -274,7 +276,7 @@ jobs:
 
 1. Create human-readable release notes: `.github/releases/archive/RELEASE-v3.2.0.md`
 2. Create machine-readable instructions: `.github/releases/v3.2.0.json`
-3. Export Elementor pages: `pwsh infra/shared/scripts/export-elementor-pages.ps1`
+3. Backup pages: `wp-action backup`
 4. Commit all files to git
 5. Push to `main` branch - GitHub Actions will detect and execute latest release
 

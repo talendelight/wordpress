@@ -1,4 +1,4 @@
-# Lessons Learned: WordPress URL Stability and Emergency Recovery
+﻿# Lessons Learned: WordPress URL Stability and Emergency Recovery
 
 **Date:** February 9, 2026  
 **Incident:** Production site redirecting to :8080, recurring URL contamination  
@@ -9,7 +9,7 @@
 
 ## Executive Summary
 
-WordPress site experienced repeated URL contamination where `siteurl` and `home` database options reset to `http://localhost:8080`, causing 301 redirects to unreachable port. Root cause: lack of URL protection mechanism. Solution: wp-config.php constants to lock URLs permanently.
+WordPress site experienced repeated URL contamination where `siteurl` and `home` database options reset to `https://wp.local`, causing 301 redirects to unreachable port. Root cause: lack of URL protection mechanism. Solution: wp-config.php constants to lock URLs permanently.
 
 **Key Takeaway:** WordPress database URLs should be **locked via constants** in wp-config.php for production environments to prevent contamination from imports, plugin updates, or deployment operations.
 
@@ -31,13 +31,13 @@ Production WordPress site at https://talendelight.com repeatedly redirected visi
 ### Timeline of Events
 
 1. **Initial Report:** User noticed site redirecting to :8080
-2. **First Fix:** Updated database `siteurl`/`home` options via wp-cli → Worked temporarily
+2. **First Fix:** Updated database `siteurl`/`home` options via wp-cli â†’ Worked temporarily
 3. **Recurrence #1:** After restoring Welcome page, URLs reset again
-4. **Second Fix:** Updated URLs again → Worked temporarily
+4. **Second Fix:** Updated URLs again â†’ Worked temporarily
 5. **Recurrence #2:** After Git deployment, URLs contaminated again
-6. **Third Fix:** Enhanced emergency script with URL checks → Still vulnerable
+6. **Third Fix:** Enhanced emergency script with URL checks â†’ Still vulnerable
 7. **Recurrence #3:** After another page operation, URLs reset again
-8. **Permanent Fix:** Added wp-config.php constants → No further resets
+8. **Permanent Fix:** Added wp-config.php constants â†’ No further resets
 
 ---
 
@@ -70,8 +70,8 @@ Production WordPress site at https://talendelight.com repeatedly redirected visi
 wp post create ~/welcome-page.html --post_type=page --post_title='Welcome' --post_status=publish
 
 # URLs in database became:
-siteurl: http://localhost:8080
-home: http://localhost:8080
+siteurl: https://wp.local
+home: https://wp.local
 ```
 
 **Why It Happened:**
@@ -84,7 +84,7 @@ home: http://localhost:8080
 **Problem:** Hostinger's Git auto-deployment might trigger WordPress processes that check/update URLs.
 
 **Theory (not fully confirmed):**
-- Git push to `main` branch → Hostinger deploys wp-content/
+- Git push to `main` branch â†’ Hostinger deploys wp-content/
 - Deployment might trigger theme activation hooks
 - Blocksy Companion plugin activation might check URLs
 - No evidence of explicit URL changes in deployment logs
@@ -145,10 +145,10 @@ fi
 ```
 
 **Results:**
-- ✅ No further URL contamination after implementation
-- ✅ Database values no longer matter (constants override)
-- ✅ Page imports no longer affect URLs
-- ✅ Git deployments safe
+- âœ… No further URL contamination after implementation
+- âœ… Database values no longer matter (constants override)
+- âœ… Page imports no longer affect URLs
+- âœ… Git deployments safe
 
 ### 2. Enhanced Emergency Fix Script
 
@@ -220,15 +220,15 @@ define('WP_SITEURL', 'https://your-domain.com');
 ```
 
 **When to Use:**
-- ✅ Production environments (always)
-- ✅ Staging environments (recommended)
-- ⚠️ Development environments (optional, depends on workflow)
-- ❌ Never lock localhost URLs in version-controlled wp-config.php
+- âœ… Production environments (always)
+- âœ… Staging environments (recommended)
+- âš ï¸ Development environments (optional, depends on workflow)
+- âŒ Never lock localhost URLs in version-controlled wp-config.php
 
 ### Lesson 2: Verify Root Cause Before Creating Workarounds
 
 **What Happened:**
-- Saw "navy backgrounds missing" → Created custom-colors.css
+- Saw "navy backgrounds missing" â†’ Created custom-colors.css
 - Spent 30 minutes on color CSS solution
 - Real problem: Welcome page didn't exist at all
 
@@ -249,16 +249,16 @@ define('WP_SITEURL', 'https://your-domain.com');
 - Possibly ISP cache
 
 **Standard Methods That Don't Work:**
-- ❌ Hard refresh (Ctrl+Shift+R)
-- ❌ Clear browsing data
-- ❌ Incognito/private mode
-- ❌ DNS flush (ipconfig /flushdns)
+- âŒ Hard refresh (Ctrl+Shift+R)
+- âŒ Clear browsing data
+- âŒ Incognito/private mode
+- âŒ DNS flush (ipconfig /flushdns)
 
 **What Actually Works:**
-- ✅ Complete browser restart (close ALL windows)
-- ✅ Different browser never used for site
-- ✅ Clear HSTS cache: chrome://net-internals/#hsts → Delete domain
-- ✅ Wait 24-48 hours (cache expiry)
+- âœ… Complete browser restart (close ALL windows)
+- âœ… Different browser never used for site
+- âœ… Clear HSTS cache: chrome://net-internals/#hsts â†’ Delete domain
+- âœ… Wait 24-48 hours (cache expiry)
 
 **Prevention:**
 - Never use 301 redirects during development/testing
@@ -318,9 +318,9 @@ wp operation --args
 # Execute, capture output, validate result
 $result = wp operation --args
 if ($result -match "expected-pattern") {
-    Write-Host "✓ Operation succeeded"
+    Write-Host "âœ“ Operation succeeded"
 } else {
-    Write-Host "✗ Operation failed: $result"
+    Write-Host "âœ— Operation failed: $result"
     # Take corrective action
 }
 ```
@@ -340,8 +340,8 @@ Invoke-WebRequest -Uri "https://domain.com" -Method Head
 ```
 
 3. **Compare results:**
-- Same → Server issue
-- Different → Client/network issue
+- Same â†’ Server issue
+- Different â†’ Client/network issue
 
 **What We Found:**
 - Server: HTTP 200 (correct)
@@ -417,7 +417,7 @@ scp production:/path/to/.htaccess backup/htaccess-$(date +%Y%m%d).txt
 wp post get 6 --field=post_content > page.html
 
 # DO sanitize before export
-wp post get 6 --field=post_content | sed 's|http://localhost:8080|PLACEHOLDER|g' > page.html
+wp post get 6 --field=post_content | sed 's|https://wp.local|PLACEHOLDER|g' > page.html
 ```
 
 **Page Import to Production:**
@@ -449,7 +449,7 @@ wp option get siteurl && wp option get home
 
 ## Anti-Patterns Identified
 
-### ❌ Anti-Pattern 1: Relying on Database for Critical URLs
+### âŒ Anti-Pattern 1: Relying on Database for Critical URLs
 
 **Why Bad:**
 - Database is mutable
@@ -464,7 +464,7 @@ define('WP_HOME', 'https://production.com');
 define('WP_SITEURL', 'https://production.com');
 ```
 
-### ❌ Anti-Pattern 2: Creating Workarounds Before Diagnosis
+### âŒ Anti-Pattern 2: Creating Workarounds Before Diagnosis
 
 **What We Did Wrong:**
 - Saw "navy backgrounds missing"
@@ -478,7 +478,7 @@ define('WP_SITEURL', 'https://production.com');
 
 **Lesson:** Verify fundamentals before solving symptoms.
 
-### ❌ Anti-Pattern 3: Testing Production Changes with Regular Browser
+### âŒ Anti-Pattern 3: Testing Production Changes with Regular Browser
 
 **Why Bad:**
 - Contaminates browser cache immediately
@@ -494,7 +494,7 @@ curl -I https://production.com
 # If correct, then test with browser in incognito
 ```
 
-### ❌ Anti-Pattern 4: Silent Failures in Scripts
+### âŒ Anti-Pattern 4: Silent Failures in Scripts
 
 **What We Had:**
 ```bash
@@ -517,7 +517,7 @@ if [ -z "$PAGE_ID" ]; then
 fi
 ```
 
-### ❌ Anti-Pattern 5: Manual Fixes Without Documentation
+### âŒ Anti-Pattern 5: Manual Fixes Without Documentation
 
 **Problem:** Fixed URLs manually 4-5 times without documenting or automating.
 

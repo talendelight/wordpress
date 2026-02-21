@@ -1,4 +1,4 @@
-# Step-by-Step Guide: Building Manager Admin Page
+﻿# Step-by-Step Guide: Building Manager Admin Page
 
 **Date:** January 19, 2026  
 **Purpose:** Create Manager Admin operations hub page using Managers Dashboard as a template
@@ -12,7 +12,7 @@
 - **Slug:** `manager-admin`
 - **Title:** Manager Admin
 - **Hero Heading:** Admin Operations
-- **URL:** http://localhost:8080/manager-admin/
+- **URL:** https://wp.local/manager-admin/
 - **Status:** Draft (ready to build)
 
 **Purpose:** Central hub for system administration tasks including:
@@ -30,18 +30,18 @@
 ### Step 1: Access the Page in WordPress Admin
 
 1. **Navigate to Pages:**
-   - Go to: http://localhost:8080/wp-admin/edit.php?post_type=page
+   - Go to: https://wp.local/wp-admin/edit.php?post_type=page
    - Find "Manager Admin" (ID 386) - should show as Draft
 
 2. **Set Page Template:**
    - Click "Edit" on the Manager Admin page
-   - In right sidebar → **Template:** Select "Elementor Canvas"
-   - In right sidebar → **Blocksy** section → **Page Layout:** Set to "Default"
+   - In right sidebar â†’ **Template:** Select "Elementor Canvas"
+   - In right sidebar â†’ **Blocksy** section â†’ **Page Layout:** Set to "Default"
    - Click "Update" to save settings
 
 3. **Open Elementor Editor:**
    - Click "Edit with Elementor" button at the top
-   - OR navigate directly to: http://localhost:8080/wp-admin/post.php?post=386&action=elementor
+   - OR navigate directly to: https://wp.local/wp-admin/post.php?post=386&action=elementor
    - Elementor editor will load with a blank canvas
 
 ---
@@ -62,20 +62,20 @@
    - Set full-width layout
 
 2. **Configure Container Settings:**
-   - Click the container border → Settings (left panel)
+   - Click the container border â†’ Settings (left panel)
    - **Layout:**
      - Content Width: Full Width (100%)
      - Min Height: 300px (or adjust to preference)
      - Align Items: Center
      - Justify Content: Center
-   - **Style → Background:**
+   - **Style â†’ Background:**
      - Background Type: Classic (Color)
      - Color: `#0a2540` (dark navy) or use Blocksy theme's primary color
-   - **Advanced → Padding:**
+   - **Advanced â†’ Padding:**
      - Top: 60px, Bottom: 60px (adjust for spacing)
 
 3. **Add Heading Widget:**
-   - Inside the container, click (+) → Search "Heading"
+   - Inside the container, click (+) â†’ Search "Heading"
    - Drag "Heading" widget into container
    - **Content:**
      - Title: "Admin Operations"
@@ -88,7 +88,7 @@
      - Text Align: Center
 
 4. **Add Subheading (Text Editor Widget):**
-   - Click (+) below heading → Search "Text Editor"
+   - Click (+) below heading â†’ Search "Text Editor"
    - Drag into container (below heading)
    - **Content:**
      - Text: "Manage system settings, user requests, and admin tasks"
@@ -101,7 +101,7 @@
      - Padding Top: 10px (spacing from heading)
 
 5. **Optional: Add Button:**
-   - Click (+) below text → Search "Button"
+   - Click (+) below text â†’ Search "Button"
    - Drag into container
    - **Content:**
      - Text: "View Documentation"
@@ -121,22 +121,22 @@
 ### Step 3: Build Admin Operations Tiles Section
 
 **What to Build:**
-- Grid of 6 tiles (2 rows × 3 columns)
+- Grid of 6 tiles (2 rows Ã— 3 columns)
 - Each tile: Icon, heading, description, click handler
 - Similar styling to Managers Dashboard tiles
 
 **Option A: Copy from Managers Dashboard (Fastest)**
 
 1. **Open Managers page in new tab:**
-   - Navigate to: http://localhost:8080/wp-admin/post.php?post=333&action=elementor
+   - Navigate to: https://wp.local/wp-admin/post.php?post=333&action=elementor
    - This is your source page
 
 2. **Select the tiles section:**
    - In Navigator (hamburger menu), find the section with tiles
-   - Right-click the section → "Copy"
+   - Right-click the section â†’ "Copy"
 
 3. **Switch back to Manager Admin page:**
-   - Right-click in canvas (below hero) → "Paste"
+   - Right-click in canvas (below hero) â†’ "Paste"
    - Entire tiles section will be duplicated
 
 4. **Modify tile content** (see next section for details)
@@ -144,7 +144,7 @@
 **Option B: Build from Scratch**
 
 1. **Add Container Section:**
-   - Click (+) below hero → Add "Container"
+   - Click (+) below hero â†’ Add "Container"
    - Set Content Width: Boxed (1140px max width for desktop)
    - Set Direction: Row (horizontal)
    - Set Wrap: Wrap (tiles will wrap to next row)
@@ -156,7 +156,7 @@
    **For EACH tile, follow these steps:**
    
    a. **Add Inner Container:**
-      - Inside the main container, click (+) → Add "Container"
+      - Inside the main container, click (+) â†’ Add "Container"
       - This is one tile
    
    b. **Configure Tile Container:**
@@ -166,21 +166,21 @@
         - Direction: Column (vertical)
         - Align Items: Center
         - Justify Content: Center
-      - **Style → Background:**
+      - **Style â†’ Background:**
         - Color: White (#ffffff) or light gray (#f5f5f5)
         - Hover: Slightly darker or add shadow
-      - **Style → Border:**
+      - **Style â†’ Border:**
         - Border Type: Solid
         - Width: 1px
         - Color: #e0e0e0
         - Border Radius: 8px (rounded corners)
-      - **Advanced → Padding:**
+      - **Advanced â†’ Padding:**
         - All sides: 30px
-      - **Advanced → Margin:**
+      - **Advanced â†’ Margin:**
         - Bottom: 30px (spacing between rows)
    
    c. **Add Icon Widget:**
-      - Inside tile container, click (+) → "Icon"
+      - Inside tile container, click (+) â†’ "Icon"
       - **Content:**
         - Icon Library: Font Awesome
         - Choose icon (see tile details below)
@@ -211,8 +211,8 @@
         - Margin Top: 10px
    
    f. **Add Link/Click Behavior:**
-      - Click the tile container border → Settings
-      - **Advanced → Motion Effects → Click:**
+      - Click the tile container border â†’ Settings
+      - **Advanced â†’ Motion Effects â†’ Click:**
         - OR use "Link" option in Advanced settings
         - Link: #user-requests (or actual URL when available)
         - Open in: Same window
@@ -270,16 +270,16 @@
 **Steps:**
 
 1. **Add Container Section:**
-   - Below tiles section, click (+) → Add "Container"
+   - Below tiles section, click (+) â†’ Add "Container"
    - Set Content Width: Full Width
    - Set Min Height: 200px
    - Align Items: Center
    - Justify Content: Center
 
 2. **Configure Background:**
-   - **Style → Background:**
+   - **Style â†’ Background:**
      - Color: Light gray (#f9f9f9)
-   - **Advanced → Padding:**
+   - **Advanced â†’ Padding:**
      - Top/Bottom: 50px
 
 3. **Add Heading:**
@@ -329,9 +329,9 @@
 1. **Copy from Managers Dashboard (Recommended):**
    - Open Managers page (ID 333) in Elementor
    - Find the footer section with compliance badges
-   - Right-click section → Copy
+   - Right-click section â†’ Copy
    - Return to Manager Admin page
-   - Right-click at bottom → Paste
+   - Right-click at bottom â†’ Paste
    - Done! Footer copied with all badges
 
 2. **OR Build from Scratch:**
@@ -348,16 +348,16 @@
 **Mobile Optimization:**
 
 1. **Switch to Mobile View:**
-   - Click device icon (bottom left) → Mobile view
+   - Click device icon (bottom left) â†’ Mobile view
 
 2. **Adjust Hero Section:**
-   - Click hero container → Style
+   - Click hero container â†’ Style
    - Mobile Padding: Reduce to 40px top/bottom
    - Heading Font Size: 28px
    - Text Font Size: 14px
 
 3. **Adjust Tiles Section:**
-   - Click tiles container → Layout
+   - Click tiles container â†’ Layout
    - Mobile: Width 100% (full width, stacked)
    - Ensure vertical spacing looks good
 
@@ -375,7 +375,7 @@
 ### Step 8: Final Settings & Publish
 
 1. **Page Settings:**
-   - Click hamburger menu (☰) → Settings (gear icon)
+   - Click hamburger menu (â˜°) â†’ Settings (gear icon)
    - **Page Layout:**
      - Hide Title: No (we want "Manager Admin" to show)
      - OR if using Elementor Canvas, title won't show anyway
@@ -390,19 +390,19 @@
    - Once ready, change to "Publish"
 
 4. **Exit Elementor:**
-   - Click hamburger menu → Exit to Dashboard
+   - Click hamburger menu â†’ Exit to Dashboard
    - You'll return to WordPress page editor
 
 5. **Set Blocksy Page Layout:**
    - In WordPress page editor (classic editor)
-   - Right sidebar → **Blocksy** section
+   - Right sidebar â†’ **Blocksy** section
    - **Page Layout:** Ensure set to "Default"
      - This shows the header/menu (learned from v3.2.0 issue)
    - Click "Update"
 
 6. **Preview Page:**
    - Click "Preview" button
-   - Opens in new tab: http://localhost:8080/manager-admin/
+   - Opens in new tab: https://wp.local/manager-admin/
    - Verify all sections look correct
    - Test on mobile (browser dev tools)
 
@@ -418,7 +418,7 @@
 
 2. **Test Access:**
    - **As Admin:** Page should load normally
-   - **As Manager:** Login as `manager_test` → Page should load
+   - **As Manager:** Login as `manager_test` â†’ Page should load
    - **As Operator:** Should see 403 Forbidden page
    - **As Other Roles:** Should see 403 Forbidden
    - **Logged Out:** Should redirect to login or 403
@@ -465,11 +465,11 @@ Test-Path tmp/elementor-exports/manager-admin.json
 ## Quick Reference
 
 **Page URLs:**
-- **Local:** http://localhost:8080/manager-admin/
+- **Local:** https://wp.local/manager-admin/
 - **Production:** https://talendelight.com/manager-admin/
 
 **Elementor Editor:**
-- **Direct Link:** http://localhost:8080/wp-admin/post.php?post=386&action=elementor
+- **Direct Link:** https://wp.local/wp-admin/post.php?post=386&action=elementor
 
 **Color Palette:**
 - **Hero Background:** #0a2540 (dark navy)
@@ -528,7 +528,7 @@ Test-Path tmp/elementor-exports/manager-admin.json
 
 2. **Deploy to Production:**
    - Follow [RELEASE-NOTES-NEXT.md](RELEASE-NOTES-NEXT.md) deployment steps
-   - Export → Upload → Import → Test
+   - Export â†’ Upload â†’ Import â†’ Test
 
 3. **Documentation:**
    - Update feature spec with actual implementation details
@@ -548,4 +548,4 @@ Test-Path tmp/elementor-exports/manager-admin.json
 
 ---
 
-**Ready to start?** Open the Elementor editor and begin with Step 1! 🚀
+**Ready to start?** Open the Elementor editor and begin with Step 1! ðŸš€

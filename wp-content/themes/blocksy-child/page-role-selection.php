@@ -51,8 +51,8 @@ get_header();
 .td-role-selection-buttons { margin-top: 24px; text-align: center; }
 .td-role-selection-buttons button { display: inline-block; min-width: 180px; padding: 14px 30px; border-radius: 50px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
 .td-role-selection-buttons button#td-role-next { background: #063970; color: #FFFFFF; box-shadow: 0 2px 4px rgba(6, 57, 112, 0.3); }
-.td-role-selection-buttons button#td-role-next:hover { background: #052d5a; box-shadow: 0 3px 6px rgba(6, 57, 112, 0.4); transform: translateY(-2px); }
-.td-role-selection-buttons button#td-role-next:active { transform: translateY(0); box-shadow: 0 2px 4px rgba(6, 57, 112, 0.3); }
+.td-role-selection-buttons button#td-role-next:hover { background: #0062e3; box-shadow: 0 2px 4px rgba(0, 98, 227, 0.3); }
+.td-role-selection-buttons button#td-role-next:active { transform: translateY(0); background: #2980B9; box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3); }
 .td-role-selection-links { margin-top: 20px; text-align: center; }
 .td-role-selection-links a { color: #3498DB; text-decoration: none; font-size: 14px; transition: color 0.3s ease; display: inline-block; margin: 5px 0; }
 .td-role-selection-links a:hover { color: #063970; text-decoration: underline; }

@@ -49,6 +49,9 @@ define('FS_METHOD', 'direct');
 define('WP_MEMORY_LIMIT', '500M');
 define('WP_MAX_MEMORY_LIMIT', '500M');
 
+/* TalenDelight Application Settings */
+define('TD_PERSON_REGISTRATION_FORM_ID', 80); // Local form ID
+
 // ** Database settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 define( 'DB_NAME', getenv_docker('WORDPRESS_DB_NAME', 'wordpress') );

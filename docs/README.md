@@ -1,4 +1,4 @@
-# Documentation Index
+﻿# Documentation Index
 
 ## System Overview
 
@@ -12,19 +12,19 @@ This repository documents the **WordPress Primary Application** (Hostinger) used
 ## Key Documents (WordPress)
 
 ### Business and UI
-- [WORDPRESS-BUSINESS-FUNCTIONALITY.md](WORDPRESS-BUSINESS-FUNCTIONALITY.md) — business scope, roles, workflows, acceptance criteria
-- [WORDPRESS-UI-DESIGN.md](WORDPRESS-UI-DESIGN.md) — UI specification + Figma production checklist
-- [COMMON-UI-DESIGN.md](COMMON-UI-DESIGN.md) — shared design primitives + responsive breakpoints (placeholders)
+- [WORDPRESS-BUSINESS-FUNCTIONALITY.md](WORDPRESS-BUSINESS-FUNCTIONALITY.md) â€” business scope, roles, workflows, acceptance criteria
+- [WORDPRESS-UI-DESIGN.md](WORDPRESS-UI-DESIGN.md) â€” UI specification + Figma production checklist
+- [COMMON-UI-DESIGN.md](COMMON-UI-DESIGN.md) â€” shared design primitives + responsive breakpoints (placeholders)
 
 ### Technical and Operations
-- [WORDPRESS-TECHNICAL-DESIGN.md](WORDPRESS-TECHNICAL-DESIGN.md) — architecture, custom plugin responsibilities, file handling, exports
-- [WORDPRESS-DEPLOYMENT.md](WORDPRESS-DEPLOYMENT.md) — local/prod deployment + CV staging/offload/cleanup operational notes
-- [WORDPRESS-SECURITY.md](WORDPRESS-SECURITY.md) — security hardening with CV/PII-specific controls
-- [WORDPRESS-DATABASE.md](WORDPRESS-DATABASE.md) — DB management + PII-safe export policy
-- [WORDPRESS-OPEN-ACTIONS.md](WORDPRESS-OPEN-ACTIONS.md) — open items split into Business and Technical
+- [WORDPRESS-TECHNICAL-DESIGN.md](WORDPRESS-TECHNICAL-DESIGN.md) â€” architecture, custom plugin responsibilities, file handling, exports
+- [WORDPRESS-DEPLOYMENT.md](WORDPRESS-DEPLOYMENT.md) â€” local/prod deployment + CV staging/offload/cleanup operational notes
+- [WORDPRESS-SECURITY.md](WORDPRESS-SECURITY.md) â€” security hardening with CV/PII-specific controls
+- [WORDPRESS-DATABASE.md](WORDPRESS-DATABASE.md) â€” DB management + PII-safe export policy
+- [WORDPRESS-OPEN-ACTIONS.md](WORDPRESS-OPEN-ACTIONS.md) â€” open items split into Business and Technical
 
 ### Excel Templates
-- [WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv](WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv) — semicolon-delimited EU CSV template
+- [WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv](WORDPRESS-EXCEL-TEMPLATE-CANDIDATE-PIPELINE.csv) â€” semicolon-delimited EU CSV template
 
 Welcome to the WordPress project documentation. This directory contains comprehensive guides for development, deployment, security, and maintenance.
 
@@ -40,7 +40,7 @@ PSSecurityException: UnauthorizedAccess
 
 **Solution (One-time fix):**
 1. Press **Windows** key, type "PowerShell"
-2. Right-click → **Run as Administrator**
+2. Right-click â†’ **Run as Administrator**
 3. Execute:
    ```powershell
    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
@@ -142,30 +142,30 @@ Should show `LocalMachine: RemoteSigned`
 
 ```
 wordpress/
-├── .github/
-│   └── copilot-instructions.md  # AI assistant context and rules
-├── config/
-│   ├── uploads.ini              # Shared PHP configuration
-│   └── dev/wp/httpd/            # Dev-specific WordPress configs
-├── docs/                        # This directory
-│   ├── README.md
-│   ├── WORDPRESS-DATABASE.md
-│   ├── WORDPRESS-DEPLOYMENT.md
-│   └── WORDPRESS-SECURITY.md
-├── infra/
-│   ├── dev/
-│   │   └── compose.yml          # Development Podman Compose config
-│   ├── prod/
-│   │   ├── compose.yml          # Production Podman Compose config
-│   │   └── .env.example         # Production environment template
-│   └── shared/
-│       ├── init/                # SQL initialization files
-│       │   ├── 000000-0000-init-db.sql  # Baseline database schema
-│       │   └── README.md        # SQL file naming conventions
-│       └── tools/               # WPScan and vulnerability scanning
-├── tmp/                         # Sensitive product data (gitignored)
-└── wp-data/
-    └── wp-content/              # WordPress content (plugins, themes, uploads)
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ copilot-instructions.md  # AI assistant context and rules
+â”œâ”€â”€ config/
+â”‚   â”œâ”€â”€ uploads.ini              # Shared PHP configuration
+â”‚   â””â”€â”€ dev/wp/httpd/            # Dev-specific WordPress configs
+â”œâ”€â”€ docs/                        # This directory
+â”‚   â”œâ”€â”€ README.md
+â”‚   â”œâ”€â”€ WORDPRESS-DATABASE.md
+â”‚   â”œâ”€â”€ WORDPRESS-DEPLOYMENT.md
+â”‚   â””â”€â”€ WORDPRESS-SECURITY.md
+â”œâ”€â”€ infra/
+â”‚   â”œâ”€â”€ dev/
+â”‚   â”‚   â””â”€â”€ compose.yml          # Development Podman Compose config
+â”‚   â”œâ”€â”€ prod/
+â”‚   â”‚   â”œâ”€â”€ compose.yml          # Production Podman Compose config
+â”‚   â”‚   â””â”€â”€ .env.example         # Production environment template
+â”‚   â””â”€â”€ shared/
+â”‚       â”œâ”€â”€ init/                # SQL initialization files
+â”‚       â”‚   â”œâ”€â”€ 000000-0000-init-db.sql  # Baseline database schema
+â”‚       â”‚   â””â”€â”€ README.md        # SQL file naming conventions
+â”‚       â””â”€â”€ tools/               # WPScan and vulnerability scanning
+â”œâ”€â”€ tmp/                         # Sensitive product data (gitignored)
+â””â”€â”€ wp-data/
+    â””â”€â”€ wp-content/              # WordPress content (plugins, themes, uploads)
 ```
 
 ---
@@ -180,7 +180,7 @@ podman-compose up -d
 ```
 
 Access:
-- WordPress: http://localhost:8080
+- WordPress: https://wp.local
 - phpMyAdmin: http://localhost:8180
 
 ### Resetting Development Database

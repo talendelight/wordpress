@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: wordpress-wpcli:6.9.0-php8.3-apache
+    image: wordpress-wpcli:6.9.1-php8.3-apache
     container_name: wp
     volumes:
       - ../../config/wp-config.php:/var/www/html/wp-config.php
@@ -44,7 +44,7 @@ services:
       # - 8443:443
 
   wp-db:
-    image: mariadb:11.8.3-noble
+    image: mariadb:12.2.2-noble
     container_name: wp-db
     volumes:
       - db-data:/var/lib/mysql

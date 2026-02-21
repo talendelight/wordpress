@@ -7,6 +7,10 @@
 - [ID Management Strategy](ID-MANAGEMENT-STRATEGY.md) - Slug-based ID lookups for cross-environment deployments
 - [Quick Reference](QUICK-REFERENCE-DEPLOYMENT.md) - Command cheat sheet
 
+**Templates:**
+- [templates/vX.Y.Z.json](templates/vX.Y.Z.json) - Machine-readable release metadata template
+- [templates/RELEASE-NOTES-vX.Y.Z.md](templates/RELEASE-NOTES-vX.Y.Z.md) - Human-readable release notes template
+
 ---
 
 ## File Structure
@@ -245,11 +249,7 @@ cp docs/templates/RELEASE-NOTES-TEMPLATE.md docs/RELEASE-NOTES-NEXT.md
 # - Target Release Date: TBD
 ```
 
-#### Step 4: Update Related References
-
-**Update manifest version:**
-- Edit `infra/shared/elementor-manifest.json`
-- Change `version` field to match next release (e.g., "3.2.0")
+#### Step 4: Commit Archive
 
 **Commit archive:**
 ```bash
@@ -257,7 +257,6 @@ git add .github/releases/archive/v3.1.0.json
 git add .github/releases/archive/RELEASE-NOTES-20251230-1500.md
 git add .github/releases/v3.2.0.json
 git add docs/RELEASE-NOTES-NEXT.md
-git add infra/shared/elementor-manifest.json
 git commit -m "Archive v3.1.0 release, prepare v3.2.0"
 git push origin main
 ```

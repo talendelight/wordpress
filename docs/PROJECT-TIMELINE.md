@@ -289,6 +289,7 @@
 - +10 days added to MVP schedule
 - Original MVP target: April 5, 2026
 - Adjusted MVP target: April 15, 2026
+- **Reconciliation (Feb 16):** Confirmed April 15 as authoritative date across all planning documents. Resolved conflicts with WORDPRESS-MVP-TASKS.md which had outdated April 10 and May 3 references.
 
 **Milestone:** Crisis management, disaster recovery success
 
@@ -477,18 +478,57 @@
 
 ---
 
+### Week 8: February 17-20, 2026
+
+#### Feb 17-20 ⚙️ WordPress 6.9.1 + MariaDB 12.2.2 Upgrade
+**Status:** 🔄 In Progress  
+**Task:** PENG-071  
+**Version:** v3.6.3
+
+**Activities:**
+- Container version upgrades (WordPress 6.9.1, MariaDB 12.2.2)
+- Fix database recreation issues:
+  - Page ID dependency problems (production vs local mismatches)
+  - Slug-based navigation implementation (environment-agnostic URLs)
+  - Core plugin activation persistence (blocksy-companion, forminator, wp-user-manager, talendelight-roles)
+  - Custom roles persistence via delta SQL
+  - Test users recreation with underscore naming convention
+- Page fixes:
+  - Footer icon corrections (shield-grey-border.svg)
+  - Login page form rendering (WP User Manager)
+  - Navigation menu updates (slug-based URLs)
+- Database delta files created:
+  - 260219-1600-create-core-pages.sql (Welcome, Help, Log In, Select Role)
+  - 260219-1630-activate-core-plugins.sql (4 plugins)
+  - 260219-1640-create-test-users.sql (5 test users with custom roles)
+- Documentation updates:
+  - Database strategy (delta file approach)
+  - Custom roles persistence guide
+  - Page ID vs slug lessons learned
+
+**Technical Debt Resolved:**
+- Ephemeral database strategy now persists essential configuration
+- Plugin activation survives `podman-compose down -v`
+- Test users automatically created with correct roles and naming
+- Menu navigation no longer breaks on database recreation
+
+**Milestone:** Infrastructure stability for development environment
+
+---
+
 ## 📊 Statistics Summary
 
-### Deployments (8 total)
+### Deployments (9 total)
 - v1.0.0: Dec 31 (Homepage launch)
 - v2.0.0: Jan 1-2 (Navigation restructure)
-- v3.0.0: Jan 9 (Custom roles & RBAC)
+- v3.0.0: Jan 9 (Custom Roles & RBAC)
 - v3.1.0: Jan 11 (Candidate & Scout pages)
 - v3.2.0: Jan 14 (Operators dashboard)
 - v3.3.0: Jan 18 (User registration flow)
 - v3.4.0: Jan 20 (Manager admin & approvals)
 - v3.5.0: Feb 2 (Environment config)
-- v3.6.2: Feb 13 (Manager actions workflow) ⭐ Latest
+- v3.6.2: Feb 13 (Manager actions workflow)
+- v3.6.3: Feb 17-20 (Version upgrade & DB persistence) 🔄 **In Progress**
 
 ### Development Velocity
 - **Pre-Week (Dec 29-31):** 1 release + design system (v1.0.0)
@@ -499,6 +539,7 @@
 - **Week 5 (Jan 27-Feb 2):** 1 release + features (v3.5.0, Record IDs)
 - **Week 6 (Feb 3-9):** Recovery + migration (Data loss incident)
 - **Week 7 (Feb 10-13):** 1 release + migrations (v3.6.2)
+- **Week 8 (Feb 17-20):** Infrastructure upgrade (v3.6.3, in progress)
 
 **Average:** 1 deployment every 5.9 days (8 deployments in 47 days)
 
@@ -726,7 +767,7 @@
 
 ---
 
-**Document Created:** February 13, 2026 at 23:40  
-**Last Updated:** February 14, 2026 at 10:15 (added migration tasks + adjusted timeline)  
-**Next Update:** February 15, 2026 (after migration work begins)  
+**Document Created:** Februa9, 2026 at 20:00 (added PENG-071 version upgrade activity Feb 17-20)  
+**Next Update:** February 21, 2026 (after version upgrade completion)  
+**Coverage:** 52 days (December 29, 2025 - February 19rk begins)  
 **Coverage:** 47 days (December 29, 2025 - February 13, 2026)

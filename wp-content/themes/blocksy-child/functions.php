@@ -166,7 +166,7 @@ add_filter('wp_nav_menu_objects', function($items, $args) {
         }
         
         // Hide Register and Login when logged in
-        if ($logged_in && (strpos($url, '/register') !== false || strpos($url, '/log-in') !== false)) {
+        if ($logged_in && (strpos($url, '/register') !== false || strpos($url, '/select-role') !== false || strpos($url, '/log-in') !== false)) {
             error_log("Removing {$item->title} (logged in)");
             unset($items[$key]);
         }
@@ -180,4 +180,80 @@ add_filter('wp_nav_menu_objects', function($items, $args) {
     
     return $items;
 }, 10, 2);
+
+// Note: manager_actions_table shortcode is registered in /wp-content/mu-plugins/manager-actions-display.php
+// Do not register here to avoid conflicts
+
+// Add tab switching JavaScript to Manager Actions page
+add_action('wp_footer', function() {
+    if (!is_page('actions')) {
+        return;
+    }
+    ?>
+    <script>
+    (function() {
+        const tabButtons = document.querySelectorAll('.td-tab-button');
+        const tabContents = document.querySelectorAll('.td-tab-content');
+        
+        if (tabButtons.length === 0) return;
+        
+        // Ensure inactive tabs are hidden
+        tabContents.forEach((content, index) => {
+            if (!content.classList.contains('active')) {
+                content.style.display = 'none';
+            }
+        });
+        
+        // Ensure tab nav has flexbox
+        const tabNav = document.querySelector('.td-tab-nav');
+        if (tabNav) {
+            tabNav.style.display = 'flex';
+        }
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    btn.style.borderBottomColor = 'transparent';
+                    btn.style.color = '#666';
+                    btn.style.background = '#f8f8f8';
+                });
+                
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+                
+                this.classList.add('active');
+                this.style.borderBottomColor = '#3498DB';
+                this.style.color = '#063970';
+                this.style.background = this.getAttribute('data-color');
+                
+                const targetContent = document.getElementById('tab-' + targetTab);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                    targetContent.style.display = 'block';
+                }
+            });
+            
+            button.addEventListener('mouseenter', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.borderBottomColor = '#3498DB';
+                    this.style.background = this.getAttribute('data-color');
+                }
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                if (!this.classList.contains('active')) {
+                    this.style.borderBottomColor = 'transparent';
+                    this.style.background = '#f8f8f8';
+                }
+            });
+        });
+    })();
+    </script>
+    <?php
+});
 

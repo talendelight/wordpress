@@ -16,6 +16,12 @@
    - ✅ Update docs/FUNCTIONAL-TEST-CASES.md (update test status when features implemented/tested)
    - ⚠️ Ask user about updating: VERSION-HISTORY.md, feature docs (WP-*.md), SESSION-SUMMARY-*.md, OPEN-ACTIONS.md
    - 🗑️ Delete docs/ELEMENTOR-TO-GUTENBERG-MIGRATION.md after migration complete (PENG-070)
+7. **ALWAYS check references before running commands:**
+   - ✅ Check [Container Names](#container-names) - NEVER run `podman ps` or container discovery commands
+   - ✅ Check [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) - Find proven commands for user management, database queries, backups, etc.
+   - ✅ Check [Critical Patterns](COMMAND-REGISTRY.md#critical-patterns) - Use `--skip-plugins`, `-Encoding utf8`, avoid `2>$null` on Windows
+   - ❌ DO NOT reinvent commands - if similar operation exists in registry, use it
+   - ❌ DO NOT run discovery commands when references exist
 
 ## Known Issues & Solutions
 
@@ -96,7 +102,51 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
 **Active theme**: Blocksy (primary)
-Action Dispatcher (Central Command Registry)
+
+## Container Names
+
+**⚠️ ALWAYS use these container names - DO NOT run discovery commands**
+
+- **`wp`** - WordPress 6.9.1 container (PHP 8.3, Apache)
+- **`wp-db`** - MariaDB 12.2.2 database container
+- **`wp-phpmyadmin`** - phpMyAdmin web interface (rarely used)
+
+**Container access patterns:**
+```powershell
+# WordPress container (WP-CLI, PHP)
+podman exec wp <command>
+podman exec wp wp <wp-cli-command> --allow-root --skip-plugins
+
+# Database container (SQL queries)
+podman exec wp-db mariadb -u root -ppassword wordpress -e "<sql-query>"
+
+# Interactive shell
+podman exec -it wp bash
+podman exec -it wp-db bash
+```
+
+## Common Commands Registry
+
+**⚠️ ALWAYS check [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) before running commands**
+
+**Complete command reference:** [.github/COMMAND-REGISTRY.md](COMMAND-REGISTRY.md)
+
+The registry contains proven commands for:
+- **User Management** - List, create, reset passwords, check existence
+- **Database Queries** - Pages, plugins, roles, migrations, backups
+- **WordPress Operations** - Plugins, themes, cache, permalinks, versions
+- **Backup & Restore** - Production backups, verification, health checks
+- **Page Management** - Export, get IDs, list pages
+- **Container Management** - Start, stop, restart, reset, logs
+- **Debugging** - PHP version, errors, connections, permissions
+
+**Critical Patterns** (see [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) for details):
+- ✅ Always use `--allow-root --skip-plugins` for wp-cli commands
+- ✅ Use `-Encoding utf8` in PowerShell `Out-File` to prevent corruption
+- ❌ NEVER use `2>$null` on Windows (creates C:\dev\null file)
+- ❌ NEVER reinvent commands - check registry first
+
+## Action Dispatcher (Central Command Registry)
 
 **Use `wp-action.ps1` as the main entry point for all WordPress operations:**
 
@@ -130,7 +180,12 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 - ✅ Action registry prevents script name confusion
 - ✅ Forwards all arguments to underlying scripts
 
-**DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+**Critical Rules:**
+- ❌ **DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+- ❌ **DO NOT create ad-hoc scripts in /tmp** - check wp-action.ps1 registry FIRST for existing scripts
+- ❌ **DO NOT reinvent commands** - if similar operation exists in registry, use it
+- ✅ **DO check registry before scripting:** `powershell infra\shared\scripts\wp-action.ps1 help` to see all available actions
+- ✅ **DO add reusable scripts to registry** - move from /tmp to infra/shared/scripts/ and register in wp-action.ps1
 
 ## Page Update & Deployment Workflow
 
@@ -419,11 +474,12 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 
 **Templates:**
 - **[docs/templates/TEMPLATE-ELEMENTOR-DEPLOYMENT.md](docs/templates/TEMPLATE-ELEMENTOR-DEPLOYMENT.md)** - Step-by-step template for Elementor page deployments
+- **[docs/templates/vX.Y.Z.json](docs/templates/vX.Y.Z.json)** - Machine-readable release metadata template
+- **[docs/templates/RELEASE-NOTES-vX.Y.Z.md](docs/templates/RELEASE-NOTES-vX.Y.Z.md)** - Human-readable release notes template
 
 **Active Working Files:**
 - **[docs/RELEASE-NOTES-NEXT.md](docs/RELEASE-NOTES-NEXT.md)** - Living document for next planned release (human-readable manual steps)
 - **[.github/releases/vX.Y.Z.json](.github/releases/)** - Machine-readable release instructions for GitHub Actions (find latest with `find -maxdepth 1`)
-- **[infra/shared/elementor-manifest.json](infra/shared/elementor-manifest.json)** - Page ID mappings (local → production), version metadata
 
 **Lessons Learned:**
 - **[docs/lessons/](docs/lessons/)** - All lesson files (elementor-cli-deployment.md, powershell-encoding-corruption.md, etc.)
@@ -458,7 +514,6 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 pwsh infra/shared/scripts/export-elementor-pages.ps1
 ```
 - Uses `podman cp` to avoid PowerShell encoding corruption
-- Reads mappings from `infra/shared/elementor-manifest.json`
 - Outputs to `tmp/elementor-exports/*.json`
 
 **2. Deploy Code (Automated via GitHub Actions):**
@@ -508,7 +563,7 @@ Move-Item .github/releases/RELEASE-NOTES-vX.Y.Z.md ".github/releases/archive/REL
 # Both files stay in .github/releases/ until that release is complete
 
 # 4. Commit
-git add .github/releases/ docs/RELEASE-NOTES-NEXT.md infra/shared/elementor-manifest.json
+git add .github/releases/
 git commit -m "Archive v3.6.2 (complete), prepare v3.6.3"
 git push origin main
 ```
@@ -565,7 +620,6 @@ docs/
 5. NEVER work on multiple releases in parallel (no 4-part versions, include hotfixes in current)
 
 infra/shared/
-├── elementor-manifest.json     # Page mappings, version metadata (update version with each release)
 └── scripts/
     ├── export-elementor-pages.ps1      # Export script (PowerShell)
     └── import-elementor-pages.php      # Import script (PHP)
@@ -581,7 +635,6 @@ infra/shared/
     └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
 
 infra/shared/
-├── elementor-manifest.json     # Page mappings, version metadata
 └── scripts/
     ├── export-elementor-pages.ps1      # Export script (PowerShell)
     └── import-elementor-pages.php      # Import script (PHP)

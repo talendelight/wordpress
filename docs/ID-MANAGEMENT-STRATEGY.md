@@ -166,7 +166,6 @@ echo "Form: $FORM_SLUG = ID $FORM_ID"
 1. Build features using local environment
 2. Use **any IDs** - they will be replaced during deployment
 3. Note which pages reference which forms/content
-4. Update `elementor-manifest.json` with slugs
 
 ### Deployment
 
@@ -229,18 +228,24 @@ wp post list --post_type=forminator_forms --format=csv --fields=ID,post_name,pos
 
 ### Update Process
 
-1. Get current production IDs:
-   ```bash
-   ssh production "cd domains/talendelight.com/public_html && \
-     wp post list --post_type=page --format=json --fields=ID,post_name,post_title" > tmp/prod-pages.json
+1. Get page ID by relative URL or slug:
+   ```powershell
+   # By relative URL
+   pwsh infra/shared/scripts/get-page-ids.ps1 -RelativeUrl "/welcome/"
+   
+   # By slug
+   pwsh infra/shared/scripts/get-page-ids.ps1 -Slug "welcome"
+   
+   # List all pages
+   pwsh infra/shared/scripts/get-page-ids.ps1 -ListAll
    ```
 
-2. Update `infra/shared/elementor-manifest.json`
+2. Update page mapping documentation as needed
 
 3. Commit to git:
    ```bash
-   git add infra/shared/elementor-manifest.json
-   git commit -m "Update manifest with production IDs"
+   git add docs/
+   git commit -m "Update page ID mappings documentation"
    ```
 
 ---

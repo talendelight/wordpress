@@ -1,4 +1,4 @@
-# Step-by-Step Guide: Building Operator Landing Page Locally
+﻿# Step-by-Step Guide: Building Operator Landing Page Locally
 
 **Goal:** Create the Operator landing page (`/operators/`) with "Needs Action" section and four navigation tiles.
 
@@ -8,17 +8,17 @@
 
 ## Current Status
 
-✅ **COMPLETE - Phase 1 & 2:**
-- ✅ Page created (ID: 299, slug: `operators`)
-- ✅ Hero section with proper content
-- ✅ "Needs Action" section with placeholder
-- ✅ 5 navigation tiles (Needs Action, Candidates, Employers, Scouts, Reports)
-- ✅ CTA section with "Need Help?" content
-- ✅ Footer section
-- ✅ Page published at https://wp.local/operators/
-- ✅ Role-based access control implemented
-- ✅ Login redirect configured (Operators → /operators/)
-- ✅ Access restricted to: Operators, Managers, Administrators only
+âœ… **COMPLETE - Phase 1 & 2:**
+- âœ… Page created (ID: 299, slug: `operators`)
+- âœ… Hero section with proper content
+- âœ… "Needs Action" section with placeholder
+- âœ… 5 navigation tiles (Needs Action, Candidates, Employers, Scouts, Reports)
+- âœ… CTA section with "Need Help?" content
+- âœ… Footer section
+- âœ… Page published at https://wp.local/operators/
+- âœ… Role-based access control implemented
+- âœ… Login redirect configured (Operators â†’ /operators/)
+- âœ… Access restricted to: Operators, Managers, Administrators only
 
 **Next Steps (Phase 3 & 4):**
 - Implement dynamic "Needs Action" content (external app/API)
@@ -41,15 +41,15 @@
 4. **Authentication:** Unauthenticated visitors redirected to login page
 
 **Test Scenarios:**
-- ✅ Operator user login → redirects to `/operators/`
-- ✅ Manager user login → redirects to `/operators/` (or `/managers/` when built)
-- ✅ Administrator login → redirects to `/wp-admin/`
-- ✅ Employer/Candidate/Scout users → cannot access `/operators/` (403 error)
-- ✅ Non-logged-in users → redirected to login page
+- âœ… Operator user login â†’ redirects to `/operators/`
+- âœ… Manager user login â†’ redirects to `/operators/` (or `/managers/` when built)
+- âœ… Administrator login â†’ redirects to `/wp-admin/`
+- âœ… Employer/Candidate/Scout users â†’ cannot access `/operators/` (403 error)
+- âœ… Non-logged-in users â†’ redirected to login page
 
 ---
 
-## Phase 1: Fill Empty Containers (✅ COMPLETE)
+## Phase 1: Fill Empty Containers (âœ… COMPLETE)
 
 ### Step 1: Verify Local Development Environment
 
@@ -67,10 +67,10 @@ podman-compose up -d
 podman ps
 
 # Check WordPress is accessible
-# Open: http://localhost:8080
+# Open: https://wp.local
 ```
 
-**Expected:** WordPress login page appears at http://localhost:8080/wp-admin
+**Expected:** WordPress login page appears at https://wp.local/wp-admin
 
 **If containers already running:** Continue to Step 2
 
@@ -81,7 +81,7 @@ podman ps
 You should see your page structure with:
 1. **Hero section** (already filled)
 2. **Empty container** - for "Needs Action" section  
-3. **Empty container(s)** - for 4 navigation tiles (2×2 grid)
+3. **Empty container(s)** - for 4 navigation tiles (2Ã—2 grid)
 4. **CTA section** (already filled)
 5. **Footer** (already filled)
 
@@ -103,7 +103,7 @@ Now proceed to fill the empty containers:
    - Alignment: Left
 
 4. Next to heading, add **"Text Editor"** widget (for dropdown - temporary static):
-   - Content: `[Today ▼]`
+   - Content: `[Today â–¼]`
    - Color: Grey `#898989`
    - Size: `16px`
    - Alignment: Right
@@ -123,7 +123,7 @@ Now proceed to fill the empty containers:
 
 ---
 
-### Step 4: Fill Tiles Container (2×2 Grid)
+### Step 4: Fill Tiles Container (2Ã—2 Grid)
      - Box Shadow: `0px 2px 8px 0px rgba(0,0,0,0.1)`
    - Go to **Advanced** tab:
      - Padding: 40px all sides
@@ -206,7 +206,7 @@ Then wrap each tile content in HTML widget:
 
 ---
 
-### Step 4: Fill Tiles Container (2×2 Grid)
+### Step 4: Fill Tiles Container (2Ã—2 Grid)
 
 **Locate the second empty container** (between "Needs Action" and CTA)
 
@@ -299,11 +299,11 @@ Then wrap each tile content in HTML widget:
 1. Click **"Update"** button (bottom left in Elementor)
 2. Click **"Preview"** (eye icon) to see full page
 3. Test:
-   - ✅ "Needs Action" table displays with sample data
-   - ✅ 4 tiles display in 2×2 grid
-   - ✅ Tiles are clickable (will show 404 for now - pages don't exist yet)
-   - ✅ Hover effects work on table rows and tiles
-   - ✅ Mobile responsive (tiles stack vertically)
+   - âœ… "Needs Action" table displays with sample data
+   - âœ… 4 tiles display in 2Ã—2 grid
+   - âœ… Tiles are clickable (will show 404 for now - pages don't exist yet)
+   - âœ… Hover effects work on table rows and tiles
+   - âœ… Mobile responsive (tiles stack vertically)
 
 4. When satisfied, click **"Publish"** to make live
 
@@ -380,13 +380,13 @@ add_action( 'template_redirect', 'td_restrict_operator_pages' );
 ```
 
 4. **Activate plugin:**
-   - Go to: http://localhost:8080/wp-admin/plugins.php
+   - Go to: https://wp.local/wp-admin/plugins.php
    - Find "TalenDelight Operators Portal"
    - Click "Activate"
 
 5. **Test access control:**
    - Logout (if logged in as admin)
-   - Try to access: http://localhost:8080/operators/
+   - Try to access: https://wp.local/operators/
    - Should redirect to login page
    - After login with non-operator user, should redirect to 403
 
@@ -517,11 +517,11 @@ function td_needs_action_table_shortcode( $atts ) {
                 <?php if ( $results ) : ?>
                     <?php foreach ( $results as $item ) : ?>
                         <tr onclick="window.location.href='/operators/candidates/<?php echo esc_attr( $item->candidate_id ); ?>/'">
-                            <td>👤 Candidate</td>
+                            <td>ðŸ‘¤ Candidate</td>
                             <td><?php echo esc_html( $item->name ); ?></td>
                             <td><span class="badge badge-<?php echo esc_attr( $item->status ); ?>"><?php echo ucfirst( $item->status ); ?></span></td>
                             <td><?php echo date( 'M j, Y', strtotime( $item->submitted_date ) ); ?></td>
-                            <td>→</td>
+                            <td>â†’</td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else : ?>
@@ -547,9 +547,9 @@ add_shortcode( 'td_needs_action', 'td_needs_action_table_shortcode' );
 ## Next Steps Summary
 
 **You've now completed:**
-✅ Phase 1: Basic page structure with Elementor
-✅ Phase 2: Access control (role checking)
-✅ Phase 3: Database setup for dynamic data
+âœ… Phase 1: Basic page structure with Elementor
+âœ… Phase 2: Access control (role checking)
+âœ… Phase 3: Database setup for dynamic data
 
 **What's next:**
 1. Add sample candidate data for testing
@@ -563,7 +563,7 @@ add_shortcode( 'td_needs_action', 'td_needs_action_table_shortcode' );
 
 ## Testing Checklist
 
-- [ ] Page accessible at http://localhost:8080/operators/
+- [ ] Page accessible at https://wp.local/operators/
 - [ ] Requires login (redirects if not logged in)
 - [ ] Requires Operator role (403 if wrong role)
 - [ ] "Needs Action" section displays
@@ -578,7 +578,7 @@ add_shortcode( 'td_needs_action', 'td_needs_action_table_shortcode' );
 
 **Issue: Page shows 404**
 - Check slug is exactly "operators"
-- Re-save permalinks: Settings → Permalinks → Save
+- Re-save permalinks: Settings â†’ Permalinks â†’ Save
 
 **Issue: Access control not working**
 - Verify plugin is activated

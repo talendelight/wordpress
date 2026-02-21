@@ -1,4 +1,4 @@
-# LiteSpeed Cache Configuration Guide
+﻿# LiteSpeed Cache Configuration Guide
 
 **Last Updated:** December 27, 2025
 
@@ -25,9 +25,9 @@ litespeed.conf.optimize
 
 ### Recommended Configuration
 
-Access: http://localhost:8080/wp-admin/admin.php?page=litespeed
+Access: https://wp.local/wp-admin/admin.php?page=litespeed
 
-#### 1. Cache Settings (Dashboard → Cache)
+#### 1. Cache Settings (Dashboard â†’ Cache)
 
 **Disable or minimize caching during active development:**
 
@@ -41,7 +41,7 @@ Access: http://localhost:8080/wp-admin/admin.php?page=litespeed
 - **Default Private Cache TTL**: 30 seconds
 - **Default Front Page TTL**: 60 seconds
 
-#### 2. Purge Settings (Dashboard → Purge)
+#### 2. Purge Settings (Dashboard â†’ Purge)
 
 **Auto-purge on updates:**
 - **Purge All On Upgrade**: ON
@@ -79,7 +79,7 @@ Access: http://localhost:8080/wp-admin/admin.php?page=litespeed
 
 **Crawler**: OFF (no need to warm cache in development)
 
-#### 8. Debug Settings (Dashboard → Toolbox → Debug)
+#### 8. Debug Settings (Dashboard â†’ Toolbox â†’ Debug)
 
 **Enable Debug**: ON
 - **Admin IPs**: Add `127.0.0.1` (your local IP)
@@ -172,7 +172,7 @@ Access: https://your-domain.com/wp-admin/admin.php?page=litespeed
 ### Initial Setup (Both Environments)
 
 1. **Install & Activate Plugin**
-   - Local: Already done ✓
+   - Local: Already done âœ“
    - Production: After Git push, activate via WordPress Admin
 
 2. **Configure for Environment**
@@ -201,14 +201,14 @@ podman exec wp-db mariadb -u root -ppassword -D wordpress \
 
 ## Important Notes
 
-### ✅ Safe: Configuration Won't Sync
+### âœ… Safe: Configuration Won't Sync
 
 - **Database storage**: LiteSpeed config in `wp_options` table
 - **Sync rule**: Database content NEVER syncs (per [SYNC-STRATEGY.md](SYNC-STRATEGY.md))
-- **Result**: Local dev settings ≠ Production production settings
+- **Result**: Local dev settings â‰  Production production settings
 - **Management**: Configure each environment independently via WordPress Admin
 
-### ⚠️ Files Created by LiteSpeed
+### âš ï¸ Files Created by LiteSpeed
 
 **These files ARE synced via Git:**
 - `wp-content/litespeed/` - Cache files (should add to `.gitignore`)
@@ -222,12 +222,12 @@ echo "wp-content/.litespeed_conf.dat" >> .gitignore
 echo "wp-content/object-cache.php" >> .gitignore
 ```
 
-### 🔍 Verifying Configuration
+### ðŸ” Verifying Configuration
 
 **Local:**
 ```bash
 # Check cache status
-curl -I http://localhost:8080 | grep -i "x-litespeed"
+curl -I https://wp.local | grep -i "x-litespeed"
 
 # Check configuration count
 podman exec wp-db mariadb -u root -ppassword -D wordpress \
@@ -261,14 +261,14 @@ curl -I https://your-domain.com | grep -i "x-litespeed"
 ### Issue: Seeing Stale Content in Development
 
 **Solution:**
-1. Disable cache: Dashboard → Cache → Enable Cache → OFF
-2. Or purge all: Dashboard → Purge → Purge All
+1. Disable cache: Dashboard â†’ Cache â†’ Enable Cache â†’ OFF
+2. Or purge all: Dashboard â†’ Purge â†’ Purge All
 3. Or add query string to URL: `?nocache=1`
 
 ### Issue: CSS/JS Broken After Optimization
 
 **Solution:**
-1. Disable optimization: Dashboard → Page Optimization → Turn OFF problematic setting
+1. Disable optimization: Dashboard â†’ Page Optimization â†’ Turn OFF problematic setting
 2. Test one setting at a time to identify conflict
 3. Check browser console for errors
 

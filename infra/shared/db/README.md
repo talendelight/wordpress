@@ -37,16 +37,29 @@ This directory contains shared SQL initialization files used across all environm
 **CRITICAL RULES:**
 - ❌ NEVER include `DROP TABLE IF EXISTS` for existing tables
 - ❌ NEVER include full table dumps with `CREATE TABLE` for baseline tables
+- ❌ NEVER use `TRUNCATE TABLE` + full INSERT (loses data, use UPDATE instead)
 - ✅ ONLY include actual changes/additions since previous combined baseline
-- ✅ Use `TRUNCATE TABLE` + `INSERT` when updating entire table data (e.g., wp_options)
+- ✅ Use `UPDATE` for modifying specific records (preferred for wp_options)
 - ✅ Use `ALTER TABLE` for schema modifications
 - ✅ Use `INSERT INTO` for new records only
+
+**IMPORTANT - wp_options Table:**
+- ⚠️ `wp_options` contains critical site configuration (active theme, menus, plugins)
+- ✅ Use targeted `UPDATE` statements for specific options
+- ❌ NEVER use `TRUNCATE TABLE wp_options` (wipes all WordPress settings)
+- ✅ Example: `UPDATE wp_options SET option_value = 'blocksy-child' WHERE option_name = 'stylesheet';`
 
 Examples:
 - `251222-1430-add-loyalty-points.sql` - adds loyalty_points column to users table (Dec 22, 2:30 PM)
 - `251225-0915-create-orders-index.sql` - adds index for faster order queries (Dec 25, 9:15 AM)
-- `251227-1149-update-theme-versions.sql` - updates wp_options with theme configs (TRUNCATE + INSERT pattern)
+- `251227-1149-fix-theme-settings.sql` - corrects active theme settings (UPDATE pattern) ✅
 - `260101-1200-enable-woocommerce-features.sql` - activates specific WooCommerce options (Jan 1, 12:00 PM)
+
+**⚠️ Historical Note:**
+- Original file `251227-1149-update-theme-versions.sql` used `TRUNCATE TABLE wp_options` approach
+- Caused loss of theme/menu settings when recreating database (Feb 19, 2026 incident)
+- Moved to `deprecated/` and replaced with targeted UPDATE approach
+- **Lesson:** Never use TRUNCATE on wp_options - use UPDATE for specific records
 
 ### Product Data (NOT in this directory)
 **Sensitive product/customer data → stored in `/tmp/` directory**
@@ -265,3 +278,109 @@ Before creating a new change file:
 
 - [WORDPRESS-DATABASE.md](../../../../Documents/WORDPRESS-DATABASE.md) - Complete database management guide (dev and prod)
 - [WORDPRESS-OPEN-ACTIONS.md](../../../../Documents/WORDPRESS-OPEN-ACTIONS.md) - All open action items and TODO tasks
+
+---
+
+## Page ID Dependency Problem
+
+### The Issue
+
+WordPress uses auto-increment integer IDs (`wp_posts.ID`) which differ between environments:
+- **Production:** Pages created organically over time (IDs 6, 11, 21, 49, etc.)
+- **Local:** Fresh database starts from baseline, new pages get next available IDs (6, 11, 12, 13)
+- **Result:** Menu items referencing `page_id=21` (Help in production) break in local where Help is `page_id=11`
+
+### When This Occurs
+
+**Database recreation destroys all data:**
+```powershell
+podman-compose down -v  # ⚠️ Destroys volume and all database data
+podman-compose up -d    # Recreates from baseline SQL only
+```
+
+**Baseline SQL (`000000-0000-init-db.sql`) contains:**
+- Vanilla WordPress installation (3 default posts/pages)
+- Does NOT include production pages (Welcome, Help, Log In, Select Role, etc.)
+
+**Production has 19+ pages that don't exist in baseline:**
+- Core pages: Welcome, Help, Log In, Select Role
+- Role pages: Employers, Candidates, Scouts, Managers, Operators
+- Admin pages: Manager Actions, Manager Admin
+
+### Solution Implemented
+
+**1. Create core pages in delta file** (`260219-1600-create-core-pages.sql`):
+- Adds placeholder pages: Welcome, Help, Log In, Select Role
+- Sets Welcome as homepage
+- Content restored separately from `restore/pages/` backups
+
+**2. Use slug-based menu items** (rebuild-navigation-menu.ps1):
+```powershell
+# ✅ CORRECT: Use custom links with slug-based URLs
+wp menu item add-custom main-navigation "Help" "/help/"
+
+# ❌ WRONG: Use page references (breaks when IDs change)
+wp menu item add-post main-navigation 21 --title="Help"
+```
+
+**3. Navigation menu uses relative URLs:**
+- `/` (Welcome - works as both / and /welcome/)
+- `/select-role/` (Register)
+- `/help/` (Help)
+- `/log-in/` (Login)
+
+### Prevention
+
+**Before database recreation:**
+- [ ] Review `infra/shared/db/` to ensure core pages included
+- [ ] Update `rebuild-navigation-menu.ps1` if menu structure changed
+- [ ] Test full recreation: `podman-compose down -v && podman-compose up -d`
+- [ ] Verify menu works: Load https://wp.local/ and click all menu items
+- [ ] Check page content restored from `restore/pages/` backups
+
+**Script registry action:**
+```powershell
+# Rebuild menu after database recreation
+pwsh infra/shared/scripts/wp-action.ps1 rebuild-menu
+```
+
+**Key Takeaway:** Use slug-based URLs (`/help/`) instead of page IDs (21) for environment-agnostic navigation.
+
+**Full details:** See [docs/lessons/page-id-dependency-problem.md](../../../docs/lessons/page-id-dependency-problem.md)
+
+---
+
+## Custom Roles & Test Users Persistence
+
+### The Issue
+
+WordPress plugin activation and user data are stored in the database, NOT in code. When you run `podman-compose down -v`, everything is lost:
+- ❌ Plugin activation status (talendelight-roles becomes inactive)
+- ❌ Custom role registration (td_candidate, td_employer, etc. disappear)
+- ❌ Test users with custom roles
+
+### Solution
+
+**1. Plugin Activation:** [260219-1630-activate-talendelight-roles.sql](260219-1630-activate-talendelight-roles.sql)
+```sql
+UPDATE wp_options 
+SET option_value = 'a:1:{i:0;s:45:"talendelight-roles/talendelight-roles.php";}' 
+WHERE option_name = 'active_plugins';
+```
+
+**2. Test Users (Optional):** [260219-1640-create-test-users.sql](260219-1640-create-test-users.sql)
+- Creates 5 test users (all password: `Test123!`)
+- Uses custom roles: td_candidate, td_employer, td_scout, td_operator, td_manager
+- Idempotent with `ON DUPLICATE KEY UPDATE`
+
+**3. Verification:**
+```powershell
+podman exec wp wp role list --allow-root --format=table
+# Should show: Employer, Candidate, Scout, Operator, Manager
+
+podman exec wp wp user list --allow-root --format=table
+# Should show: candidate-test, employer-test, scout-test, operator-test, manager-test
+```
+
+**Full details:** See [docs/CUSTOM-ROLES-PERSISTENCE.md](../../../docs/CUSTOM-ROLES-PERSISTENCE.md)
+
