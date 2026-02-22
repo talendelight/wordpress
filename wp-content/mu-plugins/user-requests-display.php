@@ -36,7 +36,7 @@ function td_approve_request_ajax() {
     
     // Get current data
     $request = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM td_user_data_change_requests WHERE id = %d",
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
         $request_id
     ));
     
@@ -69,7 +69,7 @@ function td_approve_request_ajax() {
     }
     
     $wpdb->update(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $update_data,
         ['id' => $request_id],
         $update_format,
@@ -78,7 +78,7 @@ function td_approve_request_ajax() {
     
     // Log the action
     TD_Audit_Logger::log(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $request_id,
         'approve',
         'pending',
@@ -108,7 +108,7 @@ function td_reject_request_ajax() {
     global $wpdb;
     
     $request = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM td_user_data_change_requests WHERE id = %d",
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
         $request_id
     ));
     
@@ -117,7 +117,7 @@ function td_reject_request_ajax() {
     }
     
     $wpdb->update(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         ['status' => 'rejected', 'assigned_to' => get_current_user_id()],
         ['id' => $request_id],
         ['%s', '%d'],
@@ -125,7 +125,7 @@ function td_reject_request_ajax() {
     );
     
     TD_Audit_Logger::log(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $request_id,
         'reject',
         'pending',
@@ -155,7 +155,7 @@ function td_undo_reject_ajax() {
     global $wpdb;
     
     $request = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM td_user_data_change_requests WHERE id = %d",
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
         $request_id
     ));
     
@@ -166,7 +166,7 @@ function td_undo_reject_ajax() {
     $current_user_id = get_current_user_id();
     
     $wpdb->update(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         [
             'status' => 'pending',
             'assigned_by' => $current_user_id
@@ -177,7 +177,7 @@ function td_undo_reject_ajax() {
     );
     
     TD_Audit_Logger::log(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $request_id,
         'undo',
         'rejected',
@@ -207,7 +207,7 @@ function td_undo_approve_ajax() {
     global $wpdb;
     
     $request = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM td_user_data_change_requests WHERE id = %d",
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
         $request_id
     ));
     
@@ -218,7 +218,7 @@ function td_undo_approve_ajax() {
     $current_user_id = get_current_user_id();
     
     $wpdb->update(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         [
             'status' => 'pending',
             'assigned_by' => $current_user_id
@@ -229,7 +229,7 @@ function td_undo_approve_ajax() {
     );
     
     TD_Audit_Logger::log(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $request_id,
         'undo',
         'approved',
@@ -263,7 +263,7 @@ function td_assign_request_ajax() {
     
     // Get current request
     $request = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM td_user_data_change_requests WHERE id = %d",
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
         $request_id
     ));
     
@@ -281,7 +281,7 @@ function td_assign_request_ajax() {
     
     // Update request: assign to user, set assigned_by, change status to pending
     $wpdb->update(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         [
             'status' => 'pending',
             'assigned_to' => $assigned_to,
@@ -299,7 +299,7 @@ function td_assign_request_ajax() {
     
     // Log the action
     TD_Audit_Logger::log(
-        'td_user_data_change_requests',
+        $wpdb->prefix . 'td_user_data_change_requests',
         $request_id,
         'assign',
         $request->status,
@@ -332,11 +332,11 @@ function td_user_requests_table_shortcode($atts) {
     ), $atts);
     
     global $wpdb;
-    // Table name without wp_ prefix (as defined in migration)
-    $table = 'td_user_data_change_requests';
+    // Table name with dynamic prefix
+    $table = $wpdb->prefix . 'td_user_data_change_requests';
     
     // Check if table exists
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
         return '<div class="notice notice-warning" style="padding: 20px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 20px 0;">
             <p><strong>⚠️ Database Table Not Found</strong></p>
             <p>The user requests table has not been created yet. Please apply the database migration:</p>
@@ -857,10 +857,10 @@ function td_operator_requests_table_shortcode($atts) {
     ), $atts);
     
     global $wpdb;
-    $table = 'td_user_data_change_requests';
+    $table = $wpdb->prefix . 'td_user_data_change_requests';
     
     // Check if table exists
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
         return '<div class="notice notice-warning" style="padding: 20px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 20px 0;">
             <p><strong>⚠️ Database Table Not Found</strong></p>
             <p>The user requests table has not been created yet.</p>
