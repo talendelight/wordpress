@@ -178,7 +178,7 @@ Do NOT store sensitive data or production secrets here.
 
 ## Related Documentation
 
-- [DEPLOYMENT-WORKFLOW.md](../docs/DEPLOYMENT-WORKFLOW.md) - Complete deployment process
-- [QUICK-REFERENCE-DEPLOYMENT.md](../docs/QUICK-REFERENCE-DEPLOYMENT.md) - Quick command reference
+- [DEPLOYMENT-WORKFLOW.md](../docs/procedures/DEPLOYMENT-WORKFLOW.md) - Complete deployment process
+- [QUICK-REFERENCE-DEPLOYMENT.md](../docs/procedures/QUICK-REFERENCE-DEPLOYMENT.md) - Quick command reference
 - [WORDPRESS-PAGE-SYNC-MANIFEST.md](../../Documents/WORDPRESS-PAGE-SYNC-MANIFEST.md) - Page ID mapping strategy
 - [WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md) - Hostinger deployment guide

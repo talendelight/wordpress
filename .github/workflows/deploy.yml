@@ -192,6 +192,29 @@ jobs:
           strip_components: 1
           overwrite: true
 
+      - name: Clean Up Unused Themes
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          script: |
+            cd ${{ secrets.HOSTINGER_WP_ROOT }}/wp-content/themes
+            
+            echo "Removing unused WordPress default themes..."
+            
+            # Remove twentytwenty* themes (not used, consuming ~13.6MB)
+            for theme in twentytwentythree twentytwentyfour twentytwentyfive; do
+              if [ -d "$theme" ]; then
+                rm -rf "$theme" && echo "✓ Removed: $theme" || echo "⚠ Failed to remove: $theme"
+              else
+                echo "⚠ Not found: $theme (already removed)"
+              fi
+            done
+            
+            echo "Theme cleanup complete"
+
       - name: Upload Health Check Script
         uses: appleboy/scp-action@v0.1.7
         with:

@@ -45,7 +45,7 @@
         "purpose": "Document CSS cache busting strategy"
       },
       {
-        "file": "docs/PAGE-UPDATE-WORKFLOW.md",
+        "file": "docs/procedures/PAGE-UPDATE-WORKFLOW.md",
         "type": "updated",
         "changes": ["Added Step 7: CSS version bump", "Added Step 10: Cache clearing", "Updated step numbers"]
       }

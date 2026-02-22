@@ -145,8 +145,8 @@ podman cp wp:/tmp/page-export.json tmp/page-export.json
 ## Related Documentation
 
 - [docs/lessons/powershell-encoding-corruption.md](powershell-encoding-corruption.md) - Original PowerShell encoding issue with Elementor exports
-- [docs/QUICK-REFERENCE-DEPLOYMENT.md](../QUICK-REFERENCE-DEPLOYMENT.md) - Update with new safe export method
-- [docs/DEPLOYMENT-WORKFLOW.md](../DEPLOYMENT-WORKFLOW.md) - Add JSON validation steps
+- [procedures/QUICK-REFERENCE-DEPLOYMENT.md](../procedures/QUICK-REFERENCE-DEPLOYMENT.md) - Update with new safe export method
+- [procedures/DEPLOYMENT-WORKFLOW.md](../procedures/DEPLOYMENT-WORKFLOW.md) - Add JSON validation steps
 
 ## Prevention
 

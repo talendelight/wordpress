@@ -188,14 +188,14 @@ To add a new action to the registry:
 - Uses `podman cp` for binary-safe transfer
 - Reads mappings from `infra/shared/elementor-manifest.json`
 - Outputs to `tmp/elementor-exports/`
-- See [DEPLOYMENT-WORKFLOW.md](../../docs/DEPLOYMENT-WORKFLOW.md) for details
+- See [DEPLOYMENT-WORKFLOW.md](../../docs/procedures/DEPLOYMENT-WORKFLOW.md) for details
 
 **import-elementor-pages.php** (Not exposed via wp-action.ps1)
 - Companion script for Elementor imports on production
 - Direct database operations (bypasses WordPress API)
 - Supports dry-run mode: `ELEMENTOR_DRY_RUN=true`
 - Manual execution on production server
-- See [DEPLOYMENT-WORKFLOW.md](../../docs/DEPLOYMENT-WORKFLOW.md) for usage
+- See [DEPLOYMENT-WORKFLOW.md](../../docs/procedures/DEPLOYMENT-WORKFLOW.md) for usage
 
 ## Architecture
 
@@ -248,10 +248,10 @@ As part of this implementation, the tmp/ folder was cleaned:
 
 ## Related Documentation
 
-- [BACKUP-RESTORE-QUICKSTART.md](../../docs/BACKUP-RESTORE-QUICKSTART.md) - Backup/restore quick start
-- [DISASTER-RECOVERY-PLAN.md](../../docs/DISASTER-RECOVERY-PLAN.md) - DR procedures
-- [DEPLOYMENT-WORKFLOW.md](../../docs/DEPLOYMENT-WORKFLOW.md) - Complete deployment process
-- [QUICK-REFERENCE-DEPLOYMENT.md](../../docs/QUICK-REFERENCE-DEPLOYMENT.md) - Command cheat sheet
+- [BACKUP-RESTORE-QUICKSTART.md](../../docs/procedures/BACKUP-RESTORE-QUICKSTART.md) - Backup/restore quick start
+- [DISASTER-RECOVERY-PLAN.md](../../docs/procedures/DISASTER-RECOVERY-PLAN.md) - DR procedures
+- [DEPLOYMENT-WORKFLOW.md](../../docs/procedures/DEPLOYMENT-WORKFLOW.md) - Complete deployment process
+- [QUICK-REFERENCE-DEPLOYMENT.md](../../docs/procedures/QUICK-REFERENCE-DEPLOYMENT.md) - Command cheat sheet
 
 ---
 

@@ -397,8 +397,7 @@ function td_manager_actions_table_shortcode($atts) {
             }, function(response) {
                 if (response.success) {
                     $('#td-assign-modal').hide();
-                    tdShowNotification('Request assigned successfully to ' + response.data.assigned_to, 'success');
-                    setTimeout(function() { location.reload(); }, 1000);
+                    setTimeout(function() { location.reload(); }, 500);
                 } else {
                     tdShowNotification('Error: ' + response.data.message, 'error');
                     btn.prop('disabled', false).css('opacity', '1');
@@ -436,7 +435,6 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
-                    tdShowNotification('Request approved successfully', 'success');
                     btn.closest('tr').fadeOut(300, function() {
                         $(this).remove();
                     });
@@ -463,7 +461,6 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
-                    tdShowNotification('Request rejected successfully', 'success');
                     btn.closest('tr').fadeOut(300, function() {
                         $(this).remove();
                     });
@@ -490,7 +487,6 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
-                    tdShowNotification('Approval undone successfully', 'success');
                     btn.closest('tr').fadeOut(300, function() {
                         $(this).remove();
                     });
@@ -517,7 +513,6 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
-                    tdShowNotification('Rejection undone successfully', 'success');
                     btn.closest('tr').fadeOut(300, function() {
                         $(this).remove();
                     });

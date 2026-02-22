@@ -29,24 +29,6 @@ add_action('wp_enqueue_scripts', function() {
             '6.5.1'
         );
     }
-    
-    // Registration form assets (only on registration page)
-    if (is_page('register-profile') || is_page(21)) {
-        wp_enqueue_style(
-            'td-registration-form',
-            get_stylesheet_directory_uri() . '/assets/css/registration-form.css',
-            array('blocksy-child-style'),
-            '1.0.0'
-        );
-        
-        wp_enqueue_script(
-            'td-registration-form',
-            get_stylesheet_directory_uri() . '/assets/js/registration-form.js',
-            array(),
-            '1.0.0',
-            true
-        );
-    }
 });
 
 // Register block patterns

@@ -450,7 +450,7 @@
 - restore/pages/manager-actions-84.html
 - restore/pages/manager-admin-10.html
 - restore/pages/managers-8.html
-- docs/features/APPROVAL-WORKFLOW.md (comprehensive docs)
+- docs/features/WP-02.2-registration-approval-workflow.md (comprehensive docs)
 - docs/RELEASE-NOTES-v3.6.2.md
 - docs/VERSION-HISTORY.md
 - docs/SESSION-SUMMARY-FEB-12.md

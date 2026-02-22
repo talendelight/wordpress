@@ -355,7 +355,7 @@ Automate environment config deployment via mu-plugins (v3.5.0)
   - Reuses endpoints from user-requests-display.php
   - td_approve_request, td_reject_request, td_undo_approve, td_undo_reject, td_assign_request
 - Documentation:
-  - docs/features/APPROVAL-WORKFLOW.md: Comprehensive feature documentation (15 sections)
+  - docs/features/WP-02.2-registration-approval-workflow.md: Comprehensive feature documentation (15 sections)
   - docs/SESSION-SUMMARY-FEB-12.md: Complete session record
 - Backups:
   - restore/mu-plugins/manager-actions-display.php

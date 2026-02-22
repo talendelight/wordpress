@@ -19,9 +19,12 @@
 7. **ALWAYS check references before running commands:**
    - ✅ Check [Container Names](#container-names) - NEVER run `podman ps` or container discovery commands
    - ✅ Check [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) - Find proven commands for user management, database queries, backups, etc.
+   - ✅ Check [TASK-REGISTRY.md](TASK-REGISTRY.md) - Find multi-step procedures for deployments, cleanups, migrations, etc.
+   - ✅ Check [Action Dispatcher](#action-dispatcher-central-command-registry) - Use wp-action.ps1 for backup, verify, restore, apply-sql operations
    - ✅ Check [Critical Patterns](COMMAND-REGISTRY.md#critical-patterns) - Use `--skip-plugins`, `-Encoding utf8`, avoid `2>$null` on Windows
    - ❌ DO NOT reinvent commands - if similar operation exists in registry, use it
    - ❌ DO NOT run discovery commands when references exist
+   - ❌ DO NOT create ad-hoc procedures - check TASK-REGISTRY.md for established workflows
 
 ## Known Issues & Solutions
 
@@ -98,7 +101,7 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 **Deployment Strategy:**
 - **Development**: Docker/Podman containers on local machine
 - **Production**: Hostinger shared hosting with Git auto-deployment on push to `main` branch
-- **Disaster Recovery**: Automated backup/restore system - see [DISASTER-RECOVERY-PLAN.md](docs/DISASTER-RECOVERY-PLAN.md)
+- **Disaster Recovery**: Automated backup/restore system - see [DISASTER-RECOVERY-PLAN.md](docs/procedures/DISASTER-RECOVERY-PLAN.md)
 
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
 **Active theme**: Blocksy (primary)
@@ -125,7 +128,9 @@ podman exec -it wp bash
 podman exec -it wp-db bash
 ```
 
-## Common Commands Registry
+## Reference Systems (Always Check First)
+
+### Command Registry
 
 **⚠️ ALWAYS check [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) before running commands**
 
@@ -146,7 +151,29 @@ The registry contains proven commands for:
 - ❌ NEVER use `2>$null` on Windows (creates C:\dev\null file)
 - ❌ NEVER reinvent commands - check registry first
 
-## Action Dispatcher (Central Command Registry)
+### Task Registry
+
+**⚠️ ALWAYS check [TASK-REGISTRY.md](TASK-REGISTRY.md) before creating procedures**
+
+**Complete procedure reference:** [.github/TASK-REGISTRY.md](TASK-REGISTRY.md)
+
+The registry contains proven multi-step procedures for:
+- **Production Deployment** - Deploy new release, deploy pages, verify deployment
+- **Disaster Recovery** - Rollback failed deployment, restore from backup
+- **Database Management** - Apply migrations, reset local database
+- **Plugin Management** - Remove plugins safely, cleanup
+- **Local Development** - Start/stop environment, reset database
+- **Verification** - Production health checks, security audits
+- **Pattern Usage** - Using design patterns in pages
+- **Release Management** - Prepare releases, update release files
+
+**When to use TASK-REGISTRY.md:**
+- ❌ DO NOT create ad-hoc multi-step procedures - check TASK-REGISTRY first
+- ✅ Follow established workflows for consistency and safety
+- ✅ Update registry when establishing new repeatable procedures
+- ✅ Each task includes: overview, frequency, duration, prerequisites, commands, related tasks
+
+### Script Dispatcher
 
 **Use `wp-action.ps1` as the main entry point for all WordPress operations:**
 
@@ -183,9 +210,12 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 **Critical Rules:**
 - ❌ **DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
 - ❌ **DO NOT create ad-hoc scripts in /tmp** - check wp-action.ps1 registry FIRST for existing scripts
-- ❌ **DO NOT reinvent commands** - if similar operation exists in registry, use it
-- ✅ **DO check registry before scripting:** `powershell infra\shared\scripts\wp-action.ps1 help` to see all available actions
+- ❌ **DO NOT create ad-hoc procedures** - check TASK-REGISTRY.md FIRST for established workflows
+- ❌ **DO NOT reinvent commands** - if similar operation exists in COMMAND-REGISTRY.md, use it
+- ✅ **DO check registries before scripting:** `powershell infra\shared\scripts\wp-action.ps1 help` to see all available actions
+- ✅ **DO check TASK-REGISTRY.md before creating procedures** - follow established workflows for consistency
 - ✅ **DO add reusable scripts to registry** - move from /tmp to infra/shared/scripts/ and register in wp-action.ps1
+- ✅ **DO add reusable procedures to TASK-REGISTRY.md** - document frequency, duration, prerequisites, commands
 
 ## Page Update & Deployment Workflow
 
@@ -246,9 +276,7 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 - ❌ Never skip backup creation
 - ❌ Never use partial page updates or sed replacements
 
-**See [docs/PAGE-UPDATE-WORKFLOW.md](docs/PAGE-UPDATE-WORKFLOW.md) for complete workflow documentation**
-
-**DO NOT call scripts directly** - always use wp-action.ps1 unless debugging specific script
+**See [docs/procedures/PAGE-UPDATE-WORKFLOW.md](docs/procedures/PAGE-UPDATE-WORKFLOW.md) for complete workflow documentation**
 
 ## Pattern Usage Rules
 
@@ -402,9 +430,10 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 
 **When production has issues (pages missing, site broken):**
 
-1. **Immediate Response**: See [DISASTER-RECOVERY-PLAN.md](docs/DISASTER-RECOVERY-PLAN.md) for incident-specific procedures
-2. **Quick Restore**: Use [BACKUP-RESTORE-QUICKSTART.md](docs/BACKUP-RESTORE-QUICKSTART.md) for fast recovery
-3. **Command Reference**: [QUICK-REFERENCE-DEPLOYMENT.md](docs/QUICK-REFERENCE-DEPLOYMENT.md) for copy-paste commands
+1. **Immediate Response**: See [DISASTER-RECOVERY-PLAN.md](docs/procedures/DISASTER-RECOVERY-PLAN.md) for incident-specific procedures
+2. **Quick Restore**: Use [BACKUP-RESTORE-QUICKSTART.md](docs/procedures/BACKUP-RESTORE-QUICKSTART.md) for fast recovery
+3. **Command Reference**: [QUICK-REFERENCE-DEPLOYMENT.md](docs/procedures/QUICK-REFERENCE-DEPLOYMENT.md) for copy-paste commands
+4. **Procedure Reference**: [TASK-REGISTRY.md](TASK-REGISTRY.md) for rollback and restore workflows
 
 **Available Recovery Scripts:**
 - `backup-production.ps1` - Create timestamped backup (pages, options, theme, patterns, database)
@@ -465,11 +494,11 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 ### Required Reference Files (Read These Before Any Release Work)
 
 **Master Workflows:**
-- **[docs/DEPLOYMENT-WORKFLOW.md](docs/DEPLOYMENT-WORKFLOW.md)** - Complete deployment journey including v3.1.0 implementation details, what changed, solutions implemented, and success metrics
+- **[docs/procedures/DEPLOYMENT-WORKFLOW.md](docs/procedures/DEPLOYMENT-WORKFLOW.md)** - Complete deployment journey including v3.1.0 implementation details, what changed, solutions implemented, and success metrics
 - **[docs/RELEASE-NOTES-PROCESS.md](docs/RELEASE-NOTES-PROCESS.md)** - Release lifecycle workflow (development → pre-release → deployment → post-deployment archiving)
 
 **Quick References:**
-- **[docs/QUICK-REFERENCE-DEPLOYMENT.md](docs/QUICK-REFERENCE-DEPLOYMENT.md)** - One-page cheat sheet with copy-paste commands for exports, deployment, verification, rollback, and archiving
+- **[docs/procedures/QUICK-REFERENCE-DEPLOYMENT.md](docs/procedures/QUICK-REFERENCE-DEPLOYMENT.md)** - One-page cheat sheet with copy-paste commands for exports, deployment, verification, rollback, and archiving
 - **[docs/RELEASE-INSTRUCTIONS-FORMAT.md](docs/RELEASE-INSTRUCTIONS-FORMAT.md)** - JSON schema for machine-readable release files (.github/releases/*.json)
 
 **Templates:**
@@ -501,11 +530,13 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 - **[PERSON-APP-BACKLOG.md](../../Documents/PERSON-APP-BACKLOG.md)** - Related person app features and integration points
 
 **When to Reference These Files:**
+- **Before any command:** Check COMMAND-REGISTRY for proven commands
+- **Before any procedure:** Check TASK-REGISTRY for established workflows
 - **Before development:** Check BACKLOG, BUSINESS-FUNCTIONALITY, TECHNICAL-DESIGN, UI-DESIGN
 - **During development:** Reference UI-DESIGN, COMMON-UI-DESIGN, lessons/ for patterns
-- **Before deployment:** Review DEPLOYMENT, PAGE-SYNC-MANIFEST, SECURITY
-- **After issues:** Consult lessons/, OPEN-ACTIONS, TECHNICAL-DESIGN
-- **Database changes:** Always check DATABASE for schema and migration strategy
+- **Before deployment:** Review DEPLOYMENT, PAGE-SYNC-MANIFEST, SECURITY, TASK-REGISTRY
+- **After issues:** Consult lessons/, OPEN-ACTIONS, TECHNICAL-DESIGN, TASK-REGISTRY (disaster recovery)
+- **Database changes:** Always check DATABASE for schema and migration strategy, TASK-REGISTRY for migration procedures
 
 ### Deployment Workflow Summary
 
@@ -610,6 +641,11 @@ docs/
 │   └── pattern-usage-consistency.md
 └── templates/
     └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
+
+infra/shared/
+└── scripts/
+    ├── export-elementor-pages.ps1      # Export script (PowerShell)
+    └── import-elementor-pages.php      # Import script (PHP)
 ```
 
 **Release File Lifecycle:**
@@ -618,24 +654,4 @@ docs/
 3. Archive ONLY when user confirms "this release is complete"
 4. Discuss scope → recommend version → get confirmation → create next release files **in .github/releases/**
 5. NEVER work on multiple releases in parallel (no 4-part versions, include hotfixes in current)
-
-infra/shared/
-└── scripts/
-    ├── export-elementor-pages.ps1      # Export script (PowerShell)
-    └── import-elementor-pages.php      # Import script (PHP)
-```
-
-**Release File Lifecycle:**
-1. Create `vX.Y.Z.json` + `RELEASE-NOTES-NEXT.md` when starting new release
-2. Keep updating same files during: planning, deployment, production testing, bug fixes
-3. Archive ONLY when user confirms "this release is complete"
-4. Discuss scope → recommend version → get confirmation → create next release files
-5. NEVER work on multiple releases in parallel (no 4-part versions, include hotfixes in current)
-└── templates/
-    └── TEMPLATE-ELEMENTOR-DEPLOYMENT.md
-
-infra/shared/
-└── scripts/
-    ├── export-elementor-pages.ps1      # Export script (PowerShell)
-    └── import-elementor-pages.php      # Import script (PHP)
 ```

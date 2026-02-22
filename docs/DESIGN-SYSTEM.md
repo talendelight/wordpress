@@ -35,9 +35,9 @@
 --color-navy: #063970;
 /* Use for: Hero backgrounds, primary headings, button backgrounds */
 
-/* Blue - Accent Color */
---color-blue: #3498DB;
-/* Use for: Icons, hover states, focus effects, shadows */
+/* Blue - Accent & Hover Color */
+--color-blue: #2872fa;
+/* Use for: Button hover states, links, focus effects, interactive elements */
 
 /* White */
 --color-white: #FFFFFF;
@@ -260,6 +260,18 @@
 
 ## Button System
 
+**🎨 Button Color Reference (Updated: February 20, 2026)**
+
+| State | Color Code | CSS Variable | Usage |
+|-------|------------|--------------|-------|
+| **Default** | `#063970` | `var(--color-navy)` | All button backgrounds |
+| **Hover** | `#2872fa` | `var(--color-blue)` | All button hover states |
+| **Text** | `#FFFFFF` | `var(--color-white)` | Button text color |
+
+**Important:** NO lift effect (transform: translateY) on hover as of February 2026. Only color transitions.
+
+---
+
 ### Primary Button (CTA)
 
 **Usage:** Main call-to-action buttons (Register, Get Started, Login)
@@ -298,7 +310,7 @@
 
 ```css
 .btn-secondary {
-  background-color: var(--color-navy);
+  background-color: var(--color-navy); /* #063970 */
   color: var(--color-white);
   font-size: 16px;
   font-weight: 400;
@@ -312,8 +324,8 @@
 }
 
 .btn-secondary:hover {
-  background-color: #084A8D; /* Lighter navy */
-  transform: translateY(-2px);
+  background-color: var(--color-blue); /* #2872fa */
+  /* NO transform - flat hover (as of Feb 2026) */
 }
 
 .btn-secondary:active {
@@ -526,7 +538,7 @@
 
 | Element | Size | Weight | Color | Notes |
 |---------|------|--------|-------|-------|
-| Icon | 48px | - | #3498DB (Blue) | FontAwesome icons |
+| Icon | 48px | - | #2872fa (Blue) | FontAwesome icons |
 | Title | 24px | 700 | #063970 (Navy) | H3 equivalent |
 | Description | 16px | 400 | #898989 (Gray) | Body text |
 
@@ -534,7 +546,7 @@
 
 1. **Icon Settings:**
    - Style tab → Icon → Icon Size: **48px**
-   - Style tab → Icon → Primary Color: **#3498DB**
+   - Style tab → Icon → Primary Color: **#2872fa**
 
 2. **Title Settings:**
    - Style tab → Title → Typography: **Custom**
@@ -570,7 +582,7 @@
 
 .icon-box-icon {
   font-size: 48px; /* Standard icon size */
-  color: var(--icon-color-primary); /* #3498DB */
+  color: var(--icon-color-primary); /* #2872fa */
   margin-bottom: var(--spacing-md);
 }
 
@@ -903,9 +915,9 @@ Content Sections:
 - Button backgrounds (secondary buttons)
 - Important UI elements that need emphasis
 
-### When to Use Accent Blue (#3498DB)
+### When to Use Accent Blue (#2872fa)
 - Icons (especially in icon boxes, compliance footer)
-- Hover states for buttons and links
+- Hover states for buttons and links (MAIN USE)
 - Focus states for form inputs
 - Box shadows (button glows)
 - Accent elements (badges, highlights)
@@ -949,7 +961,7 @@ Add this to your main CSS file (e.g., `config/custom-css/design-system.css`):
 :root {
   /* Colors */
   --color-navy: #063970;
-  --color-blue: #3498DB;
+  --color-blue: #2872fa;
   --color-white: #FFFFFF;
   --color-gray-dark: #333333;
   --color-gray-medium: #898989;
@@ -992,7 +1004,7 @@ Add this to your main CSS file (e.g., `config/custom-css/design-system.css`):
 1. Go to **Elementor → Custom Colors** (or Theme Builder → Global Colors)
 2. Add these colors:
    - **Primary Navy:** `#063970`
-   - **Accent Blue:** `#3498DB`
+   - **Accent Blue (Hover):** `#2872fa`
    - **Gray Dark:** `#333333`
    - **Gray Medium:** `#898989`
    - **Gray Light:** `#ECECEC`

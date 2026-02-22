@@ -86,7 +86,7 @@
                     <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Upload your CV or Resume (PDF, DOC, DOCX, or PPTX - Max 10MB)</p>
                     <div style="position: relative;">
                         <input type="file" id="cv_file" name="cv_file" accept=".pdf,.doc,.docx,.pptx" style="display: none;">
-                        <button type="button" onclick="document.getElementById('cv_file').click()" class="file-upload-btn" style="background: linear-gradient(135deg, #0A3A52 0%, #08293A 100%); color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%;">
+                        <button type="button" onclick="document.getElementById('cv_file').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                             Choose File
                         </button>
                         <span id="cv_file_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
@@ -104,7 +104,7 @@
                 <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Upload your National ID from your country of citizenship (PDF, JPEG, PNG - Max 10MB)</p>
                 <div style="position: relative;">
                     <input type="file" id="national_id_citizenship" name="national_id_citizenship" accept=".pdf,.jpg,.jpeg,.png" required style="display: none;">
-                    <button type="button" onclick="document.getElementById('national_id_citizenship').click()" class="file-upload-btn" style="background: linear-gradient(135deg, #0A3A52 0%, #08293A 100%); color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%;">
+                    <button type="button" onclick="document.getElementById('national_id_citizenship').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Choose File
                     </button>
                     <span id="national_id_citizenship_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
@@ -112,25 +112,17 @@
             </div>
             
             <div style="margin-bottom: 16px;">
-                <label style="display: block; margin-bottom: 12px; font-weight: 600; font-size: 14px;">Do you currently live in your citizenship country? <span style="color: #d32f2f;">*</span></label>
-                <div style="display: flex; gap: 24px;">
-                    <label style="display: flex; align-items: center;">
-                        <input type="radio" name="live_in_citizenship_country" value="yes" required style="margin-right: 8px; width: 18px; height: 18px;">
-                        Yes
-                    </label>
-                    <label style="display: flex; align-items: center;">
-                        <input type="radio" name="live_in_citizenship_country" value="no" required style="margin-right: 8px; width: 18px; height: 18px;">
-                        No
-                    </label>
-                </div>
+                <label style="display: flex; align-items: center; font-weight: 600; font-size: 14px;">
+                    <input type="checkbox" id="live_in_citizenship_country" name="live_in_citizenship_country" checked style="margin-right: 12px; width: 18px; height: 18px; flex-shrink: 0;">
+                    I am living in my country of citizenship
+                </label>
             </div>
             
             <div id="residence_id_section" style="display: none; margin-bottom: 16px;">
-                <label for="national_id_residence" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">National ID (Country of Residence) <span style="color: #d32f2f;">*</span></label>
-                <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Upload your National ID from your country of residence (PDF, JPEG, PNG - Max 10MB)</p>
+                <p style="margin-bottom: 8px; font-size: 14px; color: #666; font-weight: 600;">Upload your National ID from your country of residence (PDF, JPEG, PNG – Max 10MB)</p>
                 <div style="position: relative;">
                     <input type="file" id="national_id_residence" name="national_id_residence" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
-                    <button type="button" onclick="document.getElementById('national_id_residence').click()" class="file-upload-btn" style="background: linear-gradient(135deg, #0A3A52 0%, #08293A 100%); color: white; padding: 12px 24px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; width: 100%;">
+                    <button type="button" onclick="document.getElementById('national_id_residence').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Choose File
                     </button>
                     <span id="national_id_residence_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
@@ -148,7 +140,7 @@
         
         <!-- Submit Button -->
         <div style="text-align: center;">
-            <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, #097BAA 0%, #0A5F7D 100%); color: white; padding: 16px 48px; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(9, 123, 170, 0.3); transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.5px;">
+            <button type="submit" class="submit-btn" style="background: #063970; color: white; padding: 16px 48px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                 Submit Registration
             </button>
         </div>
@@ -242,19 +234,66 @@
 
     <style>
         .file-upload-btn:hover {
-            background: linear-gradient(135deg, #08293A 0%, #051F2D 100%) !important;
-            box-shadow: 0 4px 12px rgba(10, 58, 82, 0.4);
-            transform: translateY(-1px);
+            background: #2872fa !important;
         }
         
         .submit-btn:hover {
-            background: linear-gradient(135deg, #08293A 0%, #051F2D 100%) !important;
-            box-shadow: 0 6px 20px rgba(10, 58, 82, 0.5);
-            transform: translateY(-2px);
+            background: #2872fa !important;
+        }
+        
+        /* Floating Message */
+        #td-floating-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+        }
+        
+        #td-floating-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        #td-floating-message.success {
+            background: #28A745;
+        }
+        
+        #td-floating-message.error {
+            background: #DC3545;
         }
     </style>
+    <!-- Floating Message Container -->
+    <div id="td-floating-message"></div>
+    
     <script>
     (function() {
+        // Floating message function
+        function showFloatingMessage(message, type) {
+            var messageEl = document.getElementById('td-floating-message');
+            messageEl.textContent = message;
+            messageEl.className = type + ' show';
+            
+            // Hide after 2 seconds and redirect on success
+            setTimeout(function() {
+                messageEl.classList.remove('show');
+                if (type === 'success') {
+                    // Redirect to Welcome page after animation completes
+                    setTimeout(function() {
+                        window.location.href = '/welcome/';
+                    }, 300);
+                }
+            }, 2000);
+        }
+        
         // Get role from URL parameter and populate hidden field
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -297,23 +336,23 @@
         });
         
         // Toggle residence National ID field
-        document.querySelectorAll('input[name="live_in_citizenship_country"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                var residenceSection = document.getElementById('residence_id_section');
-                var residenceFile = document.getElementById('national_id_residence');
-                
-                if (this.value === 'no') {
-                    residenceSection.style.display = 'block';
-                    residenceFile.required = true;
-                } else {
-                    residenceSection.style.display = 'none';
-                    residenceFile.required = false;
-                }
-            });
+        document.getElementById('live_in_citizenship_country').addEventListener('change', function() {
+            var residenceSection = document.getElementById('residence_id_section');
+            var residenceFile = document.getElementById('national_id_residence');
+            
+            if (!this.checked) {
+                residenceSection.style.display = 'block';
+                residenceFile.required = true;
+            } else {
+                residenceSection.style.display = 'none';
+                residenceFile.required = false;
+            }
         });
         
-        // Form validation
+        // Form validation and AJAX submission
         document.getElementById('td-registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             var hasLinkedIn = document.getElementById('has_linkedin').checked;
             var hasCv = document.getElementById('has_cv').checked;
             var linkedinUrl = document.getElementById('linkedin_url').value;
@@ -321,31 +360,55 @@
             
             // Check at least one checkbox is selected
             if (!hasLinkedIn && !hasCv) {
-                alert('Please select at least one option: LinkedIn profile or CV upload.');
-                e.preventDefault();
+                showFloatingMessage('Please select at least one option: LinkedIn profile or CV upload.', 'error');
                 return false;
             }
             
             // Validate LinkedIn URL if checkbox is checked
             if (hasLinkedIn && !linkedinUrl) {
-                alert('Please enter your LinkedIn profile URL.');
-                e.preventDefault();
+                showFloatingMessage('Please enter your LinkedIn profile URL.', 'error');
                 return false;
             }
             
             // Validate CV file if checkbox is checked
             if (hasCv && !cvFile) {
-                alert('Please upload your CV file.');
-                e.preventDefault();
+                showFloatingMessage('Please upload your CV file.', 'error');
                 return false;
             }
             
             var consent = document.querySelector('input[name="consent"]:checked');
             if (!consent) {
-                alert('Please accept the Privacy Policy and Terms & Conditions.');
-                e.preventDefault();
+                showFloatingMessage('Please accept the Privacy Policy and Terms & Conditions.', 'error');
                 return false;
             }
+            
+            // Disable submit button to prevent double submission
+            var submitBtn = this.querySelector('.submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            // Submit form via AJAX
+            var formData = new FormData(this);
+            
+            fetch('/wp-admin/admin-ajax.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showFloatingMessage('Registration successful! Redirecting...', 'success');
+                } else {
+                    showFloatingMessage(data.data || 'Registration failed. Please try again.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Registration';
+                }
+            })
+            .catch(function(error) {
+                showFloatingMessage('An error occurred. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Registration';
+            });
         });
         
         // File upload display names
