@@ -6,8 +6,8 @@
   "testing_progress": {
     "tested_pages": ["Welcome (ID 6) - ISSUES FOUND AND FIXED"],
     "pending_pages": ["Select Role (ID 49) - DEPLOYED", "Register Profile (ID 50) - DEPLOYED", "Candidates", "Scouts", "Employers", "Managers", "Operators", "Manager Actions", "Manager Admin"],
-    "issues_found": 5,
-    "issues_fixed": 5
+    "issues_found": 6,
+    "issues_fixed": 6
   },
   "deployment_fixes": {
     "asset_deployment_issue": {
@@ -26,6 +26,11 @@
       "Welcome page (ID 6): Had 0 bytes content - restored from local export (13,802 chars)",
       "Select Role page (ID 49): Had 0 bytes content - created simple redirect page (2,789 chars)",
       "Register Profile page (ID 50): Verified 16,684 chars (correct size)"
+    ],
+    "database_issues": [
+      "Custom tables created without wp_ prefix (td_user_data_change_requests, td_id_sequences, td_audit_log)",
+      "Fixed: Renamed all tables to wp_td_* to match WordPress convention and $wpdb expectations",
+      "Result: 8 existing registration records preserved, AJAX handler now works correctly"
     ]
   },
   "description": "Complete user registration system with production-grade validation, JavaScript externalization (registration form + manager actions), deployment verification workflow, nonce security, retry logic, and loading states",
