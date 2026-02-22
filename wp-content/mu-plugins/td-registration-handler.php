@@ -64,7 +64,7 @@ function td_process_registration() {
     
     // Check if email already exists in change requests (pending/approved)
     $existing = $wpdb->get_var($wpdb->prepare(
-        "SELECT id FROM td_user_data_change_requests 
+        "SELECT id FROM {$wpdb->prefix}td_user_data_change_requests 
          WHERE email = %s AND status IN ('new', 'pending', 'approved')
          LIMIT 1",
         $email
@@ -201,7 +201,7 @@ function td_process_registration() {
         'submitted_date' => current_time('mysql')
     ];
     
-    $result = $wpdb->insert('td_user_data_change_requests', $insert_data);
+    $result = $wpdb->insert($wpdb->prefix . 'td_user_data_change_requests', $insert_data);
     
     if ($result === false) {
         error_log("Registration insert failed: " . $wpdb->last_error);
