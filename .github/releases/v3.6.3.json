@@ -35,8 +35,27 @@
     "database_issues": [
       "Custom tables created without wp_ prefix (td_user_data_change_requests, td_id_sequences, td_audit_log)",
       "Fixed: Renamed all tables to wp_td_* to match WordPress convention and $wpdb expectations",
-      "Fixed: Updated record-id-generator.php to use wp_td_id_sequences in all SQL queries",
-      "Result: 8 existing registration records preserved, AJAX handler now works correctly"
+      "Fixed (Feb 22): Updated record-id-generator.php to use {$wpdb->prefix}td_id_sequences (commit 0c0599d4)",
+      "Fixed (Feb 23): Updated td-registration-handler.php to use dynamic prefix (commit 19bf728f)",
+      "Fixed (Feb 23): Updated user-requests-display.php to use dynamic prefix (commit aea1393f)",
+      "Result: 8 existing registration records preserved, AJAX handler works, ID generation works",
+      "Lesson: docs/lessons/database-table-naming-consistency.md created",
+      "Pattern: SQL schemas define unprefixed tables (td_*), PHP uses {$wpdb->prefix}td_*"
+    ],
+    "css_missing": [
+      "registration-form.css was not deployed (404 error)",
+      "Fixed (Feb 23): Manually uploaded registration-form.css via SCP"
+    ],
+    "phone_pattern_issue": [
+      "Phone field pattern='[0-9+\\s\\-()]+' caused browser warning",
+      "Issue: Invalid regex character class in pattern attribute",
+      "Status: CSS deployed but pattern fix pending (low priority, doesn't block submission)"
+    ],
+    "manager_actions_table_error": [
+      "Manager Actions page shows 'Database Table Not Found' error",
+      "Root cause: user-requests-display.php table check query not working correctly",
+      "Status: PENDING - user-requests-display.php deployed (commit aea1393f) but still showing error",
+      "Next: Verify SHOW TABLES LIKE query logic, check production deployment"
     ]
   },
   "description": "Complete user registration system with production-grade validation, JavaScript externalization (registration form + manager actions), deployment verification workflow, nonce security, retry logic, and loading states",
