@@ -30,6 +30,7 @@
     "database_issues": [
       "Custom tables created without wp_ prefix (td_user_data_change_requests, td_id_sequences, td_audit_log)",
       "Fixed: Renamed all tables to wp_td_* to match WordPress convention and $wpdb expectations",
+      "Fixed: Updated record-id-generator.php to use wp_td_id_sequences in all SQL queries",
       "Result: 8 existing registration records preserved, AJAX handler now works correctly"
     ]
   },
