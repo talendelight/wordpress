@@ -4,10 +4,15 @@
   "type": "minor",
   "status": "in-production-testing",
   "testing_progress": {
-    "tested_pages": ["Welcome (ID 6) - ISSUES FOUND AND FIXED"],
-    "pending_pages": ["Select Role (ID 49) - DEPLOYED", "Register Profile (ID 50) - DEPLOYED", "Candidates", "Scouts", "Employers", "Managers", "Operators", "Manager Actions", "Manager Admin"],
-    "issues_found": 6,
-    "issues_fixed": 6
+    "tested_pages": [
+      "Welcome (ID 6) - FIXED (SVG icons, 0→13,802 bytes)",
+      "Select Role (ID 49) - DEPLOYED",
+      "Register Profile (ID 50) - WORKING (registration successful)"
+    ],
+    "pending_pages": ["Candidates", "Scouts", "Employers", "Managers (footer old)", "Operators", "Manager Actions (table error)", "Manager Admin"],
+    "issues_found": 9,
+    "issues_fixed": 8,
+    "issues_pending": 1
   },
   "deployment_fixes": {
     "asset_deployment_issue": {
