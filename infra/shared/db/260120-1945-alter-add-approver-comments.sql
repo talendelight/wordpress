@@ -5,13 +5,13 @@
 USE wordpress;
 
 -- Add approver_id column (foreign key to wp_users.ID for the manager who approved/rejected)
-ALTER TABLE td_user_data_change_requests
+ALTER TABLE wp_td_user_data_change_requests
 ADD COLUMN approver_id bigint(20) NULL AFTER assigned_to,
 ADD INDEX idx_approver_id (approver_id);
 
 -- Add comments column for approval/rejection notes
-ALTER TABLE td_user_data_change_requests
+ALTER TABLE wp_td_user_data_change_requests
 ADD COLUMN comments text NULL AFTER approver_id;
 
 -- Verify changes
-DESCRIBE td_user_data_change_requests;
+DESCRIBE wp_td_user_data_change_requests;

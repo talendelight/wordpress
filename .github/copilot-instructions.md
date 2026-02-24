@@ -185,6 +185,8 @@ pwsh infra/shared/scripts/wp-action.ps1 <action> [arguments]
 # - backup           → backup-production.ps1 (create timestamped backup)
 # - verify           → verify-production.ps1 (check production state)
 # - restore          → restore-production.ps1 (restore from backup)
+# - restore-pages    → restore-all-pages.ps1 (restore page content to local)
+# - restore-menus    → restore-menus.ps1 (restore navigation menus to local)
 # - export-elementor → export-elementor-pages.ps1 (export Elementor pages)
 # - health-check     → verify-production-health.php (comprehensive health check)
 # - apply-sql        → apply-sql-change.ps1 (apply SQL migration to local DB)
@@ -194,6 +196,8 @@ pwsh infra/shared/scripts/wp-action.ps1 <action> [arguments]
 # Examples:
 pwsh infra/shared/scripts/wp-action.ps1 backup
 pwsh infra/shared/scripts/wp-action.ps1 verify
+pwsh infra/shared/scripts/wp-action.ps1 restore-pages
+pwsh infra/shared/scripts/wp-action.ps1 restore-menus
 pwsh infra/shared/scripts/wp-action.ps1 health-check -Verbose
 pwsh infra/shared/scripts/wp-action.ps1 apply-sql -SqlFilePath infra/shared/db/260131-1200-add-record-id-prsn-cmpy.sql
 pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true
@@ -281,6 +285,8 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 ## Pattern Usage Rules
 
 **⚠️ CRITICAL: Always use actual pattern code as template when creating new pages**
+
+**⚠️ CRITICAL: Check for custom page templates - see [docs/PAGE-TEMPLATES.md](../docs/PAGE-TEMPLATES.md)**
 
 **The Problem:** Pattern comments alone (e.g., `<!-- Pattern: blocksy-child/card-grid-3 -->`) are not enough. Writing HTML from memory causes missing styling attributes and design inconsistency.
 
@@ -445,6 +451,17 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 - Daily at 02:00 UTC (automated via Task Scheduler)
 - Weekly with database (Sunday 02:00 UTC)
 - Retention: Last 10 backups (configurable)
+
+**Backup Versioning Rule (restore/ folder):**
+- ✅ **Keep ONLY the latest version** of each page/object in restore/pages/
+- ✅ **Naming convention:** `{page-slug}-{page-id}.html` (e.g., register-profile-28.html for local ID 28)
+- ✅ **When updating:** REPLACE the existing file - do NOT create timestamped versions
+- ✅ **Page ID consistency:** Use the ID from the environment you're backing up (local uses local ID, production uses production ID)
+- ❌ **Never keep multiple versions** of the same page (e.g., register-profile-21.html AND register-profile-28.html)
+- ❌ **Never use ambiguous names** like `register-profile.html` without ID
+- ❌ **Never add timestamps to individual page backups** (e.g., manager-actions-84-backup-20260212-2311.html)
+- 📝 **Timestamped backups belong in:** `restore/backups/{timestamp}/` directory (full system backups), NOT in restore/pages/
+- 🧹 **Cleanup old duplicates** regularly to avoid confusion about which file is current
 
 ### Production Detailsation monitors `main` branch
 - Auto-deploys `wp-content/` to `public_html/wp-content/` on push

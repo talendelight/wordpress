@@ -16,9 +16,9 @@ get_header();
         <label for="td_user_role">Choose your role:</label>
         <select name="td_user_role" id="td_user_role" required>
             <option value="">-- Select Role --</option>
-            <option value="candidate">Candidate</option>
-            <option value="employer">Employer</option>
-            <option value="scout">Scout</option>
+            <option value="td_candidate">Candidate</option>
+            <option value="td_employer">Employer</option>
+            <option value="td_scout">Scout</option>
         </select>
         <div class="td-role-selection-buttons">
             <button type="button" id="td-role-next">Next</button>

@@ -1,6 +1,9 @@
 (function() {
     'use strict';
     
+    // DEBUG: Confirm script is loading
+    console.log('✅ registration-form.js loaded successfully');
+    
     // Floating message function
     function showFloatingMessage(message, type) {
         var messageEl = document.getElementById('td-floating-message');
@@ -64,15 +67,20 @@
         attempt = attempt || 1;
         maxAttempts = maxAttempts || 3;
         
+        console.log('🎯 fetchRegistrationNonce called (attempt ' + attempt + '/' + maxAttempts + ')');
+        
         if (attempt === 1) {
             showLoadingSpinner(true);
         }
         
+        console.log('📡 Creating XHR request to /wp-admin/admin-ajax.php');
         var xhr = new XMLHttpRequest();
         xhr.open('POST', '/wp-admin/admin-ajax.php', true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         
         xhr.onload = function() {
+            console.log('📥 XHR onload - Status:', xhr.status);
+            console.log('📥 Response text:', xhr.responseText);
             if (xhr.status === 200) {
                 try {
                     var response = JSON.parse(xhr.responseText);
@@ -97,16 +105,17 @@
         };
         
         xhr.onerror = function() {
-            console.error('Network error fetching nonce');
+            console.error('❌ Network error fetching nonce');
             retryFetch(attempt, maxAttempts);
         };
         
         xhr.ontimeout = function() {
-            console.error('Timeout fetching nonce');
+            console.error('⏱️ Timeout fetching nonce (5s limit)');
             retryFetch(attempt, maxAttempts);
         };
         
         xhr.timeout = 5000; // 5 second timeout
+        console.log('🚀 Sending XHR request with action=td_get_registration_nonce');
         xhr.send('action=td_get_registration_nonce');
         
         function retryFetch(currentAttempt, max) {
@@ -125,26 +134,70 @@
     }
     
     // Initialize on DOM ready
+    console.log('🔍 Document ready state:', document.readyState);
     if (document.readyState === 'loading') {
+        console.log('⏳ Waiting for DOMContentLoaded...');
         document.addEventListener('DOMContentLoaded', init);
     } else {
+        console.log('⚡ DOM already loaded, initializing immediately');
         init();
     }
     
     function init() {
+        console.log('🚀 init() called');
         var form = document.getElementById('td-registration-form');
-        if (!form) return;
+        console.log('📝 Form element found:', !!form);
+        if (!form) {
+            console.error('❌ Form with id="td-registration-form" not found!');
+            return;
+        }
         
+        // Create hidden fields dynamically if they don't exist
+        // This is needed because WordPress HTML blocks may strip them out
+        var roleInput = document.getElementById('td_user_role');
+        if (!roleInput) {
+            console.log('⚠️ Role input field missing, creating dynamically...');
+            roleInput = document.createElement('input');
+            roleInput.type = 'hidden';
+            roleInput.name = 'td_user_role';
+            roleInput.id = 'td_user_role';
+            roleInput.value = '';
+            form.insertBefore(roleInput, form.firstChild);
+            console.log('✅ Created td_user_role hidden field');
+        }
+        
+        var actionInput = document.getElementById('action');
+        if (!actionInput || actionInput.value !== 'td_process_registration') {
+            console.log('⚠️ Action input field missing, creating dynamically...');
+            if (!actionInput) {
+                actionInput = document.createElement('input');
+                actionInput.type = 'hidden';
+                actionInput.name = 'action';
+                actionInput.id = 'action';
+                form.insertBefore(actionInput, form.firstChild);
+            }
+            actionInput.value = 'td_process_registration';
+            console.log('✅ Created/updated action hidden field');
+        }
+        
+        console.log('🔐 Calling fetchRegistrationNonce()...');
         // Fetch nonce via AJAX on page load
         fetchRegistrationNonce();
         
         // Populate role from query parameter
         var role = getUrlParameter('td_user_role');
+        console.log('👤 Role from URL:', role);
         if (role) {
-            var roleInput = document.getElementById('td_user_role');
-            if (roleInput) {
-                roleInput.value = role;
-            }
+            roleInput.value = role;
+            console.log('✅ Role set to:', role);
+            
+            // Verify it was set
+            setTimeout(function() {
+                var checkRole = document.getElementById('td_user_role');
+                console.log('🔍 Role value after verification:', checkRole ? checkRole.value : 'FIELD NOT FOUND');
+            }, 500);
+        } else {
+            console.warn('⚠️ No role parameter in URL');
         }
         
         // Toggle LinkedIn URL field
@@ -404,6 +457,12 @@
             
             // Submit form via AJAX
             var formData = new FormData(this);
+            
+            // DEBUG: Log all form data being sent
+            console.log('📤 Form data being submitted:');
+            for (var pair of formData.entries()) {
+                console.log('  ' + pair[0] + ':', pair[1]);
+            }
             
             fetch('/wp-admin/admin-ajax.php', {
                 method: 'POST',

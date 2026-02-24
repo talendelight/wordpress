@@ -13,7 +13,7 @@
 -- 2. Automatic daily reset (new date = new row)
 -- 3. Independent sequences per entity type
 
-CREATE TABLE IF NOT EXISTS td_id_sequences (
+CREATE TABLE IF NOT EXISTS wp_td_id_sequences (
     entity_type ENUM('USRQ', 'PRSN', 'CMPY') NOT NULL COMMENT 'ID prefix type: User Request, Person, Company',
     date_str CHAR(6) NOT NULL COMMENT 'YYMMDD format (e.g., 260131 for Jan 31, 2026)',
     last_sequence INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Last used sequence number for this entity+date',
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS td_id_sequences (
 COMMENT='Atomic sequence management for daily-reset ID generation';
 
 -- Example usage pattern:
--- INSERT INTO td_id_sequences (entity_type, date_str, last_sequence)
+-- INSERT INTO wp_td_id_sequences (entity_type, date_str, last_sequence)
 -- VALUES ('USRQ', '260131', 1)
 -- ON DUPLICATE KEY UPDATE last_sequence = last_sequence + 1;
 --

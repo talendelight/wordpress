@@ -1,5 +1,5 @@
 -- Create table for user registration and profile change requests (all roles)
-CREATE TABLE IF NOT EXISTS td_user_data_change_requests (
+CREATE TABLE IF NOT EXISTS wp_td_user_data_change_requests (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NULL,
     request_type ENUM('register', 'update', 'disable') NOT NULL,

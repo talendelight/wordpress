@@ -471,6 +471,110 @@ podman-compose down -v
 
 ---
 
+### Task: Restore Page Content to Local
+**Environment:** 🏠 LOCAL ONLY  
+**File:** [docs/procedures/DATABASE-RESTORATION.md](../docs/procedures/DATABASE-RESTORATION.md)  
+**Script:** [infra/shared/scripts/restore-all-pages.ps1](../infra/shared/scripts/restore-all-pages.ps1)  
+**Frequency:** After database reset or fresh container start  
+**Duration:** 1-2 minutes
+
+**Overview:**
+Restores all WordPress page content from backups to local environment. Maps pages by slug (not ID) since IDs differ between local and production.
+
+1. Run restore script to restore 13 pages from backups
+2. Script uploads HTML content to container
+3. Script updates each page via wp-cli
+4. Cache is flushed automatically
+
+**Key Commands:**
+```powershell
+# Via action dispatcher (recommended)
+pwsh infra/shared/scripts/wp-action.ps1 restore-pages
+
+# Direct script execution
+pwsh infra/shared/scripts/restore-all-pages.ps1
+
+# Verify pages restored
+podman exec wp wp post list --post_type=page --post_status=publish --format=table --allow-root --skip-plugins
+```
+
+**Pages Restored:**
+- Welcome, Help, Privacy Policy
+- Role landing pages: Candidates, Employers, Scouts, Managers, Operators
+- Manager dashboards: Manager Admin (/admin), Manager Actions (/actions)
+- Registration: Register Profile, Select Role
+- Error pages: 403 Forbidden
+
+**Prerequisites:**
+- Containers running (wp, wp-db)
+- Database initialized with all migrations
+- Backup files exist in restore/pages/
+
+**Common Issues:**
+- ❌ "Page not found in database" → Run SQL migrations first (init-all-migrations.sh)
+- ❌ "Backup not found" → Check restore/pages/ directory has HTML files
+- ❌ "Page looks incorrect" → Check if page uses custom template (see [docs/PAGE-TEMPLATES.md](../docs/PAGE-TEMPLATES.md))
+
+**Related:**
+- TASK: Reset Local Database (run migrations first)
+- TASK: Restore Menus to Local (run after restoring pages)
+- SCRIPT-REGISTRY: wp-action.ps1 restore-pages
+
+---
+
+### Task: Restore Menus to Local
+**Environment:** 🏠 LOCAL ONLY  
+**File:** [docs/procedures/DATABASE-RESTORATION.md](../docs/procedures/DATABASE-RESTORATION.md)  
+**Script:** [infra/shared/scripts/restore-menus.ps1](../infra/shared/scripts/restore-menus.ps1)  
+**Frequency:** After database reset or fresh container start  
+**Duration:** 30 seconds
+
+**Overview:**
+Restores WordPress navigation menu structure from production. Creates Primary Menu with 6 items and assigns to all theme locations.
+
+1. Run restore script to create menu
+2. Script adds 6 menu items via wp-cli
+3. Script assigns menu to theme locations
+4. Cache is flushed automatically
+
+**Key Commands:**
+```powershell
+# Via action dispatcher (recommended)
+pwsh infra/shared/scripts/wp-action.ps1 restore-menus
+
+# Direct script execution
+pwsh infra/shared/scripts/restore-menus.ps1
+
+# Verify menu restored
+podman exec wp wp menu list --allow-root --skip-plugins
+podman exec wp wp menu item list primary-menu --allow-root --skip-plugins
+```
+
+**Menu Structure:**
+- **Primary Menu** (assigned to: footer, menu_1, menu_2, menu_mobile)
+  1. Welcome (/)
+  2. Register (/select-role/)
+  3. Profile (/profile/)
+  4. Help (/help/)
+  5. Login (/log-in/)
+  6. Logout (logout action)
+
+**Prerequisites:**
+- Containers running (wp, wp-db)
+- WordPress core initialized
+- Pages exist in database (run restore-pages first)
+
+**Common Issues:**
+- ❌ Menu items link to missing pages → Run restore-pages first
+- ⚠️ Menu doesn't display on frontend → Check theme location assignments
+
+**Related:**
+- TASK: Restore Page Content to Local (run before restoring menus)
+- TASK: Reset Local Database (full database restoration workflow)
+- SCRIPT-REGISTRY: wp-action.ps1 restore-menus
+
+---
+
 ## Verification Tasks
 
 ### Task: Verify Production Health

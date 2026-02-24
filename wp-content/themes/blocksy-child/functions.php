@@ -31,21 +31,33 @@ add_action('wp_enqueue_scripts', function() {
     }
     
     // Registration form assets (only on registration page)
-    if (is_page('register-profile') || is_page(21)) {
-        wp_enqueue_style(
-            'td-registration-form',
-            get_stylesheet_directory_uri() . '/assets/css/registration-form.css',
-            array('blocksy-child-style'),
-            '1.0.0'
-        );
+    // Debug: Always enqueue to test if this is the issue
+    if (is_page()) {
+        $current_page = get_queried_object();
+        $page_slug = isset($current_page->post_name) ? $current_page->post_name : 'unknown';
         
-        wp_enqueue_script(
-            'td-registration-form',
-            get_stylesheet_directory_uri() . '/assets/js/registration-form.js',
-            array(),
-            '1.0.0',
-            true
-        );
+        // Log for debugging (will appear in error_log)
+        error_log('Page slug: ' . $page_slug . ', is_page: ' . (is_page() ? 'yes' : 'no'));
+        
+        // Enqueue for register-profile page
+        if ($page_slug === 'register-profile') {
+            wp_enqueue_style(
+                'td-registration-form',
+                get_stylesheet_directory_uri() . '/assets/css/registration-form.css',
+                array('blocksy-child-style'),
+                '1.0.1'  // Bumped version to force reload
+            );
+            
+            wp_enqueue_script(
+                'td-registration-form',
+                get_stylesheet_directory_uri() . '/assets/js/registration-form.js',
+                array(),
+                '1.0.6',  // Added form data debugging
+                true
+            );
+            
+            error_log('Enqueued registration scripts for: ' . $page_slug);
+        }
     }
 });
 

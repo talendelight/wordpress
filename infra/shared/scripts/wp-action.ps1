@@ -17,6 +17,8 @@ param(
         'backup',
         'verify', 
         'restore',
+        'restore-pages',
+        'restore-menus',
         'export-elementor',
         'export-users',
         'get-page-ids',
@@ -67,6 +69,24 @@ $SCRIPT_REGISTRY = @{
         examples = @(
             'wp-action restore -BackupTimestamp latest -RestorePages $true',
             'wp-action restore -BackupTimestamp latest -DryRun'
+        )
+    }
+    
+    'restore-pages' = @{
+        script = 'restore-all-pages.ps1'
+        description = 'Restore WordPress page content from backups to local environment'
+        usage = 'wp-action restore-pages'
+        examples = @(
+            'wp-action restore-pages'
+        )
+    }
+    
+    'restore-menus' = @{
+        script = 'restore-menus.ps1'
+        description = 'Restore WordPress navigation menus to local environment'
+        usage = 'wp-action restore-menus'
+        examples = @(
+            'wp-action restore-menus'
         )
     }
     

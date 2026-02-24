@@ -78,7 +78,7 @@ function td_forminator_to_custom_table($form_id, $response) {
 
     // 6) Insert into custom table (aligned with exact table structure)
     global $wpdb;
-    $table = 'td_user_data_change_requests'; // No prefix (matches table structure)
+    $table = $wpdb->prefix . 'td_user_data_change_requests';
 
     $result = $wpdb->insert(
         $table,

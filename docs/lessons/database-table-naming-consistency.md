@@ -49,14 +49,29 @@ During v3.6.3 deployment, registration form submissions failed with "Registratio
 
 ### Correct Pattern for WordPress Table Names
 
-**In SQL Migration Files (source of truth):**
+**CONCEPTUAL DESIGN (how to think about tables):**
+- Tables are logically designed as `td_*` (custom prefix without WordPress site prefix)
+- PHP code uses `$wpdb->prefix` to add site prefix at runtime
+- WordPress manages prefix based on wp-config.php `$table_prefix` setting
+
+**PHYSICAL SQL FILES (local Docker/Podman development):**
 ```sql
--- Define tables WITHOUT wp_ prefix (WordPress convention)
-CREATE TABLE IF NOT EXISTS td_user_data_change_requests (
+-- Define tables WITH full wp_td_ prefix for MariaDB CLI initialization
+-- MariaDB doesn't know about WordPress's $wpdb->prefix, so use explicit names
+CREATE TABLE IF NOT EXISTS wp_td_user_data_change_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     request_id VARCHAR(20) UNIQUE NOT NULL,
     ...
 );
+```
+
+**PRODUCTION SQL (applied through WordPress/wp-cli):**
+```sql
+-- MAY be able to use unprefixed names if WordPress processing adds prefix
+-- Check deployment method - direct MariaDB requires full prefixes
+CREATE TABLE IF NOT EXISTS td_user_data_change_requests (...);
+-- OR with full prefix to be safe:
+CREATE TABLE IF NOT EXISTS wp_td_user_data_change_requests (...);
 ```
 
 **In PHP Code (dynamic prefix):**

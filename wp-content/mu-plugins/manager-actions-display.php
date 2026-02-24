@@ -59,10 +59,10 @@ function td_manager_actions_table_shortcode($atts) {
     ), $atts);
     
     global $wpdb;
-    $table = 'td_user_data_change_requests';
+    $table = $wpdb->prefix . 'td_user_data_change_requests';
     
     // Check if table exists
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") != $table) {
         return '<div class="notice notice-warning" style="padding: 20px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 20px 0;">
             <p><strong>⚠️ Database Table Not Found</strong></p>
             <p>The user requests table has not been created yet. Please apply the database migration:</p>

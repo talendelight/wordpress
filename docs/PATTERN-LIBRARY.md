@@ -5,6 +5,9 @@
 **Theme:** Blocksy Child  
 **Purpose:** Reusable Gutenberg block patterns for Elementor-to-Gutenberg migration
 
+> **⚠️ Note:** This is about **Block Patterns** (reusable content snippets).  
+> For **Page Templates** (PHP files that override page display), see [PAGE-TEMPLATES.md](PAGE-TEMPLATES.md)
+
 ## Overview
 
 This pattern library contains 10 production-tested, reusable Gutenberg block patterns that encode design system values and solutions discovered during the Welcome page migration. All patterns are registered via `functions.php` and available in the WordPress block editor under the **TalenDelight** category.
