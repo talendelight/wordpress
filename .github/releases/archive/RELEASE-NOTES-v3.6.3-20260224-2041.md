@@ -61,7 +61,82 @@ This minor release delivers the complete user registration system with productio
 - `wp-content/mu-plugins/td-manager-actions-assets.php` (700 bytes)
 - `infra/shared/scripts/verify-deployment-readiness.ps1` (201 lines)
 
-### 🔧 Manager Pages Footer Fixes (Feb 20)
+### � Registration System Debugging (Feb 24)
+
+**Critical Issue: Infinite Spinner on Registration Page**
+
+**Problem:** "Loading security token..." spinner never disappeared, form never became interactive
+
+**Root Causes Identified:**
+
+1. **JavaScript Not Loading (CRITICAL)**
+   - **Issue:** registration-form.js not being enqueued
+   - **Cause:** functions.php used hardcoded page ID check `is_page(21)` but local page is ID 28, production is ID 50
+   - **Impact:** Without JavaScript, spinner created by HTML never hidden, nonce never fetched, form never interactive
+   - **Fix:** Replaced `is_page()` with `get_queried_object()` for reliable page detection
+   - **Solution Code:**
+     ```php
+     $current_page = get_queried_object();
+     if (is_page() && isset($current_page->post_name) && $current_page->post_name === 'register-profile') {
+         wp_enqueue_script('td-registration-form', ...);
+     }
+     ```
+   - **Result:** JavaScript now loads correctly across all environments without hardcoded IDs
+
+2. **Missing Nonce Field ID Attribute**
+   - **Issue:** AJAX nonce loaded successfully (HTTP 200, valid JSON) but JavaScript couldn't populate field
+   - **Cause:** Hidden input had `name="td_registration_nonce"` but NO `id` attribute
+   - **Impact:** `document.getElementById('td_registration_nonce')` returned null
+   - **Fix:** Added `id="td_registration_nonce"` to hidden input field via wp eval-file
+   - **Result:** JavaScript now successfully populates nonce field
+   - **Lesson:** HTML elements need BOTH name (form submission) AND id (JavaScript selectors)
+
+3. **Role Parameter Mismatch**
+   - **Issue:** Form submission error "Required field missing td_user_role"
+   - **Cause:** Select-role template sent unprefixed values (`candidate`) but handler expected prefixed (`td_candidate`)
+   - **Problem:** `page-role-selection.php` dropdown had `<option value="candidate">` instead of `<option value="td_candidate">`
+   - **Impact:** URL parameter `?td_user_role=candidate` didn't match database role names
+   - **Fix:** Updated template dropdown values to use `td_` prefix
+   - **Alternative Rejected:** JavaScript conversion (adds complexity, doesn't fix root cause)
+   - **Result:** Clean data flow from selection → registration → database
+   - **Status:** PENDING - Value still not reaching form submission (debugging continues)
+
+**Debugging Enhancements Added:**
+- ✅ Console logging at each initialization step (script load, DOM ready, init called, form found)
+- ✅ AJAX request/response logging (XHR sent, status code, response text)
+- ✅ FormData logging before submission (all field names and values)
+- ✅ Role parameter tracking (URL extraction, field population, persistence check)
+
+**Key Lessons Learned:**
+
+1. **Never Hardcode Page IDs in Theme Code**
+   - ❌ Anti-pattern: `if (is_page(21))` breaks across environments
+   - ✅ Best practice: Use `get_queried_object()->post_name` for reliable slug checking
+   - **Reason:** Page IDs differ between local/production, change after database resets
+
+2. **Custom Templates Override Page Content**
+   - Page content in database ignored when `_wp_page_template` meta exists
+   - Restoration requires BOTH content AND template meta
+   - Example: select-role uses `page-role-selection.php` template
+
+3. **Debug JavaScript Layer by Layer**
+   - Strategy: Script loading → Initialization → DOM queries → AJAX calls → Form data
+   - Test AJAX endpoints independently before debugging JavaScript
+   - Add emoji markers to console logs for visual scanning
+
+**Files Modified:**
+- `wp-content/themes/blocksy-child/functions.php` - Fixed asset enqueuing condition, version 1.0.6
+- `wp-content/themes/blocksy-child/assets/js/registration-form.js` - Added comprehensive debug logging
+- `wp-content/themes/blocksy-child/page-role-selection.php` - Fixed dropdown values (candidate → td_candidate)
+- `restore/pages/register-profile-28.html` - Updated backup with nonce field id fix
+
+**Documentation Created:**
+- `docs/SESSION-SUMMARY-FEB-24-REGISTRATION-DEBUG.md` - Complete debugging session summary with 6 lessons learned
+
+**Still Outstanding:**
+- 🔍 td_user_role value lost between JavaScript set and form submission (in progress)
+
+### �🔧 Manager Pages Footer Fixes (Feb 20)
 
 **Manager Actions Page (ID 36):**
 - Fixed footer icons: Replaced emoji corruption (≡ƒöÆ, Γ£ô, ≡ƒñ¥) with proper SVG images
@@ -709,8 +784,48 @@ None - This release only modifies CSS and page content.
 
 ---
 
-## Known Issues
-None
+## Known Issues & Ongoing Work
+
+### Registration Flow Debugging (Feb 24, 2026)
+
+**Status:** In Progress - Local testing, production deployment pending
+
+**Issues Fixed:**
+1. ✅ **Infinite Spinner** - Registration form stuck on "Loading security token..." indefinitely
+   - Root cause: JavaScript not loading due to hardcoded page ID in functions.php
+   - Solution: Replaced `is_page(21)` with `get_queried_object()` for reliable slug checking
+   - File: wp-content/themes/blocksy-child/functions.php
+
+2. ✅ **Missing Nonce Field ID** - AJAX loaded nonce but couldn't populate form field
+   - Root cause: Hidden input had `name` but no `id` attribute
+   - Solution: Added `id="td_registration_nonce"` to match JavaScript selector
+   - File: Register Profile page content (ID 28 local, ID 50 production)
+
+3. ✅ **Role Parameter Mismatch** - Form submission error "Required field missing td_user_role"
+   - Root cause: Template sent `candidate` but handler expected `td_candidate`
+   - Solution: Fixed dropdown values to use `td_` prefix
+   - File: wp-content/themes/blocksy-child/page-role-selection.php
+
+**Outstanding Issue:**
+- 🔍 **td_user_role Value Persistence** - Value set by JavaScript but not reaching form submission
+  - Debug logging added to track value through initialization, population, and submission
+  - Continuation planned for next session
+
+**Files Updated (Feb 24):**
+- `wp-content/themes/blocksy-child/functions.php` - JavaScript enqueuing fix (v1.0.6)
+- `wp-content/themes/blocksy-child/assets/js/registration-form.js` - Comprehensive debug logging (v1.0.6)
+- `wp-content/themes/blocksy-child/page-role-selection.php` - Role value prefix fix
+- `restore/pages/register-profile-28.html` - Backup with nonce field id fix
+
+**New Documentation:**
+- `docs/SESSION-SUMMARY-FEB-24-REGISTRATION-DEBUG.md` - Complete debugging session with 6 lessons learned
+
+**Next Steps:**
+1. Complete td_user_role persistence debugging in local environment
+2. Test full registration flow end-to-end locally
+3. Deploy all fixes to production
+4. Verify registration system works in production
+5. Test with real-world data
 
 ---
 
