@@ -1,9 +1,14 @@
 <?php
 /**
- * Plugin Name: Manager Actions Display
- * Description: Manager Actions page approval workflow - 5 tab interface (New, Assigned, Approved, Rejected, All)
+ * Plugin Name: Operator Actions Display
+ * Description: Operator Actions page approval workflow - 5 tab interface with operator-specific filtering
  * Version: 1.0.0
  * Author: TalenDelight
+ * 
+ * Key Differences from Manager Actions:
+ * - NEW tab: Shows ALL unassigned PUBLIC user requests (Candidates, Employers only - no Scouts/Operators/Managers)
+ * - OTHER tabs (Assigned/Approved/Rejected/All): Shows ONLY requests assigned to or handled by current operator
+ * - Access: Allows both Operator and Manager roles (Managers can use operator view)
  */
 
 // Prevent direct access
@@ -15,39 +20,34 @@ if (!defined('ABSPATH')) {
 require_once __DIR__ . '/audit-logger.php';
 
 // ============================================================================
-// AJAX HANDLERS - Use same endpoints as user-requests-display.php
+// AJAX HANDLERS - Use same endpoints as manager-actions-display.php
 // ============================================================================
-// Note: All AJAX handlers are already defined in user-requests-display.php:
-// - td_approve_request_ajax()
-// - td_reject_request_ajax()
-// - td_undo_approve_ajax()
-// - td_undo_reject_ajax()
-// - td_assign_request_ajax()
+// Note: All AJAX handlers are already defined in user-requests-display.php
+// No need to redefine them here
 
 // ============================================================================
-// SHORTCODE FOR MANAGER ACTIONS PAGE
+// SHORTCODE FOR OPERATOR ACTIONS PAGE
 // ============================================================================
 
 /**
- * Manager Actions table shortcode
- * Usage: [manager_actions_table status="new"]
+ * Operator Actions table shortcode
+ * Usage: [operator_actions_table status="new"]
  * 
  * Status values: new, assigned, approved, rejected, all
  * 
- * Key difference from user-requests-display.php:
- * - Uses 'assigned' status instead of 'pending'
- * - Designed for Manager Actions page 5-tab interface
- * - Managers see ALL requests (no role filtering)
+ * Key filtering differences from manager_actions_table:
+ * - NEW tab: Only PUBLIC user requests (Candidates, Employers) - excludes Scouts/Operators/Managers
+ * - OTHER tabs: Only requests assigned to or updated by current operator
  */
-function td_manager_actions_table_shortcode($atts) {
-    // Verify user is Manager or Administrator
+function td_operator_actions_table_shortcode($atts) {
+    // Verify user is Operator or Manager
     $user = wp_get_current_user();
-    $allowed_roles = ['administrator', 'td_manager'];
+    $allowed_roles = ['administrator', 'td_manager', 'td_operator'];
     
     if (!array_intersect($allowed_roles, $user->roles)) {
         return '<div class="notice notice-error" style="padding: 20px; background: #f8d7da; border-left: 4px solid #dc3545; margin: 20px 0;">
             <p><strong>⛔ Access Denied</strong></p>
-            <p>You do not have permission to view this content. Manager role required.</p>
+            <p>You do not have permission to view this content. Operator or Manager role required.</p>
         </div>';
     }
     
@@ -72,25 +72,40 @@ function td_manager_actions_table_shortcode($atts) {
         </div>';
     }
     
-    // Build query based on status
+    $current_user_id = get_current_user_id();
+    
+    // Build query based on status with operator-specific filtering
     $where_clause = "1=1";
     $date_filter = "";
+    $public_users_filter = "AND role IN ('candidate', 'employer')"; // CRITICAL: Operators see only public users
     
     if ($atts['status'] === 'new') {
-        // New = unassigned requests (assigned_to IS NULL)
+        // NEW tab: All unassigned PUBLIC user requests (Candidates, Employers only)
         $where_clause = "(status = 'new' OR (status = 'pending' AND assigned_to IS NULL))";
+        $where_clause .= " " . $public_users_filter; // Apply public users filter to NEW tab
+        
     } elseif ($atts['status'] === 'assigned') {
-        // Assigned = pending status with assigned_to set
-        $where_clause = "(status = 'pending' AND assigned_to IS NOT NULL)";
+        // ASSIGNED tab: Only requests assigned to current operator (public users only)
+        $where_clause = "(status = 'pending' AND assigned_to = {$current_user_id})";
+        $where_clause .= " " . $public_users_filter;
+        
     } elseif ($atts['status'] === 'approved') {
-        $where_clause = "status = 'approved'";
+        // APPROVED tab: Only requests approved by current operator (assigned to them)
+        $where_clause = "status = 'approved' AND assigned_to = {$current_user_id}";
+        $where_clause .= " " . $public_users_filter;
         $date_filter = "AND updated_date >= DATE_SUB(NOW(), INTERVAL {$atts['days']} DAY)";
+        
     } elseif ($atts['status'] === 'rejected') {
-        $where_clause = "status = 'rejected'";
+        // REJECTED tab: Only requests rejected by current operator (assigned to them)
+        $where_clause = "status = 'rejected' AND assigned_to = {$current_user_id}";
+        $where_clause .= " " . $public_users_filter;
         $date_filter = "AND updated_date >= DATE_SUB(NOW(), INTERVAL {$atts['days']} DAY)";
     }
-    // 'all' shows everything with date filter
+    
+    // ALL tab: Unassigned new + All requests assigned to current operator (public users only)
     if ($atts['status'] === 'all') {
+        $where_clause = "((status = 'new' OR (status = 'pending' AND assigned_to IS NULL)) OR assigned_to = {$current_user_id})";
+        $where_clause .= " " . $public_users_filter;
         $date_filter = "AND submitted_date >= DATE_SUB(NOW(), INTERVAL {$atts['days']} DAY)";
     }
     
@@ -104,19 +119,30 @@ function td_manager_actions_table_shortcode($atts) {
     
     $requests = $wpdb->get_results($query);
     
-    // Count statistics
-    $stats = $wpdb->get_row("
-        SELECT 
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'new' OR (status = 'pending' AND assigned_to IS NULL) THEN 1 ELSE 0 END) as new_count,
-            SUM(CASE WHEN status = 'pending' AND assigned_to IS NOT NULL THEN 1 ELSE 0 END) as assigned_count,
-            SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_count,
-            SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_count
-        FROM $table 
-        WHERE $where_clause $date_filter
-    ");
-    
-    $current_user_id = get_current_user_id();
+    // Count statistics (operator-specific)
+    if ($atts['status'] === 'new') {
+        // NEW tab stats: All unassigned public user requests
+        $stats = $wpdb->get_row("
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'new' OR (status = 'pending' AND assigned_to IS NULL) THEN 1 ELSE 0 END) as new_count
+            FROM $table
+            WHERE (status = 'new' OR (status = 'pending' AND assigned_to IS NULL))
+            AND role IN ('candidate', 'employer')
+        ");
+    } else {
+        // OTHER tabs stats: Only operator's assigned requests
+        $stats = $wpdb->get_row($wpdb->prepare("
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'new' OR (status = 'pending' AND assigned_to IS NULL) THEN 1 ELSE 0 END) as new_count,
+                SUM(CASE WHEN status = 'pending' AND assigned_to = %d THEN 1 ELSE 0 END) as assigned_count,
+                SUM(CASE WHEN status = 'approved' AND assigned_to = %d THEN 1 ELSE 0 END) as approved_count,
+                SUM(CASE WHEN status = 'rejected' AND assigned_to = %d THEN 1 ELSE 0 END) as rejected_count
+            FROM $table 
+            WHERE role IN ('candidate', 'employer')
+        ", $current_user_id, $current_user_id, $current_user_id));
+    }
     
     ob_start();
     ?>
@@ -155,11 +181,11 @@ function td_manager_actions_table_shortcode($atts) {
         .td-action-btn.td-action-reject { background: #f44336 !important; }
         .td-action-btn.td-action-undo { background: #ff9800 !important; }
         
-        .ma-table-container {
+        .oa-table-container {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        .ma-status-badge {
+        .oa-status-badge {
             display: inline-block;
             padding: 6px 12px;
             border-radius: 12px;
@@ -168,20 +194,26 @@ function td_manager_actions_table_shortcode($atts) {
             text-transform: uppercase;
         }
         
-        .ma-status-new { background: #E3F2FD; color: #1565C0; }
-        .ma-status-assigned { background: #FFF9C4; color: #F57C00; }
-        .ma-status-approved { background: #C8E6C9; color: #2E7D32; }
-        .ma-status-rejected { background: #FFCDD2; color: #C62828; }
+        .oa-status-new { background: #E3F2FD; color: #1565C0; }
+        .oa-status-assigned { background: #FFF9C4; color: #F57C00; }
+        .oa-status-approved { background: #C8E6C9; color: #2E7D32; }
+        .oa-status-rejected { background: #FFCDD2; color: #C62828; }
     </style>
     
-    <div class="ma-table-container">
+    <div class="oa-table-container">
         
         <?php if (empty($requests)): ?>
             <!-- Empty State -->
             <div style="padding: 60px 20px; text-align: center; background: white; border-radius: 8px; border: 2px dashed #ddd;">
                 <div style="font-size: 48px; margin-bottom: 20px;">📭</div>
                 <h3 style="color: #063970; margin-bottom: 10px;">No Requests Found</h3>
-                <p style="color: #666;">There are no <?php echo esc_html($atts['status']); ?> requests at this time.</p>
+                <p style="color: #666;">
+                    <?php if ($atts['status'] === 'new'): ?>
+                        There are no new public user registration requests at this time.
+                    <?php else: ?>
+                        You have no <?php echo esc_html($atts['status']); ?> requests.
+                    <?php endif; ?>
+                </p>
             </div>
         <?php else: ?>
             <!-- Requests Table -->
@@ -259,7 +291,7 @@ function td_manager_actions_table_shortcode($atts) {
                             </td>
                             <?php endif; ?>
                             <td style="padding: 12px; text-align: center;">
-                                <span class="ma-status-badge ma-status-<?php echo $display_status; ?>">
+                                <span class="oa-status-badge oa-status-<?php echo $display_status; ?>">
                                     <?php echo esc_html(ucfirst($display_status)); ?>
                                 </span>
                             </td>
@@ -271,19 +303,13 @@ function td_manager_actions_table_shortcode($atts) {
                                     </button>
                                     
                                 <?php elseif ($atts['status'] === 'assigned'): ?>
-                                    <!-- Assigned Tab: Approve/Reject if assigned to me, else Reassign -->
-                                    <?php if ($request->assigned_to == $current_user_id): ?>
-                                        <button class="td-approve-btn td-action-btn td-action-approve" data-id="<?php echo $request->id; ?>" title="Approve">
-                                            ✓
-                                        </button>
-                                        <button class="td-reject-btn td-action-btn td-action-reject" data-id="<?php echo $request->id; ?>" title="Reject">
-                                            ✗
-                                        </button>
-                                    <?php else: ?>
-                                        <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Reassign to Me">
-                                            ➜
-                                        </button>
-                                    <?php endif; ?>
+                                    <!-- Assigned Tab: Approve/Reject (always assigned to me in operator view) -->
+                                    <button class="td-approve-btn td-action-btn td-action-approve" data-id="<?php echo $request->id; ?>" title="Approve">
+                                        ✓
+                                    </button>
+                                    <button class="td-reject-btn td-action-btn td-action-reject" data-id="<?php echo $request->id; ?>" title="Reject">
+                                        ✗
+                                    </button>
                                     
                                 <?php elseif ($atts['status'] === 'approved'): ?>
                                     <!-- Approved Tab: Undo Approval -->
@@ -304,18 +330,12 @@ function td_manager_actions_table_shortcode($atts) {
                                             ➜
                                         </button>
                                     <?php elseif ($display_status === 'assigned'): ?>
-                                        <?php if ($request->assigned_to == $current_user_id): ?>
-                                            <button class="td-approve-btn td-action-btn td-action-approve" data-id="<?php echo $request->id; ?>" title="Approve">
-                                                ✓
-                                            </button>
-                                            <button class="td-reject-btn td-action-btn td-action-reject" data-id="<?php echo $request->id; ?>" title="Reject">
-                                                ✗
-                                            </button>
-                                        <?php else: ?>
-                                            <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Reassign to Me">
-                                                ➜
-                                            </button>
-                                        <?php endif; ?>
+                                        <button class="td-approve-btn td-action-btn td-action-approve" data-id="<?php echo $request->id; ?>" title="Approve">
+                                            ✓
+                                        </button>
+                                        <button class="td-reject-btn td-action-btn td-action-reject" data-id="<?php echo $request->id; ?>" title="Reject">
+                                            ✗
+                                        </button>
                                     <?php elseif ($display_status === 'approved'): ?>
                                         <button class="td-undo-approve-btn td-action-btn td-action-undo" data-id="<?php echo $request->id; ?>" title="Undo Approval">
                                             ↶
@@ -345,15 +365,15 @@ function td_manager_actions_table_shortcode($atts) {
     </div>
     
     <!-- Assignment Modal -->
-    <div id="td-assign-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000;">
+    <div id="td-assign-modal-op" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000;">
         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; max-width: 400px; width: 90%; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <h3 style="margin: 0 0 20px 0; color: #063970; font-size: 20px; font-weight: 600;">Assign Request</h3>
             <p style="margin: 0 0 20px 0; color: #666; font-size: 14px;">Assign this request to:</p>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button id="td-assign-self" style="background: #2196F3; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%;">
+                <button id="td-assign-self-op" style="background: #2196F3; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%;">
                     Assign to Me
                 </button>
-                <button id="td-assign-cancel" style="background: #e0e0e0; color: #333; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%;">
+                <button id="td-assign-cancel-op" style="background: #e0e0e0; color: #333; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%;">
                     Cancel
                 </button>
             </div>
@@ -373,13 +393,13 @@ function td_manager_actions_table_shortcode($atts) {
         var currentAssignRequestId = null;
         
         // Assign button handler - show modal
-        $(document).off('click', '.td-assign-btn').on('click', '.td-assign-btn', function() {
+        $(document).off('click', '.oa-table-container .td-assign-btn').on('click', '.oa-table-container .td-assign-btn', function() {
             currentAssignRequestId = $(this).data('id');
-            $('#td-assign-modal').show();
+            $('#td-assign-modal-op').show();
         });
         
         // Assign to self handler
-        $(document).off('click', '#td-assign-self').on('click', '#td-assign-self', function() {
+        $(document).off('click', '#td-assign-self-op').on('click', '#td-assign-self-op', function() {
             var btn = $(this);
             
             if (!currentAssignRequestId) {
@@ -396,7 +416,7 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
-                    $('#td-assign-modal').hide();
+                    $('#td-assign-modal-op').hide();
                     setTimeout(function() { location.reload(); }, 500);
                 } else {
                     tdShowNotification('Error: ' + response.data.message, 'error');
@@ -409,21 +429,21 @@ function td_manager_actions_table_shortcode($atts) {
         });
         
         // Cancel button handler
-        $(document).off('click', '#td-assign-cancel').on('click', '#td-assign-cancel', function() {
-            $('#td-assign-modal').hide();
+        $(document).off('click', '#td-assign-cancel-op').on('click', '#td-assign-cancel-op', function() {
+            $('#td-assign-modal-op').hide();
             currentAssignRequestId = null;
         });
         
         // Close modal on background click
-        $(document).off('click', '#td-assign-modal').on('click', '#td-assign-modal', function(e) {
-            if (e.target.id === 'td-assign-modal') {
+        $(document).off('click', '#td-assign-modal-op').on('click', '#td-assign-modal-op', function(e) {
+            if (e.target.id === 'td-assign-modal-op') {
                 $(this).hide();
                 currentAssignRequestId = null;
             }
         });
         
         // Approve button handler
-        $(document).off('click', '.td-approve-btn').on('click', '.td-approve-btn', function() {
+        $(document).off('click', '.oa-table-container .td-approve-btn').on('click', '.oa-table-container .td-approve-btn', function() {
             var btn = $(this);
             var requestId = btn.data('id');
             
@@ -449,7 +469,7 @@ function td_manager_actions_table_shortcode($atts) {
         });
         
         // Reject button handler
-        $(document).off('click', '.td-reject-btn').on('click', '.td-reject-btn', function() {
+        $(document).off('click', '.oa-table-container .td-reject-btn').on('click', '.oa-table-container .td-reject-btn', function() {
             var btn = $(this);
             var requestId = btn.data('id');
             
@@ -475,7 +495,7 @@ function td_manager_actions_table_shortcode($atts) {
         });
         
         // Undo approval button handler
-        $(document).off('click', '.td-undo-approve-btn').on('click', '.td-undo-approve-btn', function() {
+        $(document).off('click', '.oa-table-container .td-undo-approve-btn').on('click', '.oa-table-container .td-undo-approve-btn', function() {
             var btn = $(this);
             var requestId = btn.data('id');
             
@@ -501,7 +521,7 @@ function td_manager_actions_table_shortcode($atts) {
         });
         
         // Undo rejection button handler
-        $(document).off('click', '.td-undo-reject-btn').on('click', '.td-undo-reject-btn', function() {
+        $(document).off('click', '.oa-table-container .td-undo-reject-btn').on('click', '.oa-table-container .td-undo-reject-btn', function() {
             var btn = $(this);
             var requestId = btn.data('id');
             
@@ -531,4 +551,4 @@ function td_manager_actions_table_shortcode($atts) {
     <?php
     return ob_get_clean();
 }
-add_shortcode('manager_actions_table', 'td_manager_actions_table_shortcode');
+add_shortcode('operator_actions_table', 'td_operator_actions_table_shortcode');

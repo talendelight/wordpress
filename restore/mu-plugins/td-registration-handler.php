@@ -2,7 +2,7 @@
 /**
  * Plugin Name: TalenDelight Registration Handler
  * Description: Handles custom registration form submissions - creates change requests, not WordPress users
- * Version: 2.0.0
+ * Version: 2.1.0
  * 
  * IMPORTANT WORKFLOW NOTES:
  * - Registration creates records in td_user_data_change_requests table (status: 'new')
@@ -11,14 +11,37 @@
  * - See WORDPRESS-BACKLOG.md -> Epic WP-09.5 for external user provisioning
  */
 
+// Register shortcode to generate nonce (since PHP in post_content doesn't execute)
+add_shortcode('td_registration_nonce', function() {
+    return wp_create_nonce('td_registration_form');
+});
+
+// AJAX endpoint to get nonce (for JavaScript to fetch on page load)
+add_action('wp_ajax_td_get_registration_nonce', 'td_get_registration_nonce');
+add_action('wp_ajax_nopriv_td_get_registration_nonce', 'td_get_registration_nonce');
+function td_get_registration_nonce() {
+    wp_send_json_success([
+        'nonce' => wp_create_nonce('td_registration_form')
+    ]);
+}
+
+// Enable shortcode processing in HTML blocks (Gutenberg)
+add_filter('the_content', 'do_shortcode', 11);
+
 add_action('wp_ajax_td_process_registration', 'td_process_registration');
 add_action('wp_ajax_nopriv_td_process_registration', 'td_process_registration');
 
 function td_process_registration() {
     global $wpdb;
     
+    // Debug logging
+    error_log('=== Registration Form Submission Debug ===');
+    error_log('Nonce received: ' . (isset($_POST['td_registration_nonce']) ? $_POST['td_registration_nonce'] : 'NOT SET'));
+    error_log('Nonce verification: ' . (isset($_POST['td_registration_nonce']) && wp_verify_nonce($_POST['td_registration_nonce'], 'td_registration_form') ? 'VALID' : 'INVALID'));
+    
     // Verify nonce
     if (!isset($_POST['td_registration_nonce']) || !wp_verify_nonce($_POST['td_registration_nonce'], 'td_registration_form')) {
+        error_log('Security verification failed - sending error response');
         wp_send_json_error(['message' => 'Security verification failed.']);
         return;
     }
@@ -41,7 +64,7 @@ function td_process_registration() {
     
     // Check if email already exists in change requests (pending/approved)
     $existing = $wpdb->get_var($wpdb->prepare(
-        "SELECT id FROM td_user_data_change_requests 
+        "SELECT id FROM {$wpdb->prefix}td_user_data_change_requests 
          WHERE email = %s AND status IN ('new', 'pending', 'approved')
          LIMIT 1",
         $email
@@ -88,12 +111,12 @@ function td_process_registration() {
     require_once(ABSPATH . 'wp-admin/includes/file.php');
     
     $upload_dir = wp_upload_dir();
-    $registration_dir = $upload_dir['basedir'] . '/registration-pending';
+    $registration_dir = $upload_dir['basedir'] . '/register';
     
     // Create directory if not exists
     if (!file_exists($registration_dir)) {
         wp_mkdir_p($registration_dir);
-        // Protect with .htaccess
+        // Protect with .htaccess to prevent direct access
         file_put_contents($registration_dir . '/.htaccess', "deny from all\n");
     }
     
@@ -114,7 +137,7 @@ function td_process_registration() {
         $cv_destination = $registration_dir . '/' . $cv_filename;
         
         if (move_uploaded_file($cv_upload['tmp_name'], $cv_destination)) {
-            $cv_file_path = '/wp-content/uploads/registration-pending/' . $cv_filename;
+            $cv_file_path = '/wp-content/uploads/register/' . $cv_filename;
         } else {
             $upload_errors[] = 'CV upload failed';
         }
@@ -131,7 +154,7 @@ function td_process_registration() {
     $nid_citizenship_destination = $registration_dir . '/' . $nid_citizenship_filename;
     
     if (move_uploaded_file($nid_citizenship['tmp_name'], $nid_citizenship_destination)) {
-        $citizenship_id_file = '/wp-content/uploads/registration-pending/' . $nid_citizenship_filename;
+        $citizenship_id_file = '/wp-content/uploads/register/' . $nid_citizenship_filename;
     } else {
         $upload_errors[] = 'National ID (Citizenship) upload failed';
         wp_send_json_error(['message' => 'Required file upload failed. Please try again.']);
@@ -145,7 +168,7 @@ function td_process_registration() {
         $nid_residence_destination = $registration_dir . '/' . $nid_residence_filename;
         
         if (move_uploaded_file($nid_residence['tmp_name'], $nid_residence_destination)) {
-            $residence_id_file = '/wp-content/uploads/registration-pending/' . $nid_residence_filename;
+            $residence_id_file = '/wp-content/uploads/register/' . $nid_residence_filename;
         } else {
             $upload_errors[] = 'National ID (Residence) upload failed';
         }
@@ -178,7 +201,7 @@ function td_process_registration() {
         'submitted_date' => current_time('mysql')
     ];
     
-    $result = $wpdb->insert('td_user_data_change_requests', $insert_data);
+    $result = $wpdb->insert($wpdb->prefix . 'td_user_data_change_requests', $insert_data);
     
     if ($result === false) {
         error_log("Registration insert failed: " . $wpdb->last_error);

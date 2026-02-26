@@ -116,8 +116,68 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 
 **Related:**
 - **TASK: Verify Deployment Readiness (Pre-Commit)** - prerequisite step
+- **TASK: Verify Production Deployment (Post-Deploy)** - mandatory verification after deployment
 - SCRIPT-REGISTRY: backup-production.ps1, verify-production.ps1, restore-production.ps1
 - TASK: Deploy WordPress Page to Production
+- TASK: Rollback Failed Deployment
+
+---
+
+### Task: Verify Production Deployment (Post-Deploy)
+**Environment:** 🌐 PRODUCTION  
+**File:** [docs/procedures/POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.md)  
+**Script:** [infra/shared/scripts/verify-deployment.ps1](../infra/shared/scripts/verify-deployment.ps1)  
+**Frequency:** After EVERY deployment to production (mandatory, no exceptions)  
+**Duration:** 2-5 minutes
+
+**Overview:**
+Automated verification that compares local workspace files with production to detect deployment failures. Prevents silent failures where Hostinger Git auto-deployment doesn't deploy new files or modifications.
+
+1. Wait 30 seconds for Hostinger auto-deployment
+2. Run verify-deployment.ps1 to compare file sizes
+3. If verification fails → Manual deployment via SCP
+4. Clear production cache
+5. Run health check (wp-action.ps1 verify)
+6. Functional testing (user confirmation)
+
+**Prerequisites:**
+- Deployment completed (git push origin main executed)
+- SSH access to production configured
+
+**Key Commands:**
+```powershell
+# Wait for Hostinger auto-deployment
+Start-Sleep -Seconds 30
+
+# Verify all wp-content/ files deployed
+powershell -File infra/shared/scripts/wp-action.ps1 verify-deployment
+
+# If files missing → Manual deployment
+scp -P 65002 -i "tmp\hostinger_deploy_key" "wp-content\mu-plugins\your-file.php" u909075950@45.84.205.129:/home/u909075950/domains/talendelight.com/public_html/wp-content/mu-plugins/
+
+# Clear cache
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp cache flush --allow-root"
+
+# Health check
+powershell -File infra/shared/scripts/wp-action.ps1 verify
+```
+
+**Exit Codes:**
+- `0` = All files deployed successfully (production matches local)
+- `1` = Deployment failure detected (missing files or size mismatch)
+
+**Common Issues (Script Detects):**
+- **Missing files** → New files not created by Hostinger Git deployment
+- **Size mismatch** → Partial upload or encoding corruption
+- **Outdated files** → Modified files not updated
+
+**Manual Deployment Procedure (When Auto-Deploy Fails):**
+See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.md) Section: "Manual Deployment"
+
+**Related:**
+- **TASK: Deploy New Release to Production** - deployment procedure (includes this verification step)
+- SCRIPT-REGISTRY: verify-deployment.ps1, backup-production.ps1, restore-production.ps1
+- LESSON: ../docs/lessons/hostinger-auto-deployment-limitations.md (v3.6.4 deployment failure analysis)
 - TASK: Rollback Failed Deployment
 
 ---

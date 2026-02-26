@@ -42,7 +42,7 @@ function td_generate_request_id($date = null) {
     try {
         // Atomic increment: Insert new row or increment existing
         $result = $wpdb->query($wpdb->prepare(
-            "INSERT INTO td_id_sequences (entity_type, date_str, last_sequence)
+            "INSERT INTO {$wpdb->prefix}td_id_sequences (entity_type, date_str, last_sequence)
              VALUES (%s, %s, 1)
              ON DUPLICATE KEY UPDATE last_sequence = last_sequence + 1",
             $entity_type,
@@ -55,7 +55,7 @@ function td_generate_request_id($date = null) {
         
         // Retrieve the sequence number that was just set
         $sequence = $wpdb->get_var($wpdb->prepare(
-            "SELECT last_sequence FROM td_id_sequences 
+            "SELECT last_sequence FROM {$wpdb->prefix}td_id_sequences 
              WHERE entity_type = %s AND date_str = %s",
             $entity_type,
             $date_str
@@ -113,7 +113,7 @@ function td_generate_record_id($role, $date = null) {
     try {
         // Atomic increment: Insert new row or increment existing
         $result = $wpdb->query($wpdb->prepare(
-            "INSERT INTO td_id_sequences (entity_type, date_str, last_sequence)
+            "INSERT INTO {$wpdb->prefix}td_id_sequences (entity_type, date_str, last_sequence)
              VALUES (%s, %s, 1)
              ON DUPLICATE KEY UPDATE last_sequence = last_sequence + 1",
             $entity_type,
@@ -126,7 +126,7 @@ function td_generate_record_id($role, $date = null) {
         
         // Retrieve the sequence number that was just set
         $sequence = $wpdb->get_var($wpdb->prepare(
-            "SELECT last_sequence FROM td_id_sequences 
+            "SELECT last_sequence FROM {$wpdb->prefix}td_id_sequences 
              WHERE entity_type = %s AND date_str = %s",
             $entity_type,
             $date_str
@@ -228,7 +228,7 @@ function td_get_sequence_stats($date = null) {
     
     $results = $wpdb->get_results($wpdb->prepare(
         "SELECT entity_type, last_sequence, created_at, updated_at 
-         FROM td_id_sequences 
+         FROM {$wpdb->prefix}td_id_sequences 
          WHERE date_str = %s 
          ORDER BY entity_type",
         $date_str
