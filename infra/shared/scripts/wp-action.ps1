@@ -26,6 +26,7 @@ param(
         'purge-caches',
         'check-urls',
         'check-deployment',
+        'verify-deployment',
         'verify-security',
         'health-check',
         'apply-sql',
@@ -154,6 +155,17 @@ $SCRIPT_REGISTRY = @{
         usage = 'wp-action check-deployment'
         examples = @(
             'wp-action check-deployment'
+        )
+    }
+    
+    'verify-deployment' = @{
+        script = 'verify-deployment.ps1'
+        description = 'Post-deployment verification (compares local vs production files)'
+        usage = 'wp-action verify-deployment [-FilePattern <pattern>] [-Commit <hash>]'
+        examples = @(
+            'wp-action verify-deployment',
+            'wp-action verify-deployment -FilePattern "wp-content/mu-plugins/*.php"',
+            'wp-action verify-deployment -Commit c7722e8f'
         )
     }
     
