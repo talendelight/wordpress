@@ -1,0 +1,140 @@
+{
+  "version": "3.7.0",
+  "type": "minor",
+  "releaseDate": "2026-03-09",
+  "plannedStartDate": "2026-03-02",
+  "status": "planned",
+  "description": "Privacy Policy + Registration Request CPT + Record ID Generation System",
+  "tasks": [
+    {
+      "taskId": "PENG-014",
+      "title": "Privacy Policy Page",
+      "type": "page",
+      "status": "planned",
+      "priority": "critical",
+      "deploymentMethod": "manual-page",
+      "localPageId": null,
+      "productionPageId": null,
+      "estimatedDays": 2.0,
+      "dependencies": ["LFTC-002"],
+      "notes": "Blocked by LFTC-002 (lawyer GDPR retention policy). Requires comprehensive privacy policy covering data collection, processing purposes, retention periods, user rights (GDPR), cookie usage, third-party integrations, data transfers, contact information."
+    },
+    {
+      "taskId": "PENG-015",
+      "title": "CPT td_registration_request",
+      "type": "database",
+      "status": "planned",
+      "priority": "critical",
+      "deploymentMethod": "sql-migration",
+      "sqlFiles": [],
+      "estimatedDays": 3.0,
+      "dependencies": ["PENG-014", "BMSL-001", "PENG-001"],
+      "notes": "Custom post type for registration requests. Stores all submission data before approval. Links to td_user_requests table via request_id. Foundation for registration approval workflow."
+    },
+    {
+      "taskId": "PENG-016",
+      "title": "Record ID Generation System",
+      "type": "code",
+      "status": "planned",
+      "priority": "critical",
+      "deploymentMethod": "git-auto-deploy",
+      "files": [
+        "wp-content/mu-plugins/record-id-generator.php"
+      ],
+      "estimatedDays": 2.0,
+      "dependencies": ["PENG-001", "PENG-015"],
+      "notes": "Generate Request IDs (USRQ-YYMMDD-NNNN) for submissions and Record IDs (PRSN-YYMMDD-NNNN, CMPY-YYMMDD-NNNN) for approved entities. Enforces one-to-one-to-one mapping (1 Email = 1 WP User = 1 Record ID = 1 Role)."
+    }
+  ],
+  "gitCommits": [],
+  "deploymentSteps": [
+    {
+      "step": 1,
+      "description": "Backup production",
+      "command": "powershell -File infra/shared/scripts/wp-action.ps1 backup",
+      "critical": true
+    },
+    {
+      "step": 2,
+      "description": "Deploy code to main branch",
+      "command": "git checkout main && git merge develop --no-edit && git push origin main",
+      "critical": true
+    },
+    {
+      "step": 3,
+      "description": "Wait for Hostinger auto-deployment",
+      "command": "Start-Sleep -Seconds 30",
+      "critical": true
+    },
+    {
+      "step": 4,
+      "description": "Verify deployment (post-deployment check)",
+      "command": "powershell -File infra/shared/scripts/wp-action.ps1 verify-deployment",
+      "critical": true,
+      "notes": "NEW in v3.6.4: Mandatory verification to detect deployment failures"
+    },
+    {
+      "step": 5,
+      "description": "Deploy database migration (SQL files)",
+      "command": "scp SQL files to production, import via phpMyAdmin or wp-cli",
+      "critical": true,
+      "notes": "Apply PENG-015 SQL migration for td_registration_request CPT"
+    },
+    {
+      "step": 6,
+      "description": "Deploy Privacy Policy page",
+      "command": "Manual page deployment via restore-page-X.php script",
+      "critical": true,
+      "notes": "Use POST-DEPLOYMENT-CHECKLIST.md workflow"
+    },
+    {
+      "step": 7,
+      "description": "Clear production cache",
+      "command": "ssh production 'cd public_html && wp cache flush --allow-root'",
+      "critical": false
+    },
+    {
+      "step": 8,
+      "description": "Run health check",
+      "command": "powershell -File infra/shared/scripts/wp-action.ps1 verify",
+      "critical": true
+    },
+    {
+      "step": 9,
+      "description": "Functional testing",
+      "command": "User tests Privacy Policy page, Record ID generation, CPT creation",
+      "critical": true
+    }
+  ],
+  "verificationChecklist": [
+    "Privacy Policy page exists and displays correctly",
+    "All sections present: data collection, processing, retention, user rights, cookies, transfers, contact",
+    "CPT td_registration_request created in database",
+    "Record ID generation works for test submissions",
+    "Request IDs format: USRQ-YYMMDD-NNNN",
+    "Record IDs format: PRSN-YYMMDD-NNNN (people), CMPY-YYMMDD-NNNN (companies)",
+    "One-to-one-to-one mapping enforced (1 Email = 1 WP User = 1 Record ID)",
+    "No errors in production logs",
+    "Health check passes (all 18+ checks)"
+  ],
+  "rollbackProcedure": "powershell -File infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true",
+  "knownIssues": [],
+  "breakingChanges": false,
+  "affectedPages": [
+    {
+      "pageName": "Privacy Policy",
+      "pageSlug": "privacy-policy",
+      "localId": null,
+      "productionId": 3,
+      "changeType": "major-update",
+      "notes": "Comprehensive privacy policy replacing placeholder content"
+    }
+  ],
+  "documentation": [
+    "docs/PENG-001-CANDIDATEID-STRATEGY-V2.md - Record ID strategy",
+    "deliverables/COPS-001-CV-LIFECYCLE-POLICY.md - CV handling and consent",
+    "deliverables/LFTC-002-GDPR-RETENTION-POLICY.md - Retention policy (pending lawyer)",
+    "docs/procedures/POST-DEPLOYMENT-CHECKLIST.md - Deployment verification"
+  ],
+  "releaseNotes": ".github/releases/RELEASE-NOTES-v3.7.0.md"
+}
