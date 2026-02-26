@@ -25,6 +25,12 @@
    - ❌ DO NOT reinvent commands - if similar operation exists in registry, use it
    - ❌ DO NOT run discovery commands when references exist
    - ❌ DO NOT create ad-hoc procedures - check TASK-REGISTRY.md for established workflows
+8. **Verify before implementing** - When user reports issues:
+   - ✅ Ask clarifying questions: "What was the expected behavior?" "What actually happened?" "Can you show me an example?"
+   - ✅ Confirm the actual problem with evidence (database queries, log files, code inspection)
+   - ✅ Propose solution and get approval before implementing
+   - ❌ DO NOT jump straight to code changes based on initial report
+   - ❌ DO NOT assume you understand the full context without verification
 
 ## Known Issues & Solutions
 

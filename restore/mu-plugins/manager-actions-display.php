@@ -227,7 +227,7 @@ function td_manager_actions_table_shortcode($atts) {
                             </td>
                             <td style="padding: 12px;">
                                 <span style="display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #e3f2fd; color: #1565c0; text-transform: uppercase;">
-                                    <?php echo esc_html($request->requested_role ?? 'N/A'); ?>
+                                    <?php echo esc_html(ucfirst($request->role ?? 'N/A')); ?>
                                 </span>
                             </td>
                             <td style="padding: 12px;">

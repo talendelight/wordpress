@@ -3,45 +3,153 @@
   "release_date": "2026-02-24",
   "type": "patch",
   "status": "in-development",
+  "steps": [
+    {
+      "type": "bug_fix",
+      "task_id": "BUG-001",
+      "title": "Fix Role Parameter Display",
+      "description": "Fix td_user_role showing N/A instead of actual role name in Manager Actions table",
+      "files": ["wp-content/mu-plugins/register-user-action-handler.php"],
+      "status": "pending"
+    },
+    {
+      "type": "deploy_page",
+      "task_id": "PENG-073",
+      "title": "Operators Landing Page",
+      "description": "Dashboard landing page for operators with quick links and Needs Action tile",
+      "files": [
+        "restore/pages/operators-25.html"
+      ],
+      "page_slug": "operators",
+      "local_id": 25,
+      "prod_id": "TBD",
+      "status": "complete"
+    },
+    {
+      "type": "deploy_page",
+      "task_id": "PENG-072",
+      "title": "Operator Actions Page",
+      "description": "Dashboard for operators to manage user registration requests with tab filtering (New, Assigned, Approved, Rejected, All)",
+      "files": [
+        "restore/pages/operator-actions-49.html",
+        "wp-content/mu-plugins/operator-actions-display.php"
+      ],
+      "dependencies": [
+        "wp-content/mu-plugins/user-requests-display.php",
+        "wp-content/mu-plugins/audit-logger.php"
+      ],
+      "page_slug": "operator-actions",
+      "local_id": 49,
+      "prod_id": "TBD",
+      "status": "complete"
+    },
+    {
+      "type": "deploy_page",
+      "task_id": "PENG-018",
+      "title": "Employer Registration Form",
+      "description": "Registration form for employer users",
+      "page_slug": "register-employer",
+      "status": "planned"
+    },
+    {
+      "type": "deploy_page",
+      "task_id": "PENG-019",
+      "title": "Scout Registration Form",
+      "description": "Registration form for scout users",
+      "page_slug": "register-scout",
+      "status": "planned"
+    }
+  ],
   "testing_progress": {
-    "tested_pages": [],
-    "pending_pages": [
-      "Operators (ID 20) - Operator Actions page implementation",
-      "Candidates (ID 17) - Footer icons fixed",
-      "Employers (ID 16) - Footer icons fixed",
-      "Scouts (ID 18) - Footer icons fixed",
-      "Managers (ID 19) - Footer icons fixed"
+    "tested_pages": [
+      "Candidates (ID 17) - Footer icons fixed ✅",
+      "Employers (ID 16) - Footer icons fixed ✅",
+      "Scouts (ID 18) - Footer icons fixed ✅",
+      "Managers (ID 19) - Footer icons fixed ✅",
+      "Operators Landing (ID 25) - Complete with clickable tiles ✅",
+      "Operator Actions (ID 49) - Tab filtering working, approval flow tested ✅"
     ],
-    "issues_found": 0,
-    "issues_fixed": 0,
-    "issues_pending": 0
+    "pending_pages": [],
+    "issues_found": 3,
+    "issues_fixed": 3,
+    "issues_pending": 0,
+    "bugs": [
+      {
+        "id": "BUG-001",
+        "title": "Role showing N/A instead of Candidate",
+        "status": "Todo",
+        "priority": "High",
+        "description": "Role field displaying N/A instead of actual role name. Debug td_user_role parameter flow.",
+        "task_ref": "PENG-017"
+      },
+      {
+        "id": "BUG-002",
+        "title": "Operators landing page corrupted to 1 byte",
+        "status": "Done",
+        "priority": "Critical",
+        "description": "Page content corrupted to single dash character. Restored from operators-9.html backup (17,555 bytes).",
+        "fixed_date": "2026-02-26"
+      },
+      {
+        "id": "BUG-003",
+        "title": "Empty NEW and ALL tabs in Operator Actions",
+        "status": "Done",
+        "priority": "Critical",
+        "description": "Database column mismatch - code used requested_role (doesn't exist) and td_candidate (wrong prefix). Fixed to use role column with candidate/employer values.",
+        "fixed_date": "2026-02-26"
+      },
+      {
+        "id": "BUG-004",
+        "title": "Missing footer icons in Operator Actions",
+        "status": "Done",
+        "priority": "High",
+        "description": "First 3 footer badges showing placeholder text (??, ?). Replaced paragraph blocks with HTML img blocks.",
+        "fixed_date": "2026-02-26"
+      }
+    ]
   },
   "scope": {
-    "primary_features": [
-      "Operator Actions Page - display and manage user registration requests",
-      "Operator Actions Tabs - New, In Progress, Approved, Rejected",
-      "Style fixes - Footer emoji to SVG icons across all landing pages"
+    "completed_features": [
+      "PENG-017: Candidate registration form (basic version deployed Feb 24)",
+      "Footer SVG icons deployed to 4 pages (Candidates, Employers, Scouts, Managers)",
+      "PENG-072: Operator Actions Page - Complete with tab filtering (New, Assigned, Approved, Rejected, All)",
+      "PENG-073: Operators Landing Page - Dashboard with clickable Needs Action tile",
+      "BUG-002: Restored corrupted operators landing page from backup",
+      "BUG-003: Fixed database column mismatch causing empty tabs",
+      "BUG-004: Fixed missing footer icons in Operator Actions page"
+    ],
+    "in_progress_features": [
+      "PENG-028: Manager Actions dashboard - COMPLETE (Manager + Operator views both done)",
+      "BUG-001: Fix Role parameter showing N/A instead of actual role name"
+    ],
+    "pending_features": [
+      "PENG-018: Employer registration form",
+      "PENG-019: Scout registration form"
     ],
     "backend_changes": [
-      "operator-actions-display.php MU plugin (similar to manager-actions-display.php)",
-      "operator-actions-tabs.js for tab functionality",
-      "Database query to fetch requests for operators (role-based filtering)"
+      "operator-actions-display.php MU plugin (555 lines) - ✅ COMPLETE with database fixes",
+      "Database query fixes: role IN ('candidate', 'employer') instead of requested_role",
+      "Public user filtering: Operators see only candidate/employer requests",
+      "Tab statistics with correct WHERE clauses",
+      "Fix td_user_role parameter flow in registration - BUG-001 (Todo)"
     ],
     "frontend_changes": [
-      "Operators Actions page creation (ID 20 production)",
-      "Hierarchical URL structure /operators/actions/",
-      "Footer SVG icons deployed to Candidates, Employers, Scouts, Managers pages"
-    ],
-    "style_fixes": [
-      "Footer icons: Changed emoji to SVG across 4 pages (Candidates, Employers, Scouts, Managers)",
-      "Icons: shield-grey-border.svg, padlock-lock-grey.svg, balance-scale-yellow.svg, eu-logo.svg"
+      "Operators Landing page (ID 25, 17,731 bytes) - ✅ COMPLETE",
+      "Operator Actions page (ID 49, 12,962 bytes) - ✅ COMPLETE",
+      "Hierarchical URL structure /operators/ and /operators/actions/",
+      "Clickable Needs Action tile (matches managers pattern)",
+      "CTA button spacing fixed (matches welcome page)",
+      "Footer SVG icons in Operator Actions page (HTML img blocks)",
+      "Footer SVG icons deployed to Candidates, Employers, Scouts, Managers pages ✅"
     ]
   },
   "deployment_plan": {
     "files_to_deploy": [
-      "wp-content/mu-plugins/operator-actions-display.php",
-      "wp-content/themes/blocksy-child/assets/js/operator-actions-tabs.js",
-      "Operator Actions page content (ID 20 production)"
+      "restore/pages/operators-25.html (Operators landing page - 17,731 bytes) ✅ READY",
+      "restore/pages/operator-actions-49.html (Operator actions page - 12,962 bytes) ✅ READY",
+      "wp-content/mu-plugins/operator-actions-display.php (555 lines with database fixes) ✅ READY",
+      "Operator Actions page content (ID 20 production) (PENG-072)",
+      "Bug fixes for role parameter (BUG-001)"
     ],
     "configuration_steps": [
       "Set Operator Actions page parent to Operators page",
@@ -50,12 +158,81 @@
       "Clear cache"
     ],
     "verification_steps": [
-      "Login as operator user",
-      "Visit /operators/actions/",
-      "Verify tabs display correctly (New, In Progress, Approved, Rejected)",
-      "Verify requests display in appropriate tabs",
-      "Test action buttons (Approve, Reject)",
-      "Verify footer icons on all landing pages"
+      "BUG-001: Verify role displays correctly (not N/A) in Manager Actions table",
+      "PENG-072: Login as operator user",
+      "PENG-072: Visit /operators/actions/",
+      "PENG-072: Verify tabs display correctly (New, In Progress, Approved, Rejected)",
+      "PENG-072: Verify requests display in appropriate tabs",
+      "PENG-072: Test action buttons (Approve, Reject)",
+      "Footer icons: Verified on all landing pages ✅"
+    ]
+  },
+  "task_tracking": {
+    "completed": [
+      {
+        "task_id": "PENG-017",
+        "name": "Forminator: Candidate registration",
+        "type": "Task",
+        "status": "Done",
+        "completed_date": "2026-02-24",
+        "notes": "Basic version deployed to production"
+      },
+      {
+        "task_id": "PENG-072",
+        "name": "Operator Actions Page",
+        "type": "Task",
+        "status": "Done",
+        "completed_date": "2026-02-26",
+        "notes": "Complete implementation with tab filtering, database fixes, approval workflow tested"
+      },
+      {
+        "task_id": "PENG-073",
+        "name": "Operators Landing Page",
+        "type": "Task",
+        "status": "Done",
+        "completed_date": "2026-02-26",
+        "notes": "Dashboard with clickable tiles, restored from corruption, CTA spacing fixed"
+      }
+    ],
+    "in_progress": [],
+    "todo": [
+      {
+        "task_id": "BUG-001",
+        "name": "Fix: Role showing N/A instead of Candidate",
+        "type": "Bug",
+        "priority": "High",
+        "status": "Todo",
+        "dependencies": ["PENG-017"],
+        "estimated_days": 0.5
+      },
+      {
+        "task_id": "PENG-018",
+        "name": "Forminator: Employer registration",
+        "type": "Task",
+        "priority": "Critical",
+        "status": "Todo",
+        "dependencies": ["PENG-014", "PENG-015"],
+        "estimated_days": 2
+      },
+      {
+        "task_id": "PENG-019",
+        "name": "Forminator: Scout registration",
+        "type": "Task",
+        "priority": "High",
+        "status": "Todo",
+        "dependencies": ["PENG-014", "PENG-015"],
+        "estimated_days": 2
+      }
+    ],
+    "post_mvp": [
+      {
+        "task_id": "PENG-031",
+        "name": "Registration detail view modal/page",
+        "type": "Task",
+        "priority": "Low",
+        "status": "Todo",
+        "notes": "NOT NEEDED IN MVP - Details visible in actions page + files in uploads folder. Moved to Post-MVP."
+      }
     ]
   },
   "completed_fixes": [
@@ -77,12 +254,56 @@
         "eu-logo.svg - EU Markets"
       ],
       "result": "All landing pages now display professional SVG icons instead of emojis"
+    },
+    {
+      "name": "operators_landing_page_corruption",
+      "description": "Fixed operators landing page corrupted to 1 byte (single dash character). Restored from backup operators-9.html.",
+      "pages_affected": ["Operators Landing (25)"],
+      "fixed_date": "2026-02-26",
+      "files_restored": ["operators-9.html (17,555 bytes → 17,731 bytes final)"],
+      "enhancements": [
+        "Added clickable Needs Action tile (matches managers pattern)",
+        "Fixed CTA button spacing (matches welcome page)",
+        "Content restored to 17,731 bytes"
+      ],
+      "result": "Page fully functional with enhanced UX patterns"
+    },
+    {
+      "name": "operator_actions_empty_tabs",
+      "description": "Fixed empty NEW and ALL tabs caused by database column/value mismatch in operator-actions-display.php",
+      "pages_affected": ["Operator Actions (49)"],
+      "fixed_date": "2026-02-26",
+      "root_cause": "Code used requested_role (non-existent column) and td_candidate/td_employer (wrong value prefix)",
+      "solution": "Changed to role IN ('candidate', 'employer') matching actual database schema",
+      "files_modified": ["wp-content/mu-plugins/operator-actions-display.php (3 locations: line 80, 131, 143)"],
+      "result": "All tabs now populate correctly with public user registration requests"
+    },
+    {
+      "name": "operator_actions_footer_icons",
+      "description": "Fixed missing footer icons in Operator Actions page (first 3 badges showed ??, ?)",
+      "pages_affected": ["Operator Actions (49)"],
+      "fixed_date": "2026-02-26",
+      "root_cause": "Used paragraph blocks instead of HTML img blocks",
+      "solution": "Replaced 3 paragraph blocks with HTML blocks containing img tags",
+      "icons_fixed": [
+        "shield-grey-border.svg - GDPR Compliant",
+        "padlock-lock-grey.svg - Secure & Reliable",
+        "balance-scale-yellow.svg - Equal Opportunity"
+      ],
+      "result": "All 4 footer badges now display correctly"
     }
   ],
-  "description": "Operator Actions page implementation with user request management capabilities, plus style fixes for footer icons across all landing pages",
+  "description": "Candidate registration (PENG-017) completed and deployed. Operator workflow complete: Operators Landing Page (PENG-073) and Operator Actions Page (PENG-072) with tab filtering, database fixes, and approval workflow tested. Three critical bugs fixed (page corruption, empty tabs, missing icons). Footer SVG icons deployed across all landing pages.",
   "notes": [
-    "Operators Actions page follows same pattern as Manager Actions (tabs, status filtering, action buttons)",
-    "Footer SVG icons already deployed and verified on production",
-    "Clean separation between Operator actions (public users) and Manager actions (all users)"
+    "Candidate registration (PENG-017): Basic version working, needs role parameter bug fix (BUG-001)",
+    "Operator workflow COMPLETE (Feb 26): Landing page (ID 25) + Actions page (ID 49) with tab filtering",
+    "PENG-072: operator-actions-display.php (555 lines) with database column fixes applied",
+    "PENG-073: Operators landing page restored from corruption, enhanced with clickable tiles",
+    "Critical fixes: Database column mismatch (requested_role → role), footer icons (paragraphs → HTML img blocks), CTA spacing",
+    "Approval workflow tested by user and confirmed working end-to-end",
+    "Footer SVG icons: Already deployed and verified on production (Feb 24)",
+    "Clean separation: Operators see public users (candidate, employer), Managers see all users",
+    "Dependencies: user-requests-display.php (AJAX handlers), audit-logger.php (logging)",
+    "Ready for production deployment: All local testing complete"
   ]
 }

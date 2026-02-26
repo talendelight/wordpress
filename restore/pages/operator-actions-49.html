@@ -1,11 +1,11 @@
-<!-- Manager Actions Page - Built from Block Patterns -->
+﻿<!-- Operator Actions Page - Built from Block Patterns -->
 <!-- Migrated from Elementor to Gutenberg on February 12, 2026 -->
 
 <!-- Hero Section -->
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"},"margin":{"top":"0","bottom":"0"}}},"backgroundColor":"navy","textColor":"gray-off-white","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull has-gray-off-white-color has-navy-background-color has-text-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
     <!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontSize":"48px","fontWeight":"700"}}} -->
-    <h1 class="wp-block-heading has-text-align-center" style="font-size:48px;font-weight:700">Manager Actions</h1>
+    <h1 class="wp-block-heading has-text-align-center" style="font-size:48px;font-weight:700">Operator Actions</h1>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"20px"},"spacing":{"margin":{"top":"var:preset|spacing|24"}}}} -->
@@ -47,35 +47,35 @@
             <!-- New Tab -->
             <div class="td-tab-content active" id="tab-new" style="padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [manager_actions_table status="new" limit="50"]
+                [operator_actions_table status="new" limit="50"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Assigned Tab -->
             <div class="td-tab-content" id="tab-assigned" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [manager_actions_table status="assigned" limit="50"]
+                [operator_actions_table status="assigned" limit="50"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Approved Tab -->
             <div class="td-tab-content" id="tab-approved" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [manager_actions_table status="approved" limit="50" days="90"]
+                [operator_actions_table status="approved" limit="50" days="90"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Rejected Tab -->
             <div class="td-tab-content" id="tab-rejected" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [manager_actions_table status="rejected" limit="50" days="90"]
+                [operator_actions_table status="rejected" limit="50" days="90"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- All Tab -->
             <div class="td-tab-content" id="tab-all" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [manager_actions_table status="all" limit="100" days="90"]
+                [operator_actions_table status="all" limit="100" days="90"]
                 <!-- /wp:shortcode -->
             </div>
         </div>
@@ -150,8 +150,8 @@
 
     <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
     <div class="wp-block-buttons">
-        <!-- wp:button {"style":{"border":{"radius":"50px"},"spacing":{"padding":{"left":"var:preset|spacing|60","right":"var:preset|spacing|60","top":"16px","bottom":"16px"}}},"backgroundColor":"white","textColor":"navy","fontSize":"medium"} -->
-        <div class="wp-block-button has-custom-font-size has-medium-font-size"><a class="wp-block-button__link has-navy-color has-white-background-color has-text-color has-background wp-element-button" href="/help" style="border-radius:50px;padding-top:16px;padding-right:var(--wp--preset--spacing--60);padding-bottom:16px;padding-left:var(--wp--preset--spacing--60)">View Documentation</a></div>
+        <!-- wp:button {"style":{"border":{"radius":"50px"},"spacing":{"padding":{"left":"var:preset|spacing|60","right":"var:preset|spacing|60","top":"16px","bottom":"16px"}}},"backgroundColor":"white","textColor":"navy"} -->
+        <div class="wp-block-button"><a class="wp-block-button__link has-navy-color has-white-background-color has-text-color has-background wp-element-button" href="/help" style="border-radius:50px;padding-top:16px;padding-right:var(--wp--preset--spacing--60);padding-bottom:16px;padding-left:var(--wp--preset--spacing--60)">View Documentation</a></div>
         <!-- /wp:button -->
     </div>
     <!-- /wp:buttons -->
@@ -166,25 +166,25 @@
     <div class="wp-block-columns are-vertically-aligned-center" style="gap:24px">
         <!-- wp:column {"verticalAlignment":"center","width":"25%"} -->
         <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:25%">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}},"textColor":"gray-dark"} -->
-            <p class="has-text-align-center has-gray-dark-color has-text-color" style="font-size:14px;font-weight:600">🔒 GDPR Compliant</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;"><img src="/wp-content/themes/blocksy-child/assets/images/shield-grey-border.svg" alt="GDPR" style="height:18px;vertical-align:middle;margin-right:8px;"/>GDPR Compliant</div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 
         <!-- wp:column {"verticalAlignment":"center","width":"25%"} -->
         <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:25%">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}},"textColor":"gray-dark"} -->
-            <p class="has-text-align-center has-gray-dark-color has-text-color" style="font-size:14px;font-weight:600">✓ Secure &amp; Reliable</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;"><img src="/wp-content/themes/blocksy-child/assets/images/padlock-lock-grey.svg" alt="Secure" style="height:18px;vertical-align:middle;margin-right:8px;"/>Secure &amp; Reliable</div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 
         <!-- wp:column {"verticalAlignment":"center","width":"25%"} -->
         <div class="wp-block-column is-vertically-aligned-center" style="flex-basis:25%">
-            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}},"textColor":"gray-dark"} -->
-            <p class="has-text-align-center has-gray-dark-color has-text-color" style="font-size:14px;font-weight:600">🤝 Equal Opportunity</p>
-            <!-- /wp:paragraph -->
+            <!-- wp:html -->
+            <div style="text-align:center;font-size:14px;font-weight:600;color:#4A5568;"><img src="/wp-content/themes/blocksy-child/assets/images/balance-scale-yellow.svg" alt="Equal Opportunity" style="height:18px;vertical-align:middle;margin-right:8px;"/>Equal Opportunity</div>
+            <!-- /wp:html -->
         </div>
         <!-- /wp:column -->
 
@@ -201,3 +201,6 @@
     <!-- /wp:columns -->
 </div>
 <!-- /wp:group -->
+
+
+

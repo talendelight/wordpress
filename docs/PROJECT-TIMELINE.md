@@ -198,6 +198,48 @@
 
 **Database Migrations:**
 - 260117: td_user_data_change_requests table
+
+---
+
+### Week 6: February 24, 2026
+
+#### Feb 24 🚀 v3.6.4 - Candidate Registration & Operator Actions (In Development)
+**Status:** 🔄 In Development
+
+**Completed (Feb 24):**
+- PENG-017: Candidate registration form deployed to production
+  - Basic version working with known bug (BUG-001)
+  - File: wp-content/mu-plugins/register-user-action-handler.php
+  - Form: Register Your Profile page (ID 31 production)
+- Manager Actions dashboard complete (PENG-028 partial)
+  - Status tabs: All Requests, Pending, Approved, Rejected
+  - Action buttons: Approve/Reject working
+- Footer SVG icons deployed to 4 landing pages
+  - Candidates, Employers, Scouts, Managers
+  - Professional SVG badges replacing emojis
+
+**In Progress:**
+- BUG-001: Fix role parameter showing "N/A" instead of actual role name
+  - Priority: High
+  - Planned: w/s 2026-02-23
+- PENG-072: Operator Actions Page implementation
+  - Similar to Manager Actions but for Operator role
+  - Priority: Critical
+  - Planned: w/s 2026-02-23
+
+**Pending:**
+- PENG-018: Employer registration (Planned: w/s 2026-03-02)
+- PENG-019: Scout registration (Planned: w/s 2026-03-02)
+
+**Post-MVP:**
+- PENG-031: Registration detail view modal (moved to Post-MVP, not needed in MVP)
+
+**Task Tracking:**
+- CSV updated with "Planned for w/s" column (22 tasks mapped to planned weeks)
+- Release tracking: .github/releases/v3.6.4.json with comprehensive task_tracking
+- GitHub Actions aligned with task structure
+
+**Milestone:** Candidate registration operational, Operator workflows in development
 - 260119: Role column, profile method, audit log
 - 260120: Approver tracking, comments
 
