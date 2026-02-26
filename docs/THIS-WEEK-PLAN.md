@@ -34,28 +34,33 @@
 
 ## 💼 CRITICAL: In-Progress Work
 
-### 3. BUG-001: Fix Role Showing N/A Instead of Candidate
+### 3. BUG-001: Fix Role Showing N/A Instead of Candidate ✅ COMPLETED
 - **Priority:** HIGH
 - **Estimate:** 0.5 days (1 hour)
-- **Status:** Todo → In Progress
+- **Status:** ✅ Complete (Feb 26, 2026)
 - **Why Important:** Production bug affecting candidate registration (PENG-017)
 - **Action Items:**
-  - [ ] Debug td_user_role parameter flow in Forminator submission
-  - [ ] Check database insert logic for role field
-  - [ ] Test fix on local, deploy to production
+  - [x] Debug td_user_role parameter flow in Forminator submission
+  - [x] Check database insert logic for role field
+  - [x] Test fix on local, deploy to production
 - **Deliverable:** Role displays correctly on Manager Actions dashboard
+- **Solution:** Changed `$request->requested_role` to `$request->role` (actual DB column) + added `ucfirst()` for capitalization
+- **Files Updated:** manager-actions-display.php (28,691 bytes), operator-actions-display.php (30,227 bytes)
 
-### 4. PENG-072: Operator Actions Page
+### 4. PENG-072: Operator Actions Page ✅ COMPLETED
 - **Priority:** CRITICAL
 - **Estimate:** 2 days (4 hours)
-- **Status:** Todo → In Progress
+- **Status:** ✅ Complete (Feb 26, 2026)
 - **Why Critical:** MVP requires both Manager AND Operator dashboards for approval workflow
 - **Action Items:**
-  - [ ] Clone Manager Actions page structure
-  - [ ] Add role-based filtering (Operators see Candidate + Employer only, not Scout/Manager/Operator)
-  - [ ] Test approval/rejection buttons with Operator user
-  - [ ] Update navigation to show Operator Actions in Operator menu
+  - [x] Clone Manager Actions page structure
+  - [x] Add role-based filtering (Operators see Candidate + Employer only, not Scout/Manager/Operator)
+  - [x] Test approval/rejection buttons with Operator user
+  - [x] Update navigation to show Operator Actions in Operator menu
 - **Deliverable:** Operator Actions dashboard functional with role filtering
+- **Deployed:** Page ID 84 (/operators/actions/) with shortcode `[operator_actions_table]`
+- **Role Filter:** `role IN ('candidate', 'employer')` - operators see only public users
+- **Verified:** User tested approvals successfully
 
 ---
 
@@ -105,16 +110,17 @@
 ## 📊 This Week Summary
 
 ### Workload Breakdown
-| Task | Priority | Est (Days) | Type |
-|------|----------|------------|------|
-| LFTC-002 (Lawyer) | 🚨 CRITICAL | 0.5 | Blocker |
-| COPS-006 (Secretary) | 🚨 CRITICAL | 1.0 | Business Ops |
-| BUG-001 (Role fix) | ⚠️ HIGH | 0.5 | Development |
-| PENG-072 (Operator Actions) | ⚠️ HIGH | 2.0 | Development |
-| COPS-008 (CRM) | ⚠️ HIGH | 1.0 | Business Ops |
-| MKTB-013 (Lead schema) | ⚠️ HIGH | 0.5 | Business Ops |
-| MKTB-005 (Outreach templates) | 🚨 CRITICAL | 0.5 | Business Ops |
-| **TOTAL** | | **6.0 days** | |
+| Task | Priority | Est (Days) | Status | Actual |
+|------|----------|------------|--------|--------|
+| LFTC-002 (Lawyer) | 🚨 CRITICAL | 0.5 | Todo | - |
+| COPS-006 (Secretary) | 🚨 CRITICAL | 1.0 | Todo | - |
+| BUG-001 (Role fix) | ⚠️ HIGH | 0.5 | ✅ Done | 0.5 |
+| PENG-072 (Operator Actions) | ⚠️ HIGH | 2.0 | ✅ Done | 2.0 |
+| COPS-008 (CRM) | ⚠️ HIGH | 1.0 | Todo | - |
+| MKTB-013 (Lead schema) | ⚠️ HIGH | 0.5 | Todo | - |
+| MKTB-005 (Outreach templates) | 🚨 CRITICAL | 0.5 | Todo | - |
+| **TOTAL** | | **6.0 days** | | **2.5 done** |
+| **REMAINING** | | | | **3.5 days** |
 
 **Capacity Analysis:**
 - **Planned:** 6.0 days
@@ -123,11 +129,19 @@
 - **Verdict:** ✅ **ACHIEVABLE** with minimal buffer (tight week, prioritize ruthlessly)
 
 **Week Goals:**
-1. ✅ Lawyer engaged → GDPR work starts (unblocks Privacy Policy)
-2. ✅ Secretary job posted → Hiring pipeline starts
-3. ✅ Operator Actions working → MVP approval workflow intact
-4. ✅ CRM operational → Revenue tracking in place
-5. ✅ Outreach templates ready → Begin outreach execution (2 sessions/week: 3 new + 5 follow-ups each)
+1. ⏳ Lawyer engaged → GDPR work starts (unblocks Privacy Policy) - Todo
+2. ⏳ Secretary job posted → Hiring pipeline starts - Todo
+3. ✅ Operator Actions working → MVP approval workflow intact - DONE (Feb 26)
+4. ⏳ CRM operational → Revenue tracking in place - Todo
+5. ⏳ Outreach templates ready → Begin outreach execution (2 sessions/week: 3 new + 5 follow-ups each) - Todo
+
+**Additional Completed (Feb 27):**
+6. ✅ v3.6.4 deployed to production (PENG-072, PENG-073, BUG-001)
+7. ✅ Deployment verification system created (verify-deployment.ps1 + POST-DEPLOYMENT-CHECKLIST.md)
+8. ✅ restore/ folder backups updated (11/11 mu-plugins current)
+9. ✅ POST-DEPLOYMENT-CHECKLIST added to TASK-REGISTRY.md
+10. ✅ v3.6.4 marked complete and archived
+11. ✅ v3.7.0 release prepared (Privacy Policy + CPT + Record ID)
 
 ## 🚫 Explicitly Deferred to Next Week
 
