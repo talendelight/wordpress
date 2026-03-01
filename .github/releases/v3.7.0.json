@@ -17,7 +17,7 @@
       "productionPageId": 3,
       "estimatedDays": 2.0,
       "dependencies": ["LFTC-002"],
-      "notes": "Draft completed Feb 28, 2026. Deployed to local (page ID 3). GDPR-compliant policy covering data controller, legal basis, processing purpose, international transfers, retention (24 months), data subject rights, security measures. Awaiting lawyer review (LFTC-002)."
+      "notes": "Draft completed Feb 28, 2026. Updated with HireAccord branding Mar 1, 2026. Deployed to local (page ID 3). GDPR-compliant policy covering data controller, legal basis, processing purpose, international transfers, retention (24 months), data subject rights, security measures. Awaiting lawyer review (LFTC-002)."
     },
     {
       "taskId": "PENG-076",
@@ -30,7 +30,7 @@
       "productionPageId": null,
       "estimatedDays": 1.0,
       "dependencies": ["LFTC-002"],
-      "notes": "Draft completed Feb 28, 2026. Deployed to local (page ID 60). Covers company information, scope of services, employer/candidate obligations, fees & payment, confidentiality, liability limitations, governing law, amendments. Awaiting lawyer review (LFTC-002)."
+      "notes": "Draft completed Feb 28, 2026. Updated with HireAccord branding Mar 1, 2026. Deployed to local (page ID 60). Covers company information, scope of services, employer/candidate obligations, fees & payment, confidentiality, liability limitations, governing law, amendments. Awaiting lawyer review (LFTC-002)."
     },
     {
       "taskId": "PENG-015",
@@ -137,10 +137,13 @@
   "knownIssues": [],
   "breakingChanges": false,
   "affectedPages": [
-    {3,
+    {
+      "pageName": "Privacy Policy",
+      "pageSlug": "privacy-policy",
+      "localId": 3,
       "productionId": 3,
       "changeType": "major-update",
-      "notes": "Comprehensive GDPR-compliant privacy policy replacing placeholder content. Draft completed Feb 28, 2026. Awaiting lawyer review."
+      "notes": "Comprehensive GDPR-compliant privacy policy. Updated with HireAccord branding Mar 1, 2026. Awaiting lawyer review."
     },
     {
       "pageName": "Terms & Conditions",
@@ -148,10 +151,7 @@
       "localId": 60,
       "productionId": null,
       "changeType": "new-page",
-      "notes": "New legal page covering service terms, user obligations, liability, and governing law. Draft completed Feb 28, 2026. Awaiting lawyer review.
-      "productionId": 3,
-      "changeType": "major-update",
-      "notes": "Comprehensive privacy policy replacing placeholder content"
+      "notes": "New legal page covering service terms. Updated with HireAccord branding Mar 1, 2026. Awaiting lawyer review."
     }
   ],
   "documentation": [
