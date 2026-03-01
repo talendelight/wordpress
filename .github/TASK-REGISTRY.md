@@ -769,6 +769,34 @@ Copy-Item docs/templates/RELEASE-NOTES-vX.Y.Z.md .github/releases/RELEASE-NOTES-
 
 ---
 
+### Task: Migrate WordPress Site to New Domain (Hostinger)
+**Environment:** 🌐 PRODUCTION  
+**Frequency:** Rarely (domain changes, rebrand)  
+**Duration:** 30-45 minutes  
+
+**Overview:**  
+Complete WordPress site migration from one domain to another on Hostinger shared hosting.
+
+**High-Level Steps:**
+1. Upload backup files (tar.gz + sql.gz) to server
+2. Extract and sync files to new domain (exclude wp-config.php)
+3. Import database with target credentials
+4. URL search-replace (old → new domain, typically 100-150 replacements)
+5. Update WordPress site URLs (siteurl, home, blogname)
+6. Disable persistent object cache + remove LiteSpeed rules
+7. Clear all WordPress caches
+8. **🚨 CRITICAL: Purge CDN cache via hPanel** (most common failure point)
+
+**⚠️ Common Issue:**  
+Hostinger CDN caches old domain content for 7 days. Must manually purge via hPanel → Performance → CDN → Flush Cache.
+
+**Related:**
+- **GUIDE:** [DOMAIN-MIGRATION-HOSTINGER.md](../docs/procedures/DOMAIN-MIGRATION-HOSTINGER.md) - Complete 15-step procedure
+- **LESSON:** [hostinger-cdn-cache-migration.md](../docs/lessons/hostinger-cdn-cache-migration.md) - Troubleshooting and root cause
+- **COMMANDS:** Domain Migration & Cache Management section in COMMAND-REGISTRY.md
+
+---
+
 ## Task Categories Summary
 
 ### Daily Tasks

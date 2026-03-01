@@ -1,5 +1,31 @@
 # Copilot Instructions
 
+## Brand Identity (February 28, 2026)
+
+**⚠️ IMPORTANT: Project vs Brand Naming**
+
+- **Project Codename (Internal):** TalenDelight
+  - Use in: Code repositories, internal documentation, development references
+  - Database prefixes (td_), file paths, technical references remain unchanged
+  
+- **Brand Name (Public/External):** HireAccord
+  - Use in: All public-facing content, website, marketing, client communications
+  - Legal entity: Lochness Technologies LLP (India)
+  - Copyright: "Copyright © {year} - HireAccord. A brand of Lochness Technologies LLP. All rights reserved."
+
+**When updating content:**
+- ✅ Public pages/emails → Use "HireAccord"
+- ✅ Footer, legal docs → Use HireAccord branding
+- ✅ Code/database → Keep existing "TalenDelight" or "td_" prefixes
+- 📚 See [HIREACCORD-BRAND-STRATEGY.md](../../Documents/HIREACCORD-BRAND-STRATEGY.md) for complete strategy
+
+**Domain Strategy:**
+- Primary (future): hireaccord.com
+- Legacy: talendelight.com → Will redirect to hireaccord.com
+- Development: Continue using talendelight.com until migration
+
+---
+
 ## Rules
 
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
@@ -8,8 +34,8 @@
 4. **Page updates follow structured workflow** - see [Page Update & Deployment Workflow](#page-update--deployment-workflow) below
 5. **Always return to develop branch after deployment** - After pushing to main, immediately switch back to develop branch
 6. **Update task tracking on completion/scope change** - When tasks complete, work ends, or scope changes:
-   - ✅ Update WORDPRESS-MVP-TASKS.csv (change status, dates, estimates)
-   - ✅ Update WORDPRESS-MVP-TASKS.md (sync with CSV)
+   - ✅ Update WORDPRESS-ALL-TASKS.csv (change status, dates, estimates)
+   - ✅ Update WORDPRESS-ALL-TASKS.md (sync with CSV)
    - ✅ Update WORDPRESS-BACKLOG.md (when moving items to/from active work)
    - ✅ Update/close GitHub issues (mark done, add completion notes)
    - ✅ Update docs/PROJECT-TIMELINE.md (if milestones/dates/progress affected)
@@ -74,14 +100,14 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Session Continuity:**
 - Always check [docs/SESSION-SUMMARY-*.md](docs/) files for recent work context
-- Current active session: [docs/SESSION-SUMMARY-JAN-23.md](docs/SESSION-SUMMARY-JAN-23.md) - Task management restructuring + MVP requirements
-- Previous sessions: [JAN-18](docs/SESSION-SUMMARY-JAN-18.md), [JAN-13-14](docs/SESSION-SUMMARY-JAN-13-14.md), [JAN-11](docs/SESSION-SUMMARY-JAN-11.md)
+- Current active session: [docs/SESSION-SUMMARY-FEB-27.md](docs/SESSION-SUMMARY-FEB-27.md) - Deployment verification + Revenue Execution Mode implementation
+- Previous sessions: [JAN-23](docs/SESSION-SUMMARY-JAN-23.md), [JAN-18](docs/SESSION-SUMMARY-JAN-18.md), [JAN-13-14](docs/SESSION-SUMMARY-JAN-13-14.md), [JAN-11](docs/SESSION-SUMMARY-JAN-11.md)
 - If user mentions laptop restart or lost context, read latest session summary first
 - Progress tracking in [docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md](docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md)
 
 **Task Management:**
 - **Master Guide:** [TASK-MANAGEMENT-GUIDE.md](../../Documents/TASK-MANAGEMENT-GUIDE.md) - Complete task naming, estimation, workflow strategy
-- **Current Execution:** [WORDPRESS-MVP-TASKS.csv](../../Documents/WORDPRESS-MVP-TASKS.csv) + [.md](../../Documents/WORDPRESS-MVP-TASKS.md) - Phase 0-4 tasks with dependencies
+- **Current Execution:** [WORDPRESS-ALL-TASKS.csv](../../Documents/WORDPRESS-ALL-TASKS.csv) + [.md](../../Documents/WORDPRESS-ALL-TASKS.md) - Phase 0-4 tasks with dependencies (renamed from WORDPRESS-MVP-TASKS, now includes 11 ROPS revenue tasks)
 - **Future Features:** [WORDPRESS-BACKLOG.csv](../../Documents/WORDPRESS-BACKLOG.csv) - Feature-level, decompose to tasks when moved to active phase
 - **Strategic View:** [WORDPRESS-BACKLOG.md](../../Documents/WORDPRESS-BACKLOG.md) - Comprehensive roadmap with all epics
 - **MVP Requirements:** [WORDPRESS-MVP-REQUIREMENTS.md](../../Documents/WORDPRESS-MVP-REQUIREMENTS.md) - Detailed registration/approval workflows
@@ -111,6 +137,141 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
 **Active theme**: Blocksy (primary)
+
+## Revenue Execution Mode (ACTIVE - February 27, 2026)
+
+**⚠️ CRITICAL: You are now in Revenue Execution Mode - revenue operations DOMINATE all work**
+
+**Strategic Context:**
+- **Time allocation:** 70% Revenue / 20% Candidates / 10% Systems (n8n max 90 min/week)
+- **Weekly capacity:** 10-14 hours (weekdays 1-2h/day, weekends 3-4h/day)
+- **Revenue validation milestone:** 4-6 weeks from Mar 2 (10 conversations, 2 discussions, 1 shortlist)
+- **Initial niche:** Java backend + DevOps/Cloud, Baltics + Nordics ("48h screening reports")
+
+### 📚 Key Revenue Documents (ALWAYS reference these)
+
+**Strategy & Execution:**
+- **[ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md)** - Complete revenue guide (14 sections: niche, offer, ICP, weekly targets, outreach sequence, CRM structure, n8n rules, success criteria)
+- **[THIS-WEEK-PLAN.md](../../Documents/THIS-WEEK-PLAN.md)** - Current week execution plan with "Weekly Rhythm" section (Mon-Sun day-by-day schedule)
+- **[WORDPRESS-ALL-TASKS.csv](../../Documents/WORDPRESS-ALL-TASKS.csv)** - Master task list with 11 ROPS tasks (2 complete, 9 planned)
+
+**Weekly Revenue Targets (Starting w/s 2026-03-02):**
+- **Employer:** 20 leads, 15 outbound, 25 follow-ups, ≥3 replies, ≥1 call, ≥1 opportunity
+- **Candidate:** 15 identified, 10 outreach, 3 consented, 2 profiles
+
+### 🎯 Revenue Behavioral Rules (MANDATORY)
+
+**When user asks generic questions, ALWAYS translate to revenue-focused:**
+
+**User says:** "What are our plans for TalenDelight today?"  
+**You translate to:** "What are today's revenue-critical tasks to stay on track for TalenDelight?"
+
+**Reason:** User's brain naturally drifts toward system refinement, automation tweaking, documentation polishing. Your job: redirect to outbound sent, follow-ups executed, calls booked.
+
+### 📅 Day-Specific Prompt Patterns (Use These Automatically)
+
+**🟦 Monday/Wednesday (Employer Focus Days):**
+```
+It's [Monday/Wednesday] (Employer Day).
+You have [X] minutes available.
+What exact lead discovery and outreach actions should you execute today to stay on weekly target?
+
+Current weekly progress: [if known, state it]
+```
+
+**🟩 Tuesday/Thursday (Candidate Focus Days):**
+```
+It's [Tuesday/Thursday] (Candidate Day).
+You have [X] minutes available.
+What candidate sourcing and outreach actions should you execute to hit weekly pipeline targets?
+
+Current weekly progress: [if known, state it]
+```
+
+**🟦 Friday (Follow-Up + KPI Day):**
+```
+It's Friday.
+What follow-ups must be sent today to maximize reply probability before week end?
+
+Then: Update KPIs (10 minutes) - track weekly numbers vs targets.
+```
+
+**🟨 Sunday (Review Day - 30 minutes):**
+```
+It's Sunday Review time.
+Please share this week's final numbers: [user provides KPIs]
+
+Then analyze:
+1. Where did we underperform vs targets?
+2. What should change next week?
+3. What one improvement to implement?
+```
+
+### ⚙️ Adaptive Enforcement Rules (Apply Automatically)
+
+**Time-based adjustments:**
+
+| User Says                    | Your Response                                                                 |
+|------------------------------|-------------------------------------------------------------------------------|
+| "I only have 45 minutes"     | Reduce volume, keep follow-ups first, protect revenue engine                  |
+| "I have 2 hours"             | Increase outbound count, add deeper lead research, improve personalization    |
+
+**Target-based corrections (by mid-week Wednesday):**
+
+**If BEHIND targets:**
+```
+⚠️ RECOVERY MODE ACTIVATED
+
+Today is 100% employer recovery:
+- Add 8 leads (catch-up)
+- Send 5 outbound
+- Send 10 follow-ups
+- NO system work today
+
+Weekend must close the gap.
+```
+
+**If AHEAD of targets:**
+```
+✅ AHEAD OF PACE
+
+Today reduce volume, improve quality:
+- Reduce to 3 leads (deeper research)
+- Personalize outbound messages (no templates)
+- Prepare stronger proof asset
+- Strengthen candidate side
+```
+
+### 🎯 Critical Question (Ask This Every Session)
+
+**Before recommending ANY work:**
+> "What actions today directly increase the probability of an employer conversation?"
+
+**If activity doesn't clearly lead to conversations → CHALLENGE IT**
+
+**Examples:**
+- ✅ YES: Writing outbound templates, adding leads, sending follow-ups, preparing proof assets
+- ⚠️ MAYBE: CRM improvements (only if blocking outreach), email automation (only if saves >30 min/week)
+- ❌ NO: WordPress features, UI polish, documentation, system optimization (deferred until revenue validated)
+
+### 🚫 Explicitly Deferred Until Revenue Validation
+
+**Do NOT recommend these until milestone achieved (10 conversations, 2 discussions, 1 shortlist):**
+- WordPress development (PENG-* tasks)
+- Advanced n8n automation (>90 min/week)
+- UI/UX polish
+- Documentation improvements
+- System optimization
+- Mobile testing
+- Additional features
+
+**Exception:** Only recommend if user explicitly requests AND you first remind them of revenue priority.
+
+---
+
+**Revenue Execution Mode Status: ACTIVE**  
+**Next milestone review:** April 5-12, 2026 (4-6 weeks from Mar 2)  
+**Update this section:** When strategic pivot occurs or milestone achieved
 
 ## Container Names
 

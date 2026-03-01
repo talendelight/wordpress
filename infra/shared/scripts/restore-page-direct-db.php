@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Restore Register Profile Page (ID 28) - Direct database update
  * Avoid WordPress sanitization that encodes HTML
@@ -24,7 +24,7 @@ if (empty($new_content)) {
 echo "=== Restoring Register Profile Page (ID $page_id) - Database Direct ===\n";
 echo "Content length: " . strlen($new_content) . " bytes\n";
 echo "Content lines: " . substr_count($new_content, "\n") . "\n";
-echo "Has form tag: " . (strpos($new_content, '<form id="td-registration-form"') !== false ? 'YES ✓' : 'NO ✗') . "\n\n";
+echo "Has form tag: " . (strpos($new_content, '<form id="td-registration-form"') !== false ? 'YES âœ“' : 'NO âœ—') . "\n\n";
 
 global $wpdb;
 
@@ -56,5 +56,5 @@ $has_encoded = strpos($check, '&lt;input') !== false;
 
 echo "Verification:\n";
 echo "- Content length: " . strlen($check) . " bytes\n";
-echo "- Form tag: " . ($has_form ? 'FOUND ✓' : 'NOT FOUND ✗') . "\n";
-echo "- Encoded HTML: " . ($has_encoded ? 'YES ✗' : 'NO ✓') . "\n";
+echo "- Form tag: " . ($has_form ? 'FOUND âœ“' : 'NOT FOUND âœ—') . "\n";
+echo "- Encoded HTML: " . ($has_encoded ? 'YES âœ—' : 'NO âœ“') . "\n";

@@ -132,7 +132,7 @@ pwsh infra/shared/scripts/wp-action.ps1 verify
 1. **Release notes:** `.github/releases/RELEASE-NOTES-vX.Y.Z.md` - Mark as deployed
 2. **Version history:** `docs/VERSION-HISTORY.md` - Add deployment timestamp
 3. **Timeline:** `docs/PROJECT-TIMELINE.md` - Update milestone status
-4. **Tasks:** Mark related tasks complete in WORDPRESS-MVP-TASKS.csv
+4. **Tasks:** Mark related tasks complete in WORDPRESS-ALL-TASKS.csv
 
 ---
 

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Production Health Check Script
  * 
@@ -21,12 +21,12 @@ function check($name, $condition, $success_msg, $failure_msg, &$passed, &$failed
     if ($condition) {
         $passed[] = $name;
         if ($verbose) {
-            echo "✅ {$name}: {$success_msg}\n";
+            echo "âœ… {$name}: {$success_msg}\n";
         }
         return true;
     } else {
         $failed[] = $name;
-        echo "❌ {$name}: {$failure_msg}\n";
+        echo "âŒ {$name}: {$failure_msg}\n";
         return false;
     }
 }
@@ -288,8 +288,8 @@ foreach ($required_constants as $constant => $description) {
 // SUMMARY
 // ============================================================================
 echo "\n=== Summary ===\n";
-echo "✅ Passed: " . count($passed_checks) . "\n";
-echo "❌ Failed: " . count($failed_checks) . "\n";
+echo "âœ… Passed: " . count($passed_checks) . "\n";
+echo "âŒ Failed: " . count($failed_checks) . "\n";
 
 if (!empty($failed_checks)) {
     echo "\nFailed Checks:\n";
@@ -300,5 +300,5 @@ if (!empty($failed_checks)) {
     exit(1);
 }
 
-echo "\n✅ All health checks passed!\n";
+echo "\nâœ… All health checks passed!\n";
 exit(0);

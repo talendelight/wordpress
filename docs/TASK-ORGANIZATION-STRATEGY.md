@@ -114,7 +114,7 @@ wordpress/
     └── assets/                  # Asset backups (keep)
 
 Documents/ workspace:
-├── WORDPRESS-MVP-TASKS.csv/.md     # Active sprint tasks
+├── WORDPRESS-ALL-TASKS.csv/.md     # All project tasks (MVP + future phases)
 ├── WORDPRESS-BACKLOG.csv/.md       # Feature backlog
 ├── WORDPRESS-OPEN-ACTIONS.md       # Active issues/blockers
 └── TASK-MANAGEMENT-GUIDE.md        # Task process documentation
@@ -241,7 +241,7 @@ Documents/ workspace:
 ## Maintenance Schedule
 
 ### Daily
-- Update WORDPRESS-MVP-TASKS.csv with completed tasks
+- Update WORDPRESS-ALL-TASKS.csv with completed tasks
 - Update WORDPRESS-OPEN-ACTIONS.md with new blockers/resolutions
 
 ### Weekly

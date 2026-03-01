@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Import ALL tasks from CSV (both Done and Todo) to GitHub Issues
 
@@ -21,7 +21,7 @@
 param(
     [string]$Owner = "talendelight",
     [string]$Repo = "wordpress",
-    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-MVP-TASKS.csv",
+    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-ALL-TASKS.csv",
     [switch]$DryRun
 )
 

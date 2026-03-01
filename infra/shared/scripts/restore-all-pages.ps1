@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 # Restore all page content from backups to local WordPress
 # Matches pages by slug, not ID (IDs differ between local/production)
 # 
@@ -26,13 +26,13 @@ $backupDir = "c:\data\lochness\talendelight\code\wordpress\restore\pages"
 $restored = 0
 $failed = 0
 
-Write-Host "`n🔄 Restoring page content from backups...`n" -ForegroundColor Cyan
+Write-Host "`nðŸ”„ Restoring page content from backups...`n" -ForegroundColor Cyan
 
 foreach ($page in $pageMapping) {
     $backupFile = Join-Path $backupDir $page.Backup
     
     if (-not (Test-Path $backupFile)) {
-        Write-Host "⚠️  Backup not found: $($page.Backup)" -ForegroundColor Yellow
+        Write-Host "âš ï¸  Backup not found: $($page.Backup)" -ForegroundColor Yellow
         $failed++
         continue
     }
@@ -41,12 +41,12 @@ foreach ($page in $pageMapping) {
     $pageId = podman exec wp bash -c "wp post list --post_type=page --name=$($page.Slug) --field=ID --allow-root --skip-plugins 2>/dev/null" 2>$null
     
     if (-not $pageId) {
-        Write-Host "⚠️  Page not found in database: $($page.Slug)" -ForegroundColor Yellow
+        Write-Host "âš ï¸  Page not found in database: $($page.Slug)" -ForegroundColor Yellow
         $failed++
         continue
     }
     
-    Write-Host "📄 Restoring $($page.Slug) (ID: $pageId)..." -NoNewline
+    Write-Host "ðŸ“„ Restoring $($page.Slug) (ID: $pageId)..." -NoNewline
     
     # Upload content to container and update page
     Get-Content $backupFile -Raw | podman exec -i wp bash -c "cat > /tmp/page-$pageId.html && wp post update $pageId /tmp/page-$pageId.html --post_content --allow-root --skip-plugins 2>/dev/null && rm /tmp/page-$pageId.html" 2>$null | Out-Null
@@ -57,18 +57,18 @@ foreach ($page in $pageMapping) {
             podman exec wp bash -c "wp post meta update $pageId _wp_page_template page-role-selection.php --allow-root --skip-plugins 2>/dev/null" 2>$null | Out-Null
         }
         
-        Write-Host " ✅" -ForegroundColor Green
+        Write-Host " âœ…" -ForegroundColor Green
         $restored++
     } else {
-        Write-Host " ❌" -ForegroundColor Red
+        Write-Host " âŒ" -ForegroundColor Red
         $failed++
     }
 }
 
 # Flush cache
-Write-Host "`n🧹 Flushing WordPress cache..." -NoNewline
+Write-Host "`nðŸ§¹ Flushing WordPress cache..." -NoNewline
 podman exec wp bash -c "wp cache flush --allow-root 2>/dev/null" 2>$null | Out-Null
-Write-Host " ✅" -ForegroundColor Green
+Write-Host " âœ…" -ForegroundColor Green
 
 Write-Host "`nSummary:" -ForegroundColor Cyan
 Write-Host "  Restored: $restored pages" -ForegroundColor Green

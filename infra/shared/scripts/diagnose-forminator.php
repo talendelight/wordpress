@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Diagnostic script to check Forminator submission data flow
  */
@@ -40,7 +40,7 @@ if ($forminator_entries) {
         }
     }
 } else {
-    echo "   ❌ No entries found in Forminator table\n";
+    echo "   âŒ No entries found in Forminator table\n";
 }
 
 echo "\n";
@@ -69,10 +69,10 @@ if ($table_exists) {
             echo "   - ID: {$request->id}, User: {$request->user_id}, Type: {$request->request_type}, Role: {$request->role}, Status: {$request->status}, Date: {$request->created_at}\n";
         }
     } else {
-        echo "   ⚠️  Table exists but no data found\n";
+        echo "   âš ï¸  Table exists but no data found\n";
     }
 } else {
-    echo "   ❌ Table td_user_data_change_requests does NOT exist\n";
+    echo "   âŒ Table td_user_data_change_requests does NOT exist\n";
 }
 
 echo "\n";
@@ -85,13 +85,13 @@ $is_plugin_active = false;
 foreach ($active_plugins as $plugin) {
     if (strpos($plugin, 'td-user-data-change-requests.php') !== false) {
         $is_plugin_active = true;
-        echo "   ✅ Plugin is ACTIVE: {$plugin}\n";
+        echo "   âœ… Plugin is ACTIVE: {$plugin}\n";
         break;
     }
 }
 
 if (!$is_plugin_active) {
-    echo "   ❌ Plugin 'td-user-data-change-requests.php' is NOT active\n";
+    echo "   âŒ Plugin 'td-user-data-change-requests.php' is NOT active\n";
 }
 
 echo "\n";
@@ -99,20 +99,20 @@ echo "\n";
 // 4. Summary
 echo "=== DIAGNOSIS ===\n";
 if (!$forminator_entries) {
-    echo "❌ No Forminator entries found - submission may have failed\n";
+    echo "âŒ No Forminator entries found - submission may have failed\n";
 } else {
     if ($table_exists) {
         if (!$custom_requests) {
-            echo "❌ Data not transferred to custom table\n";
+            echo "âŒ Data not transferred to custom table\n";
             if (!$is_plugin_active) {
-                echo "   → Plugin is NOT active - ACTIVATE IT!\n";
+                echo "   â†’ Plugin is NOT active - ACTIVATE IT!\n";
             } else {
-                echo "   → Plugin active but field mapping may be failing\n";
+                echo "   â†’ Plugin active but field mapping may be failing\n";
             }
         } else {
-            echo "✅ Data flow working\n";
+            echo "âœ… Data flow working\n";
         }
     } else {
-        echo "❌ Custom table doesn't exist - run migration\n";
+        echo "âŒ Custom table doesn't exist - run migration\n";
     }
 }

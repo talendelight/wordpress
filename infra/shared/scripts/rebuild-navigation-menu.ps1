@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     Rebuild WordPress navigation menu with standard items
@@ -34,7 +34,7 @@ param(
     [string]$SshHost = "u909075950@45.84.205.129",
     [int]$SshPort = 65002,
     [string]$SshKey = "tmp/hostinger_deploy_key",
-    [string]$WpPath = "/home/u909075950/domains/talendelight.com/public_html"
+    [string]$WpPath = "/home/u909075950/domains/hireaccord.com/public_html"
 )
 
 $ErrorActionPreference = "Stop"

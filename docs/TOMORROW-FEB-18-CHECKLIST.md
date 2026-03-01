@@ -88,7 +88,7 @@ $content | Out-File -Encoding utf8 tmp\page-fixed.html
 ## Priority 4: Documentation Updates
 
 ### Task Management
-- [ ] Review WORDPRESS-MVP-TASKS.csv - update status for completed tasks
+- [ ] Review WORDPRESS-ALL-TASKS.csv - update status for completed tasks
 - [ ] Check if any tasks blocked by testing results
 - [ ] Update task dates if needed
 

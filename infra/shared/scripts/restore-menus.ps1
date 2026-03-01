@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 # Script: restore-menus.ps1
 # Purpose: Restore WordPress menus from production structure
 # Usage: pwsh tmp/restore-menus.ps1

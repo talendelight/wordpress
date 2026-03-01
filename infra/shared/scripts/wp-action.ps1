@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     Main action dispatcher for WordPress operations
@@ -299,15 +299,15 @@ try {
         
         Write-Host "Executing health check on production...`n" -ForegroundColor Cyan
         
-        $sshCommand = "ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 `"cd domains/talendelight.com/public_html && wp eval-file ~/verify-production-health.php $verbose --allow-root`""
+        $sshCommand = "ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129 `"cd domains/hireaccord.com/public_html && wp eval-file ~/verify-production-health.php $verbose --allow-root`""
         
         Invoke-Expression $sshCommand
         $exitCode = $LASTEXITCODE
         
         if ($exitCode -eq 0) {
-            Write-Host "`n✅ Health check passed" -ForegroundColor Green
+            Write-Host "`nâœ… Health check passed" -ForegroundColor Green
         } else {
-            Write-Host "`n❌ Health check failed - see details above" -ForegroundColor Red
+            Write-Host "`nâŒ Health check failed - see details above" -ForegroundColor Red
         }
         
         exit $exitCode

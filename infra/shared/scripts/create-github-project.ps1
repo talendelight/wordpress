@@ -1,10 +1,10 @@
-<#
+﻿<#
 .SYNOPSIS
-    Create GitHub Project Kanban board from WORDPRESS-MVP-TASKS.csv
+    Create GitHub Project Kanban board from WORDPRESS-ALL-TASKS.csv
 
 .DESCRIPTION
     This script creates a GitHub Project (v2) and populates it with issues
-    from the WORDPRESS-MVP-TASKS.csv file. It creates proper columns and
+    from the WORDPRESS-ALL-TASKS.csv file. It creates proper columns and
     organizes tasks by phase and priority.
 
 .NOTES
@@ -15,7 +15,7 @@
 param(
     [string]$Owner = "talendelight",
     [string]$Repo = "wordpress",
-    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-MVP-TASKS.csv",
+    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-ALL-TASKS.csv",
     [switch]$DryRun
 )
 
@@ -27,11 +27,11 @@ Write-Host "CSV: $CsvPath" -ForegroundColor Yellow
 # Import CSV
 Write-Host "`nImporting CSV..." -ForegroundColor Cyan
 $tasks = Import-Csv $CsvPath -Delimiter ';'
-Write-Host "✓ Loaded $($tasks.Count) tasks" -ForegroundColor Green
+Write-Host "âœ“ Loaded $($tasks.Count) tasks" -ForegroundColor Green
 
 # Filter out completed tasks
 $todoTasks = $tasks | Where-Object { $_.Status -eq 'Todo' }
-Write-Host "✓ Found $($todoTasks.Count) Todo tasks (excluding $($tasks.Count - $todoTasks.Count) Done)" -ForegroundColor Green
+Write-Host "âœ“ Found $($todoTasks.Count) Todo tasks (excluding $($tasks.Count - $todoTasks.Count) Done)" -ForegroundColor Green
 
 if ($DryRun) {
     Write-Host "`n=== DRY RUN MODE ===" -ForegroundColor Yellow
@@ -56,7 +56,7 @@ try {
     $projectJson = gh project create --owner $Owner --title "WordPress MVP - v3.6.0 (Jan-May 2026)" --format json 2>&1
     
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "✗ Failed to create project" -ForegroundColor Red
+        Write-Host "âœ— Failed to create project" -ForegroundColor Red
         Write-Host "Error: $projectJson" -ForegroundColor Red
         Write-Host "`nYou may need to refresh GitHub CLI authentication:" -ForegroundColor Yellow
         Write-Host "  gh auth refresh -s project,read:project" -ForegroundColor Yellow
@@ -64,11 +64,11 @@ try {
     }
     
     $project = $projectJson | ConvertFrom-Json
-    Write-Host "✓ Created project: $($project.title) (ID: $($project.id))" -ForegroundColor Green
+    Write-Host "âœ“ Created project: $($project.title) (ID: $($project.id))" -ForegroundColor Green
     Write-Host "  URL: $($project.url)" -ForegroundColor Gray
     
 } catch {
-    Write-Host "✗ Error creating project: $_" -ForegroundColor Red
+    Write-Host "âœ— Error creating project: $_" -ForegroundColor Red
     exit 1
 }
 
@@ -89,4 +89,4 @@ Write-Host "   - Strategic"
 Write-Host ""
 Write-Host "3. Run import-tasks-to-project.ps1 to create issues"
 
-Write-Host "`n✓ Project created successfully!" -ForegroundColor Green
+Write-Host "`nâœ“ Project created successfully!" -ForegroundColor Green

@@ -323,7 +323,7 @@ wp litespeed-purge all
 
 - ✅ `docs/RELEASE-NOTES-NEXT.md` - Added PENG-054 section
 - ✅ `docs/API-SECURITY-PATTERNS.md` - Created security patterns guide
-- ✅ `Documents/WORDPRESS-MVP-TASKS.md` - Marked PENG-054 complete
+- ✅ `Documents/WORDPRESS-ALL-TASKS.md` - Marked PENG-054 complete
 
 ### Documentation to Create (Future)
 

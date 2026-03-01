@@ -3,7 +3,7 @@
     Import tasks from CSV to GitHub Issues and link to Project
 
 .DESCRIPTION
-    Creates GitHub issues from WORDPRESS-MVP-TASKS.csv with proper labels,
+    Creates GitHub issues from WORDPRESS-ALL-TASKS.csv with proper labels,
     milestones, and metadata. Can optionally link to GitHub Project.
 
 .NOTES
@@ -29,7 +29,7 @@
 param(
     [string]$Owner = "talendelight",
     [string]$Repo = "wordpress",
-    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-MVP-TASKS.csv",
+    [string]$CsvPath = "C:\Users\codes\OneDrive\Lochness\TalenDelight\Documents\WORDPRESS-ALL-TASKS.csv",
     [string]$Phase = $null,  # Filter by phase (e.g., "Phase 0")
     [switch]$DryRun,
     [switch]$TodoOnly,  # Only create Todo tasks (skip Done)
@@ -153,7 +153,7 @@ foreach ($task in $filteredTasks) {
     $bodyParts += ""
     $bodyParts += "---"
     $bodyParts += ""
-    $bodyParts += "*Imported from WORDPRESS-MVP-TASKS.csv*"
+    $bodyParts += "*Imported from WORDPRESS-ALL-TASKS.csv*"
     
     $body = $bodyParts -join "`n"
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     Restore production from backup
@@ -36,7 +36,7 @@ $ErrorActionPreference = "Stop"
 # Configuration
 $SSH_USER = "u909075950"
 $SSH_HOST = "45.84.205.129"
-$WP_ROOT = "domains/talendelight.com/public_html"
+$WP_ROOT = "domains/hireaccord.com/public_html"
 $BACKUP_ROOT = "c:\data\lochness\talendelight\code\wordpress\restore"
 
 Write-Host "=== Production Restore Started ===" -ForegroundColor Cyan
@@ -99,7 +99,7 @@ try {
                     scp $pageFile.FullName "$SSH_USER@${SSH_HOST}:~/restore-page-temp.json" 2>&1 | Out-Null
                     
                     if ($LASTEXITCODE -ne 0) {
-                        Write-Host "    ✗ Upload failed" -ForegroundColor Red
+                        Write-Host "    âœ— Upload failed" -ForegroundColor Red
                         $failed++
                         continue
                     }
@@ -158,10 +158,10 @@ if (`$existing) {
                     $result = ssh "$SSH_USER@$SSH_HOST" "php ~/restore-page.php"
                     
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "    ✓ Restored (ID: $result)" -ForegroundColor Green
+                        Write-Host "    âœ“ Restored (ID: $result)" -ForegroundColor Green
                         $restored++
                     } else {
-                        Write-Host "    ✗ Restore failed: $result" -ForegroundColor Red
+                        Write-Host "    âœ— Restore failed: $result" -ForegroundColor Red
                         $failed++
                     }
                 } else {
@@ -169,7 +169,7 @@ if (`$existing) {
                 }
             }
         } else {
-            Write-Host "  ⚠ No pages found in backup" -ForegroundColor Yellow
+            Write-Host "  âš  No pages found in backup" -ForegroundColor Yellow
         }
     }
     
@@ -196,10 +196,10 @@ if (`$existing) {
                     ssh "$SSH_USER@$SSH_HOST" $cmd 2>&1 | Out-Null
                     
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "    ✓ Updated" -ForegroundColor Green
+                        Write-Host "    âœ“ Updated" -ForegroundColor Green
                         $restored++
                     } else {
-                        Write-Host "    ✗ Failed" -ForegroundColor Red
+                        Write-Host "    âœ— Failed" -ForegroundColor Red
                         $failed++
                     }
                 } else {
@@ -207,7 +207,7 @@ if (`$existing) {
                 }
             }
         } else {
-            Write-Host "  ⚠ No options found in backup" -ForegroundColor Yellow
+            Write-Host "  âš  No options found in backup" -ForegroundColor Yellow
         }
     }
     
@@ -229,10 +229,10 @@ if (`$existing) {
                     scp $file.FullName "$SSH_USER@${SSH_HOST}:$WP_ROOT/$destPath" 2>&1 | Out-Null
                     
                     if ($LASTEXITCODE -eq 0) {
-                        Write-Host "    ✓ Uploaded" -ForegroundColor Green
+                        Write-Host "    âœ“ Uploaded" -ForegroundColor Green
                         $restored++
                     } else {
-                        Write-Host "    ✗ Upload failed" -ForegroundColor Red
+                        Write-Host "    âœ— Upload failed" -ForegroundColor Red
                         $failed++
                     }
                 } else {
@@ -240,14 +240,14 @@ if (`$existing) {
                 }
             }
         } else {
-            Write-Host "  ⚠ No theme files found in backup" -ForegroundColor Yellow
+            Write-Host "  âš  No theme files found in backup" -ForegroundColor Yellow
         }
     }
     
     # 4. Restore database (DESTRUCTIVE)
     if ($RestoreDatabase) {
         Write-Host "`n4. Restoring database..." -ForegroundColor Yellow
-        Write-Host "  ⚠ WARNING: This will overwrite the entire database!" -ForegroundColor Red
+        Write-Host "  âš  WARNING: This will overwrite the entire database!" -ForegroundColor Red
         
         if (-not $DryRun) {
             $confirm = Read-Host "  Type 'YES' to confirm database restore"
@@ -267,18 +267,18 @@ if (`$existing) {
                         ssh "$SSH_USER@$SSH_HOST" $cmd
                         
                         if ($LASTEXITCODE -eq 0) {
-                            Write-Host "  ✓ Database restored" -ForegroundColor Green
+                            Write-Host "  âœ“ Database restored" -ForegroundColor Green
                             $restored++
                         } else {
-                            Write-Host "  ✗ Database import failed" -ForegroundColor Red
+                            Write-Host "  âœ— Database import failed" -ForegroundColor Red
                             $failed++
                         }
                     } else {
-                        Write-Host "  ✗ Database upload failed" -ForegroundColor Red
+                        Write-Host "  âœ— Database upload failed" -ForegroundColor Red
                         $failed++
                     }
                 } else {
-                    Write-Host "  ⚠ No database dump found in backup" -ForegroundColor Yellow
+                    Write-Host "  âš  No database dump found in backup" -ForegroundColor Yellow
                 }
             }
         } else {
@@ -290,7 +290,7 @@ if (`$existing) {
     if (-not $DryRun) {
         Write-Host "`nFlushing cache..." -ForegroundColor Yellow
         ssh "$SSH_USER@$SSH_HOST" "cd $WP_ROOT && wp cache flush --allow-root" 2>&1 | Out-Null
-        Write-Host "✓ Cache flushed" -ForegroundColor Green
+        Write-Host "âœ“ Cache flushed" -ForegroundColor Green
     }
     
     # Summary
@@ -301,13 +301,13 @@ if (`$existing) {
     if ($DryRun) {
         Write-Host "`nDRY RUN complete - no changes made" -ForegroundColor Yellow
     } else {
-        Write-Host "`n✓ Restore complete" -ForegroundColor Green
+        Write-Host "`nâœ“ Restore complete" -ForegroundColor Green
     }
     
     return $(if ($failed -eq 0) { 0 } else { 1 })
     
 } catch {
-    Write-Host "`n✗ Restore failed: $_" -ForegroundColor Red
+    Write-Host "`nâœ— Restore failed: $_" -ForegroundColor Red
     Write-Host $_.ScriptStackTrace -ForegroundColor Red
     return 1
 }

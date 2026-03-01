@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Deploy custom CSS to WordPress Additional CSS (theme mods)
  */
@@ -27,6 +27,6 @@ $mods['custom_css'] = $css_content;
 // Save theme mods
 update_option("theme_mods_$theme_slug", $mods);
 
-echo "✓ Custom CSS deployed successfully\n";
+echo "âœ“ Custom CSS deployed successfully\n";
 echo "Theme: $theme_slug\n";
 echo "CSS length: " . strlen($css_content) . " bytes\n";

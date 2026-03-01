@@ -1,4 +1,4 @@
-name: Deploy to Hostinger
+﻿name: Deploy to Hostinger
 
 on:
   push:
@@ -69,7 +69,7 @@ jobs:
             exit 1
           fi
           
-          echo "✓ Release instructions are valid"
+          echo "âœ“ Release instructions are valid"
 
       - name: Check for Elementor Deployment
         id: check_elementor
@@ -79,8 +79,8 @@ jobs:
           echo "has_elementor=$HAS_ELEMENTOR" >> $GITHUB_OUTPUT
           
           if [ "$HAS_ELEMENTOR" = "true" ]; then
-            echo "⚠️  This release includes Elementor page deployment"
-            echo "⚠️  Ensure Elementor exports are committed to repository"
+            echo "âš ï¸  This release includes Elementor page deployment"
+            echo "âš ï¸  Ensure Elementor exports are committed to repository"
           fi
       
       - name: Check for Plugin Activation
@@ -91,7 +91,7 @@ jobs:
           echo "has_plugins=$HAS_PLUGINS" >> $GITHUB_OUTPUT
           
           if [ "$HAS_PLUGINS" = "true" ]; then
-            echo "⚠️  This release requires plugin activation"
+            echo "âš ï¸  This release requires plugin activation"
             PLUGIN_LIST=$(jq -r '.steps[] | select(.type == "activate_plugins") | .plugins[].slug' "$RELEASE_FILE")
             echo "$PLUGIN_LIST" > plugin_list.txt
             echo "Plugins to activate:"
@@ -207,9 +207,9 @@ jobs:
             # Remove twentytwenty* themes (not used, consuming ~13.6MB)
             for theme in twentytwentythree twentytwentyfour twentytwentyfive; do
               if [ -d "$theme" ]; then
-                rm -rf "$theme" && echo "✓ Removed: $theme" || echo "⚠ Failed to remove: $theme"
+                rm -rf "$theme" && echo "âœ“ Removed: $theme" || echo "âš  Failed to remove: $theme"
               else
-                echo "⚠ Not found: $theme (already removed)"
+                echo "âš  Not found: $theme (already removed)"
               fi
             done
             
@@ -302,7 +302,7 @@ jobs:
             for sql_file in ~/db-deploy/*.sql; do
               if [ -f "$sql_file" ]; then
                 echo "Executing: $(basename $sql_file)"
-                wp db query < "$sql_file" && echo "✓ Success" || echo "✗ Failed: $sql_file"
+                wp db query < "$sql_file" && echo "âœ“ Success" || echo "âœ— Failed: $sql_file"
               fi
             done
             
@@ -343,9 +343,9 @@ jobs:
             echo "Activating theme: $THEME"
             
             if wp theme activate "$THEME"; then
-              echo "✓ Theme activated: $THEME"
+              echo "âœ“ Theme activated: $THEME"
             else
-              echo "✗ Theme activation failed: $THEME"
+              echo "âœ— Theme activation failed: $THEME"
               exit 1
             fi
 
@@ -372,21 +372,21 @@ jobs:
               
               # Check if plugin exists
               if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
-                echo "⚠️  Plugin not found: $plugin (may need to be installed first)"
+                echo "âš ï¸  Plugin not found: $plugin (may need to be installed first)"
                 continue
               fi
               
               # Check if already active
               if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
-                echo "✓ Plugin already active: $plugin"
+                echo "âœ“ Plugin already active: $plugin"
                 continue
               fi
               
               # Activate plugin
               if wp plugin activate "$plugin" --allow-root; then
-                echo "✓ Plugin activated: $plugin"
+                echo "âœ“ Plugin activated: $plugin"
               else
-                echo "❌ Plugin activation failed: $plugin"
+                echo "âŒ Plugin activation failed: $plugin"
               fi
             done < ~/plugin_list.txt
             
@@ -433,19 +433,19 @@ jobs:
               echo "Processing plugin: $plugin"
               
               if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
-                echo "⚠️  Plugin not found: $plugin"
+                echo "âš ï¸  Plugin not found: $plugin"
                 continue
               fi
               
               if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
-                echo "✓ Already active: $plugin"
+                echo "âœ“ Already active: $plugin"
                 continue
               fi
               
               if wp plugin activate "$plugin" --allow-root; then
-                echo "✓ Activated: $plugin"
+                echo "âœ“ Activated: $plugin"
               else
-                echo "❌ Failed: $plugin"
+                echo "âŒ Failed: $plugin"
               fi
             done < ~/plugin_list.txt
             
@@ -470,7 +470,7 @@ jobs:
             # Create elementor-exports directory if not exists
             mkdir -p ~/elementor-exports
             
-            echo "⚠️  ELEMENTOR DEPLOYMENT REQUIRES MANUAL STEPS"
+            echo "âš ï¸  ELEMENTOR DEPLOYMENT REQUIRES MANUAL STEPS"
             echo "================================================"
             echo ""
             echo "Elementor pages cannot be fully automated in CI/CD because:"
@@ -509,25 +509,25 @@ jobs:
             echo "Clearing caches..."
             
             # Clear WordPress cache
-            wp cache flush --allow-root && echo "✓ WordPress cache cleared" || echo "⚠ WordPress cache clear failed"
+            wp cache flush --allow-root && echo "âœ“ WordPress cache cleared" || echo "âš  WordPress cache clear failed"
             
             # Flush rewrite rules
-            wp rewrite flush --allow-root && echo "✓ Rewrite rules flushed" || echo "⚠ Rewrite flush failed"
+            wp rewrite flush --allow-root && echo "âœ“ Rewrite rules flushed" || echo "âš  Rewrite flush failed"
             
             # Clear Elementor cache
             if wp elementor flush_css --allow-root 2>/dev/null; then
-              echo "✓ Elementor cache cleared"
+              echo "âœ“ Elementor cache cleared"
             else
-              echo "⚠ Elementor cache clear failed or plugin not active"
+              echo "âš  Elementor cache clear failed or plugin not active"
             fi
             
             # Clear LiteSpeed cache (if available)
             if command -v litespeed 2>/dev/null; then
-              wp litespeed-purge all --allow-root 2>/dev/null && echo "✓ LiteSpeed cache cleared" || echo "⚠ LiteSpeed cache clear failed"
+              wp litespeed-purge all --allow-root 2>/dev/null && echo "âœ“ LiteSpeed cache cleared" || echo "âš  LiteSpeed cache clear failed"
             fi
             
             # Clear WordPress transients
-            wp transient delete --all --allow-root 2>/dev/null && echo "✓ WordPress transients cleared" || true
+            wp transient delete --all --allow-root 2>/dev/null && echo "âœ“ WordPress transients cleared" || true
             
             echo "Cache clearing complete"
 
@@ -548,16 +548,16 @@ jobs:
             if [ -f ~/verify-production-health.php ]; then
               if wp eval-file ~/verify-production-health.php --allow-root; then
                 echo ""
-                echo "✅ All health checks passed!"
+                echo "âœ… All health checks passed!"
                 exit 0
               else
                 echo ""
-                echo "❌ Some health checks failed - review output above"
-                echo "⚠️  Deployment may need attention"
+                echo "âŒ Some health checks failed - review output above"
+                echo "âš ï¸  Deployment may need attention"
                 exit 1
               fi
             else
-              echo "⚠️  Health check script not found"
+              echo "âš ï¸  Health check script not found"
               echo "Manual verification required"
               exit 0
             fi
@@ -599,7 +599,7 @@ jobs:
           
           if [ "${{ steps.check_elementor.outputs.has_elementor }}" = "true" ]; then
             echo "=========================================="
-            echo "⚠️  MANUAL ELEMENTOR DEPLOYMENT REQUIRED"
+            echo "âš ï¸  MANUAL ELEMENTOR DEPLOYMENT REQUIRED"
             echo "=========================================="
             echo "See Elementor deployment instructions above"
             echo ""
@@ -607,7 +607,7 @@ jobs:
           
           if [ "${{ steps.health_check_post.outcome }}" = "failure" ]; then
             echo "=========================================="
-            echo "⚠️  HEALTH CHECK FAILURES DETECTED"
+            echo "âš ï¸  HEALTH CHECK FAILURES DETECTED"
             echo "=========================================="
             echo "Review health check output above for details"
             echo "Some components may not be properly configured"
@@ -622,7 +622,7 @@ jobs:
           echo "3. Test production site functionality"
           echo "4. Check for any errors in production logs"
           echo ""
-          echo "Production URL: https://talendelight.com"
+          echo "Production URL: https://hireaccord.com"
           echo ""
           echo "Deployment workflow complete!"
 

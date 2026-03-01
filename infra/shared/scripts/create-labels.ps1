@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Create standard labels for GitHub repository
 

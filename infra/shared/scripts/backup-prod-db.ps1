@@ -1,4 +1,4 @@
-# Production database backup script
+﻿# Production database backup script
 # Run weekly (e.g., Friday evenings)
 
 $timestamp = Get-Date -Format "yyyyMMdd-HHmm"
@@ -9,12 +9,12 @@ New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
 
 Write-Host "=== Production Database Backup ===" -ForegroundColor Cyan
 Write-Host "Timestamp: $timestamp"
-Write-Host "Server: talendelight.com (Hostinger)"
+Write-Host "Server: hireaccord.com (Hostinger)"
 
 # Check SSH key exists
 $sshKey = "tmp/hostinger_deploy_key"
 if (-not (Test-Path $sshKey)) {
-    Write-Host "❌ Error: SSH key not found at $sshKey" -ForegroundColor Red
+    Write-Host "âŒ Error: SSH key not found at $sshKey" -ForegroundColor Red
     exit 1
 }
 
@@ -26,14 +26,14 @@ try {
         Out-File -Encoding utf8 "$backupDir/$timestamp-prod-db.sql"
     
     $fileSize = (Get-Item "$backupDir/$timestamp-prod-db.sql").Length / 1MB
-    Write-Host "✅ Production backup saved: $timestamp-prod-db.sql ($([math]::Round($fileSize, 2)) MB)" -ForegroundColor Green
+    Write-Host "âœ… Production backup saved: $timestamp-prod-db.sql ($([math]::Round($fileSize, 2)) MB)" -ForegroundColor Green
     
     # Verify backup is not empty
     if ((Get-Item "$backupDir/$timestamp-prod-db.sql").Length -lt 100KB) {
-        Write-Host "⚠️  WARNING: Backup file is suspiciously small!" -ForegroundColor Yellow
+        Write-Host "âš ï¸  WARNING: Backup file is suspiciously small!" -ForegroundColor Yellow
     }
 } catch {
-    Write-Host "❌ Error during backup: $_" -ForegroundColor Red
+    Write-Host "âŒ Error during backup: $_" -ForegroundColor Red
     exit 1
 }
 
@@ -44,7 +44,7 @@ $deleted = Get-ChildItem $backupDir -Filter "*-prod-db.sql" |
 
 if ($deleted) {
     $deleted | Remove-Item -Force
-    Write-Host "✅ Removed $($deleted.Count) old backup(s)" -ForegroundColor Green
+    Write-Host "âœ… Removed $($deleted.Count) old backup(s)" -ForegroundColor Green
 } else {
     Write-Host "No old backups to clean"
 }
@@ -60,7 +60,7 @@ if ($backups.Count -gt 0) {
     Write-Host "Total size: $([math]::Round(($backups | Measure-Object -Property Length -Sum).Sum / 1MB, 2)) MB"
 }
 
-Write-Host "`n✅ Production backup complete!" -ForegroundColor Green
+Write-Host "`nâœ… Production backup complete!" -ForegroundColor Green
 Write-Host "`nNext steps:"
 Write-Host "  1. Verify backup integrity: Import to test database"
 Write-Host "  2. Consider downloading to external storage"

@@ -12,7 +12,7 @@ $localPath = '/var/www/html/wp-content/themes'
 $sshKey = 'tmp\hostinger_deploy_key'
 $sshHost = 'u909075950@45.84.205.129'
 $sshPort = 65002
-$prodPath = '/home/u909075950/domains/talendelight.com/public_html/wp-content/themes'
+$prodPath = '/home/u909075950/domains/hireaccord.com/public_html/wp-content/themes'
 
 Write-Host "`n=== WordPress Themes Cleanup ===" -ForegroundColor Cyan
 Write-Host "Environment: $Environment" -ForegroundColor Yellow

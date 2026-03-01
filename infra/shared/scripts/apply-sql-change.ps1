@@ -1,4 +1,4 @@
-# PowerShell script to apply a SQL file to the local MariaDB (dev) database
+﻿# PowerShell script to apply a SQL file to the local MariaDB (dev) database
 # Usage: .\apply-sql-change.ps1 -SqlFilePath <path-to-sql-file>
 param(
     [Parameter(Mandatory=$true)]

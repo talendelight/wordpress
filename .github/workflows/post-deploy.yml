@@ -1,4 +1,4 @@
-name: Post-Deployment Cleanup
+﻿name: Post-Deployment Cleanup
 
 on:
   workflow_dispatch:
@@ -64,7 +64,7 @@ jobs:
           # Move release file to archive
           git mv "$RELEASE_FILE" "$ARCHIVE_DIR/v${VERSION}.json"
           
-          echo "✓ Moved $RELEASE_FILE to archive"
+          echo "âœ“ Moved $RELEASE_FILE to archive"
 
       - name: Prepare Next Release Version
         run: |
@@ -104,7 +104,7 @@ jobs:
                 "description": "Deploy wp-content (plugins, themes) to production",
                 "config": {
                   "source": "wp-content/",
-                  "destination": "/domains/talendelight.com/public_html/wp-content/",
+                  "destination": "/domains/hireaccord.com/public_html/wp-content/",
                   "exclude": ["uploads/", "upgrade/", "upgrade-temp-backup/", "*.log"],
                   "rsync_flags": "-avz --delete --exclude-from=.hostingerignore",
                   "critical_files": []
@@ -138,7 +138,7 @@ jobs:
           sed -i "s/VERSION_PLACEHOLDER/${NEXT_VERSION}/" "$NEXT_FILE"
           
           git add "$NEXT_FILE"
-          echo "✓ Created next release template: $NEXT_FILE"
+          echo "âœ“ Created next release template: $NEXT_FILE"
 
       - name: Update RELEASE-NOTES-NEXT.md
         run: |
@@ -163,20 +163,20 @@ jobs:
             } > "$ARCHIVE_NOTES"
             
             git add "$ARCHIVE_NOTES"
-            echo "✓ Archived release notes to: $ARCHIVE_NOTES"
+            echo "âœ“ Archived release notes to: $ARCHIVE_NOTES"
           fi
           
           # Create fresh RELEASE-NOTES-NEXT.md for next version
           cat > docs/RELEASE-NOTES-NEXT.md <<'MDEOF'
           # Release Notes & Deployment Instructions
           
-          **Status:** 🔄 Planning
+          **Status:** ðŸ”„ Planning
           
           This document tracks all manual deployment steps required for the **next production release**.
           
           **Purpose:** Ensure consistent, error-free deployments by documenting every manual step needed after Git push to main branch.
           
-          **📋 See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
+          **ðŸ“‹ See Process:** [RELEASE-NOTES-PROCESS.md](RELEASE-NOTES-PROCESS.md) for workflow documentation
           
           ---
           
@@ -184,12 +184,12 @@ jobs:
           
           **Target Deployment Date:** TBD  
           **Release Version:** NEXT_VERSION_PLACEHOLDER  
-          **Branch:** develop → main  
-          **Status:** 🔄 Planning
+          **Branch:** develop â†’ main  
+          **Status:** ðŸ”„ Planning
           
           ### Overview
           
-          **vPREV_VERSION_PLACEHOLDER Deployment Complete:** ✅ TIMESTAMP_PLACEHOLDER
+          **vPREV_VERSION_PLACEHOLDER Deployment Complete:** âœ… TIMESTAMP_PLACEHOLDER
           - See [VERSION-HISTORY.md](VERSION-HISTORY.md) for complete vPREV_VERSION_PLACEHOLDER details
           - Release archived in .github/releases/archive/
           
@@ -234,7 +234,7 @@ jobs:
           sed -i "s/TIMESTAMP_PLACEHOLDER/${TIMESTAMP}/g" docs/RELEASE-NOTES-NEXT.md
           
           git add docs/RELEASE-NOTES-NEXT.md
-          echo "✓ Reset RELEASE-NOTES-NEXT.md for v${NEXT_VERSION}"
+          echo "âœ“ Reset RELEASE-NOTES-NEXT.md for v${NEXT_VERSION}"
 
       - name: Update VERSION-HISTORY.md
         run: |
@@ -250,7 +250,7 @@ jobs:
           ### vVERSION_PLACEHOLDER
           
           **Deployed:** TIMESTAMP_PLACEHOLDER  
-          **Status:** ✅ Production  
+          **Status:** âœ… Production  
           
           **Description:** DESCRIPTION_PLACEHOLDER
           
@@ -276,7 +276,7 @@ jobs:
           fi
           
           git add docs/VERSION-HISTORY.md
-          echo "✓ Updated VERSION-HISTORY.md with v${VERSION}"
+          echo "âœ“ Updated VERSION-HISTORY.md with v${VERSION}"
 
       - name: Commit Changes
         run: |
@@ -304,14 +304,14 @@ jobs:
       - name: Push to Develop
         run: |
           git push origin develop
-          echo "✓ Changes pushed to develop branch"
+          echo "âœ“ Changes pushed to develop branch"
 
       - name: Merge to Main
         run: |
           git checkout main
           git merge develop --no-edit
           git push origin main
-          echo "✓ Changes merged to main branch"
+          echo "âœ“ Changes merged to main branch"
 
       - name: Cleanup Summary
         run: |
@@ -326,12 +326,12 @@ jobs:
           echo "Next version: v${NEXT_VERSION}"
           echo ""
           echo "Changes made:"
-          echo "  ✓ Archived v${VERSION}.json to archive/"
-          echo "  ✓ Archived release notes with timestamp"
-          echo "  ✓ Created v${NEXT_VERSION}.json template"
-          echo "  ✓ Reset RELEASE-NOTES-NEXT.md"
-          echo "  ✓ Updated VERSION-HISTORY.md"
-          echo "  ✓ Pushed to develop and main branches"
+          echo "  âœ“ Archived v${VERSION}.json to archive/"
+          echo "  âœ“ Archived release notes with timestamp"
+          echo "  âœ“ Created v${NEXT_VERSION}.json template"
+          echo "  âœ“ Reset RELEASE-NOTES-NEXT.md"
+          echo "  âœ“ Updated VERSION-HISTORY.md"
+          echo "  âœ“ Pushed to develop and main branches"
           echo ""
           echo "You can now start planning v${NEXT_VERSION}!"
           echo "=========================================="

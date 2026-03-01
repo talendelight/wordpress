@@ -331,7 +331,7 @@
 - +10 days added to MVP schedule
 - Original MVP target: April 5, 2026
 - Adjusted MVP target: April 15, 2026
-- **Reconciliation (Feb 16):** Confirmed April 15 as authoritative date across all planning documents. Resolved conflicts with WORDPRESS-MVP-TASKS.md which had outdated April 10 and May 3 references.
+- **Reconciliation (Feb 16):** Confirmed April 15 as authoritative date across all planning documents. Resolved conflicts with previous task files which had outdated April 10 and May 3 references.
 
 **Milestone:** Crisis management, disaster recovery success
 

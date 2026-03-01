@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Script to delete Forminator form entries
  * Since we're using Option B (custom table only), this cleans up redundant Forminator data
@@ -28,10 +28,10 @@ $days_old = getenv('DAYS_OLD') ?: null; // Optional: only delete entries older t
 echo "=== Forminator Entry Cleanup Script ===\n\n";
 
 if ($dry_run) {
-    echo "⚠️  DRY-RUN MODE (no data will be deleted)\n";
+    echo "âš ï¸  DRY-RUN MODE (no data will be deleted)\n";
     echo "   To actually delete, run: FORMINATOR_DELETE=true wp eval-file ...\n\n";
 } else {
-    echo "🔥 DELETION MODE ACTIVE\n";
+    echo "ðŸ”¥ DELETION MODE ACTIVE\n";
     echo "   Data will be permanently deleted!\n\n";
 }
 
@@ -66,7 +66,7 @@ if (!empty($where_params)) {
 }
 
 if (empty($entries)) {
-    echo "✅ No entries found matching criteria.\n";
+    echo "âœ… No entries found matching criteria.\n";
     exit(0);
 }
 
@@ -108,7 +108,7 @@ echo "=== DELETING DATA ===\n";
 // Delete metadata first (foreign key constraint)
 echo "Deleting metadata... ";
 $meta_deleted = $wpdb->query("DELETE FROM {$meta_table} WHERE entry_id IN ({$entry_ids_str})");
-echo "✅ Deleted {$meta_deleted} rows\n";
+echo "âœ… Deleted {$meta_deleted} rows\n";
 
 // Delete entries
 echo "Deleting entries... ";
@@ -117,7 +117,7 @@ if (!empty($where_params)) {
 } else {
     $entries_deleted = $wpdb->query("DELETE FROM {$entry_table} WHERE {$where_clause}");
 }
-echo "✅ Deleted {$entries_deleted} rows\n";
+echo "âœ… Deleted {$entries_deleted} rows\n";
 
 echo "\n=== CLEANUP COMPLETE ===\n";
 echo "Total deleted:\n";

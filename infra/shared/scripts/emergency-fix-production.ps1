@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
     Emergency production fix for URL redirect and missing Welcome page
@@ -19,7 +19,7 @@ $SSH_USER = "u909075950"
 $SSH_HOST = "45.84.205.129"
 $SSH_PORT = "65002"  # Hostinger uses port 65002, not default 22
 $SSH_KEY = Join-Path $PSScriptRoot "..\..\..\tmp\hostinger_deploy_key"
-$PROD_PATH = "domains/talendelight.com/public_html"
+$PROD_PATH = "domains/hireaccord.com/public_html"
 
 Write-Host "=== Production Emergency Fix ===" -ForegroundColor Cyan
 Write-Host "Fixing: 1) Welcome page missing, 2) URL redirect to :8080`n" -ForegroundColor Yellow
@@ -29,11 +29,11 @@ Write-Host "1. Fixing WordPress URLs..." -ForegroundColor Cyan
 
 $fixUrlsScript = @'
 <?php
-require_once('/home/u909075950/domains/talendelight.com/public_html/wp-load.php');
+require_once('/home/u909075950/domains/hireaccord.com/public_html/wp-load.php');
 
 // Fix site URL and home URL
-update_option('siteurl', 'https://talendelight.com');
-update_option('home', 'https://talendelight.com');
+update_option('siteurl', 'https://hireaccord.com');
+update_option('home', 'https://hireaccord.com');
 
 echo "URLs fixed:\n";
 echo "  siteurl: " . get_option('siteurl') . "\n";
@@ -111,7 +111,7 @@ if ($LASTEXITCODE -ne 0) {
 # Create restore script
 $restoreScript = @'
 <?php
-require_once('/home/u909075950/domains/talendelight.com/public_html/wp-load.php');
+require_once('/home/u909075950/domains/hireaccord.com/public_html/wp-load.php');
 
 $content = file_get_contents('/home/u909075950/welcome-content.html');
 if (!$content) {
@@ -163,9 +163,9 @@ update_option('page_on_front', $page_id);
 echo "Set as homepage (page_on_front = $page_id)\n";
 
 // Force correct URLs (prevent localhost:8080 contamination)
-update_option('siteurl', 'https://talendelight.com');
-update_option('home', 'https://talendelight.com');
-echo "URLs verified: https://talendelight.com\n";
+update_option('siteurl', 'https://hireaccord.com');
+update_option('home', 'https://hireaccord.com');
+echo "URLs verified: https://hireaccord.com\n";
 
 // Flush caches
 wp_cache_flush();
@@ -398,8 +398,8 @@ if ($LASTEXITCODE -eq 0) {
 Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host "`n=== Production Fix Complete ===" -ForegroundColor Green
-Write-Host "$([char]0x2713) URLs fixed (https://talendelight.com)" -ForegroundColor Green
+Write-Host "$([char]0x2713) URLs fixed (https://hireaccord.com)" -ForegroundColor Green
 Write-Host "$([char]0x2713) Welcome page restored and set as homepage" -ForegroundColor Green
 Write-Host "$([char]0x2713) Blocksy theme and companion activated" -ForegroundColor Green
 Write-Host "$([char]0x2713) Permalink structure configured" -ForegroundColor Green
-Write-Host "`nTest site: https://talendelight.com" -ForegroundColor Cyan
+Write-Host "`nTest site: https://hireaccord.com" -ForegroundColor Cyan

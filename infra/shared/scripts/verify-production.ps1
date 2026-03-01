@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     Verify production deployment state
@@ -18,7 +18,7 @@ $ErrorActionPreference = "Stop"
 # Configuration
 $SSH_USER = "u909075950"
 $SSH_HOST = "45.84.205.129"
-$WP_ROOT = "domains/talendelight.com/public_html"
+$WP_ROOT = "domains/hireaccord.com/public_html"
 $LOCAL_ROOT = "c:\data\lochness\talendelight\code\wordpress"
 
 Write-Host "=== Production Verification Started ===" -ForegroundColor Cyan
@@ -50,11 +50,11 @@ function Test-ProductionItem {
                     expected = $Expected
                     actual = $result
                 }
-                Write-Host "  ✗ $Name (mismatch)" -ForegroundColor Red
+                Write-Host "  âœ— $Name (mismatch)" -ForegroundColor Red
                 return $false
             } else {
                 $script:passed++
-                Write-Host "  ✓ $Name" -ForegroundColor Green
+                Write-Host "  âœ“ $Name" -ForegroundColor Green
                 return $true
             }
         } else {
@@ -64,7 +64,7 @@ function Test-ProductionItem {
                 status = "missing"
                 error = $result
             }
-            Write-Host "  ✗ $Name (missing/error)" -ForegroundColor Red
+            Write-Host "  âœ— $Name (missing/error)" -ForegroundColor Red
             return $false
         }
     } catch {
@@ -74,7 +74,7 @@ function Test-ProductionItem {
             status = "error"
             error = $_.Exception.Message
         }
-        Write-Host "  ✗ $Name (check failed)" -ForegroundColor Red
+        Write-Host "  âœ— $Name (check failed)" -ForegroundColor Red
         return $false
     }
 }
@@ -167,7 +167,7 @@ if ($issues.Count -gt 0) {
         Write-Host "`n$($group.Name.ToUpper()):" -ForegroundColor Yellow
         
         foreach ($issue in $group.Group) {
-            Write-Host "  • $($issue.name)" -ForegroundColor Red
+            Write-Host "  â€¢ $($issue.name)" -ForegroundColor Red
             Write-Host "    Status: $($issue.status)" -ForegroundColor Gray
             
             if ($issue.expected) {
@@ -184,17 +184,17 @@ if ($issues.Count -gt 0) {
     # Save issues report
     $reportFile = Join-Path $LOCAL_ROOT "tmp\verification-issues-$(Get-Date -Format 'yyyyMMdd-HHmm').json"
     $issues | ConvertTo-Json -Depth 10 | Out-File -FilePath $reportFile -Encoding UTF8
-    Write-Host "`n✓ Issues report saved: $reportFile" -ForegroundColor Gray
+    Write-Host "`nâœ“ Issues report saved: $reportFile" -ForegroundColor Gray
     
     if ($Fix) {
         Write-Host "`n=== Attempting Automatic Fixes ===" -ForegroundColor Yellow
-        Write-Host "⚠ Fix mode not yet implemented - please restore from backup" -ForegroundColor Yellow
+        Write-Host "âš  Fix mode not yet implemented - please restore from backup" -ForegroundColor Yellow
     } else {
         Write-Host "`nRun with -Fix flag to attempt automatic repairs" -ForegroundColor Yellow
     }
     
     return 1
 } else {
-    Write-Host "`n✓ All verification checks passed" -ForegroundColor Green
+    Write-Host "`nâœ“ All verification checks passed" -ForegroundColor Green
     return 0
 }

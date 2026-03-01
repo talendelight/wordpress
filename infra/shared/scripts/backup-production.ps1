@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     Automated production backup script
@@ -21,7 +21,7 @@ $ErrorActionPreference = "Stop"
 # Configuration
 $SSH_USER = "u909075950"
 $SSH_HOST = "45.84.205.129"
-$WP_ROOT = "domains/talendelight.com/public_html"
+$WP_ROOT = "domains/hireaccord.com/public_html"
 $BACKUP_ROOT = "c:\data\lochness\talendelight\code\wordpress\restore"
 $TIMESTAMP = Get-Date -Format "yyyyMMdd-HHmm"
 $BACKUP_DIR = Join-Path $BACKUP_ROOT "backups\$TIMESTAMP"
@@ -31,7 +31,7 @@ Write-Host "Timestamp: $TIMESTAMP" -ForegroundColor Gray
 
 # Create backup directory
 New-Item -ItemType Directory -Path $BACKUP_DIR -Force | Out-Null
-Write-Host "✓ Created backup directory: $BACKUP_DIR" -ForegroundColor Green
+Write-Host "âœ“ Created backup directory: $BACKUP_DIR" -ForegroundColor Green
 
 # Backup manifest
 $manifest = @{
@@ -70,7 +70,7 @@ try {
         
         if ($LASTEXITCODE -eq 0) {
             $jsonContent | Out-File -FilePath $jsonFile -Encoding UTF8
-            Write-Host "  ✓ $($page.post_title) (ID: $pageId)" -ForegroundColor Green
+            Write-Host "  âœ“ $($page.post_title) (ID: $pageId)" -ForegroundColor Green
             $pageCount++
             
             $manifest.items += @{
@@ -81,7 +81,7 @@ try {
                 file = "pages/$pageName-$pageId.json"
             }
         } else {
-            Write-Host "  ✗ Failed to export $($page.post_title)" -ForegroundColor Red
+            Write-Host "  âœ— Failed to export $($page.post_title)" -ForegroundColor Red
         }
     }
     
@@ -111,9 +111,9 @@ try {
         
         if ($LASTEXITCODE -eq 0) {
             $optionsData[$option] = $value | ConvertFrom-Json
-            Write-Host "  ✓ $option" -ForegroundColor Green
+            Write-Host "  âœ“ $option" -ForegroundColor Green
         } else {
-            Write-Host "  ⚠ $option (not found)" -ForegroundColor Yellow
+            Write-Host "  âš  $option (not found)" -ForegroundColor Yellow
         }
     }
     
@@ -144,9 +144,9 @@ try {
         Invoke-Expression $scpCmd 2>$null
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "  ✓ $file" -ForegroundColor Green
+            Write-Host "  âœ“ $file" -ForegroundColor Green
         } else {
-            Write-Host "  ⚠ $file (failed)" -ForegroundColor Yellow
+            Write-Host "  âš  $file (failed)" -ForegroundColor Yellow
         }
     }
     
@@ -160,7 +160,7 @@ try {
     
     if ($LASTEXITCODE -eq 0) {
         $patternFiles = Get-ChildItem -Path $patternsDir -Filter "*.php"
-        Write-Host "  ✓ Backed up $($patternFiles.Count) patterns" -ForegroundColor Green
+        Write-Host "  âœ“ Backed up $($patternFiles.Count) patterns" -ForegroundColor Green
         
         $manifest.items += @{
             type = "patterns"
@@ -168,7 +168,7 @@ try {
             file = "patterns/"
         }
     } else {
-        Write-Host "  ⚠ Pattern backup failed" -ForegroundColor Yellow
+        Write-Host "  âš  Pattern backup failed" -ForegroundColor Yellow
     }
     
     # 5. Backup database (optional)
@@ -182,7 +182,7 @@ try {
         
         if ($LASTEXITCODE -eq 0) {
             $dbSize = (Get-Item $dbFile).Length / 1MB
-            Write-Host "  ✓ Database exported ($([math]::Round($dbSize, 2)) MB)" -ForegroundColor Green
+            Write-Host "  âœ“ Database exported ($([math]::Round($dbSize, 2)) MB)" -ForegroundColor Green
             
             $manifest.items += @{
                 type = "database"
@@ -190,14 +190,14 @@ try {
                 file = "database.sql"
             }
         } else {
-            Write-Host "  ✗ Database backup failed" -ForegroundColor Red
+            Write-Host "  âœ— Database backup failed" -ForegroundColor Red
         }
     }
     
     # Save manifest
     $manifestFile = Join-Path $BACKUP_DIR "manifest.json"
     $manifest | ConvertTo-Json -Depth 10 | Out-File -FilePath $manifestFile -Encoding UTF8
-    Write-Host "`n✓ Backup manifest saved" -ForegroundColor Green
+    Write-Host "`nâœ“ Backup manifest saved" -ForegroundColor Green
     
     # Create latest symlink/marker
     $latestFile = Join-Path $BACKUP_ROOT "backups\LATEST.txt"
@@ -219,16 +219,16 @@ try {
         
         foreach ($old in $toDelete) {
             Remove-Item -Path $old.FullName -Recurse -Force
-            Write-Host "  ✓ Removed old backup: $($old.Name)" -ForegroundColor Gray
+            Write-Host "  âœ“ Removed old backup: $($old.Name)" -ForegroundColor Gray
         }
     }
     
-    Write-Host "`n✓ Backup system ready" -ForegroundColor Green
+    Write-Host "`nâœ“ Backup system ready" -ForegroundColor Green
     
     return 0
     
 } catch {
-    Write-Host "`n✗ Backup failed: $_" -ForegroundColor Red
+    Write-Host "`nâœ— Backup failed: $_" -ForegroundColor Red
     Write-Host $_.ScriptStackTrace -ForegroundColor Red
     return 1
 }

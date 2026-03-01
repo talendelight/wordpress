@@ -1,5 +1,5 @@
-<?php
-require '/home/u909075950/domains/talendelight.com/public_html/wp-load.php';
+﻿<?php
+require '/home/u909075950/domains/hireaccord.com/public_html/wp-load.php';
 echo "WP_HOME constant: " . (defined('WP_HOME') ? WP_HOME : 'NOT DEFINED') . "\n";
 echo "WP_SITEURL constant: " . (defined('WP_SITEURL') ? WP_SITEURL : 'NOT DEFINED') . "\n";
 echo "home option: " . get_option('home') . "\n";

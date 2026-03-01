@@ -584,6 +584,84 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 
 ---
 
+## Domain Migration & Cache Management
+
+### URL search-replace (all tables)
+**Purpose:** Replace old domain with new domain across entire database  
+**Environment:** 🌐 PRODUCTION  
+**Example:**
+```bash
+wp search-replace 'olddomain.com' 'newdomain.com' --all-tables --report-changed-only
+```
+**Success:** Reports 100-150 replacements across wp_options, wp_posts, wp_postmeta, td_user_data_change_requests tables
+
+### Fix WordPress site URLs
+**Purpose:** Force update siteurl and home options  
+**Environment:** 🌐 PRODUCTION  
+**Example:**
+```bash
+wp option update siteurl 'https://newdomain.com' && wp option update home 'https://newdomain.com'
+```
+
+### Fix corrupted front page options (delete+recreate)
+**Purpose:** Recreate front page settings when database import corrupts options  
+**Environment:** 🏠 LOCAL | 🌐 PRODUCTION  
+**Example:**
+```bash
+# Delete corrupted options
+wp option delete show_on_front && wp option delete page_on_front
+# Recreate with autoload
+wp option add show_on_front 'page' --autoload=yes
+wp option add page_on_front 6 --autoload=yes
+```
+**Why delete+recreate:** Update doesn't work with corrupted serialized data during import
+
+### Disable persistent object cache
+**Purpose:** Prevent stale cache serving old option values during migration  
+**Environment:** 🏠 LOCAL | 🌐 PRODUCTION  
+**Example:**
+```bash
+# Local
+podman exec wp bash -c "cd /var/www/html/wp-content && mv object-cache.php object-cache.php.disabled"
+# Production
+ssh production "cd public_html/wp-content && mv object-cache.php object-cache.php.disabled"
+```
+
+### Remove LiteSpeed cache rules from .htaccess
+**Purpose:** Clean up cache directives from deactivated plugins  
+**Environment:** 🌐 PRODUCTION  
+**Example:**
+```bash
+cp .htaccess .htaccess.backup
+sed -i '/#.*BEGIN LSCACHE/,/#.*END LSCACHE/d' .htaccess
+sed -i '/#.*BEGIN NON_LSCACHE/,/#.*END NON_LSCACHE/d' .htaccess
+```
+
+### Test CDN cache status (response headers)
+**Purpose:** Check if CDN is serving cached content  
+**Environment:** PowerShell  
+**Example:**
+```powershell
+$response = Invoke-WebRequest -Uri "https://domain.com/" -UseBasicParsing
+$response.Headers['x-hcdn-cache-status']  # HIT=cached, MISS=fresh
+$response.Headers['Server']               # hcdn=Hostinger CDN
+$response.Headers['Cache-Control']        # max-age TTL
+```
+
+### Verify actual content served (not just settings)
+**Purpose:** Confirm real HTML response matches expected content  
+**Environment:** PowerShell or bash  
+**Example:**
+```powershell
+$response = Invoke-WebRequest -Uri "https://domain.com/" -UseBasicParsing
+$response.Content -match "Welcome page hero text"  # True=correct, False=cached old
+```
+**Critical:** Server-side curl bypasses CDN, always test from browser/PowerShell
+
+**Related Guide:** [DOMAIN-MIGRATION-HOSTINGER.md](../docs/procedures/DOMAIN-MIGRATION-HOSTINGER.md) - Complete 15-step migration procedure
+
+---
+
 ## Critical Patterns
 
 ### ✅ Always Do:
@@ -592,12 +670,19 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 - Use `2>/dev/null` or `2>&1` for stderr handling in bash
 - Use `-Encoding utf8` in PowerShell `Out-File` to prevent corruption
 - Quote passwords and special characters in SQL queries
+- **Purge CDN cache via hPanel** after domain migrations (Hostinger)
+- **Test from browser**, not just server-side curl/wp-cli
+- **Check response headers** for CDN cache indicators (x-hcdn-*, cf-*)
+- **Delete+recreate corrupted options** instead of updating during migrations
 
 ### ❌ Never Do:
 - NEVER use `wp-cli` stdin pipes for large content (causes corruption)
 - NEVER use `2>$null` on Windows (creates C:\dev\null file) - use bash wrapper instead
 - NEVER run `podman ps` or container discovery commands (use container names above)
 - NEVER reinvent commands - check this registry first
+- NEVER assume `wp cache flush` clears CDN cache (it doesn't)
+- NEVER skip CDN cache purge after domain/content migrations
+- NEVER trust server-side tests alone when browser shows different content
 
 ---
 
