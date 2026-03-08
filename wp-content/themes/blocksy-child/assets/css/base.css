@@ -1,0 +1,197 @@
+/**
+ * HireAccord Base Styles
+ * Global defaults + layout wrappers
+ * 
+ * @package HireAccord
+ * @since 3.2.0
+ * @requires design-tokens.css
+ * @lastUpdated 2026-03-08
+ */
+
+/* =====================================
+   GLOBAL DEFAULTS
+   ===================================== */
+
+html { 
+  font-size: var(--font-size-base);
+}
+
+body {
+  color: var(--color-grey-dark);
+  background: var(--color-grey-white);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  padding: 0;
+}
+
+/* Heading color consistency */
+h1, h2, h3, h4, h5, h6 { 
+  color: var(--color-navy);
+  margin-top: 0;
+}
+
+/* Links */
+a { 
+  color: var(--color-link-default);
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+a:hover, a:focus { 
+  color: var(--color-link-hover);
+}
+
+/* Focus visibility for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--color-navy);
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* =====================================
+   LAYOUT WRAPPERS
+   ===================================== */
+
+.td-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  box-sizing: border-box;
+}
+
+.td-section {
+  padding: var(--space-3xl) 0;
+}
+
+/* Surface container - alternate background to prevent drift */
+.td-surface {
+  background: var(--color-grey-off-white);
+  border: 1px solid var(--color-grey-border);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Compliance/Legal emphasis section - dark background */
+.td-compliance {
+  background: var(--color-compliance-bg);
+  color: var(--color-white);
+  padding: var(--space-3xl) 0;
+}
+
+.td-compliance h1,
+.td-compliance h2,
+.td-compliance h3,
+.td-compliance h4,
+.td-compliance h5,
+.td-compliance h6 {
+  color: var(--color-white);
+}
+
+.td-compliance a {
+  color: var(--color-accent-blue);
+}
+
+.td-compliance a:hover {
+  color: var(--color-navy-hover);
+}
+
+/* =====================================
+   FORM FIELD DEFAULTS
+   ===================================== */
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  border: 1px solid var(--input-border-default);
+  border-radius: var(--border-radius-sm);
+  padding: var(--input-padding);
+  min-height: var(--input-height);
+  width: 100%;
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: var(--transition-base);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--input-border-focus);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--color-grey-light);
+}
+
+/* Form labels */
+label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-grey-dark);
+}
+
+/* Required field indicator */
+.required,
+abbr[title="required"] {
+  color: var(--color-error);
+  text-decoration: none;
+}
+
+/* =====================================
+   MOBILE RESPONSIVE POLISH
+   ===================================== */
+
+@media (max-width: 768px) {
+  .td-container {
+    padding: 0 var(--space-md);
+  }
+
+  .td-section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .td-surface {
+    padding: var(--space-lg);
+  }
+
+  /* Typography adjustments */
+  h1 {
+    font-size: var(--font-size-4xl); /* 36px instead of 48px */
+  }
+
+  h2 {
+    font-size: var(--font-size-3xl); /* 30px */
+  }
+
+  /* Reduce shadow intensity on mobile */
+  .td-surface {
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Comfortable tap targets */
+  button,
+  input[type="submit"],
+  input[type="button"],
+  .button,
+  a.button {
+    min-height: 44px;
+  }
+}

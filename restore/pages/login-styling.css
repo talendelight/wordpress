@@ -89,8 +89,8 @@
 }
 
 .wpum-form input[type="submit"]:hover {
-    background: #2980b9;
-    box-shadow: 0 0 15px 0 rgba(52, 152, 219, 0.7);
+    background: #0062e3;
+    box-shadow: 0 0 15px 0 rgba(0, 98, 227, 0.7);
     transform: translateY(-2px);
 }
 

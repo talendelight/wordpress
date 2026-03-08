@@ -1,23 +1,52 @@
 <?php
 // Enqueue child theme stylesheet
 add_action('wp_enqueue_scripts', function() {
-    // Main child theme stylesheet
-    wp_enqueue_style('blocksy-child-style', get_stylesheet_uri());
-    
-    // Custom color palette CSS
+    // Design tokens - CSS custom properties (MUST load first)
     wp_enqueue_style(
-        'blocksy-child-colors',
-        get_stylesheet_directory_uri() . '/custom-colors.css',
-        array('blocksy-child-style'),
-        '1.0.1'
+        'td-design-tokens',
+        get_stylesheet_directory_uri() . '/design-tokens.css',
+        array(),  // No dependencies - this is the foundation
+        '3.2.0'
     );
     
-    // WPUM form overrides (design system integration)
+    // Base styles - global defaults and layout wrappers
     wp_enqueue_style(
-        'wpum-design-system', 
-        get_stylesheet_directory_uri() . '/wpum-overrides.css',
-        array('blocksy-child-style'),
-        '1.0.0'
+        'td-base',
+        get_stylesheet_directory_uri() . '/assets/css/base.css',
+        array('td-design-tokens'),
+        '3.2.0'
+    );
+    
+    // Components - reusable UI components (buttons, utilities)
+    wp_enqueue_style(
+        'td-components',
+        get_stylesheet_directory_uri() . '/assets/css/components.css',
+        array('td-design-tokens', 'td-base'),
+        '3.2.0'
+    );
+    
+    // Plugin overrides - WPUM (login, registration, profile forms)
+    wp_enqueue_style(
+        'td-plugin-wpum',
+        get_stylesheet_directory_uri() . '/assets/css/plugin-wpum.css',
+        array('td-design-tokens', 'td-base', 'td-components'),
+        '3.2.0'
+    );
+    
+    // Plugin overrides - Forminator (forms)
+    wp_enqueue_style(
+        'td-plugin-forminator',
+        get_stylesheet_directory_uri() . '/assets/css/plugin-forminator.css',
+        array('td-design-tokens', 'td-base', 'td-components'),
+        '3.2.0'
+    );
+    
+    // Main child theme stylesheet
+    wp_enqueue_style(
+        'blocksy-child-style',
+        get_stylesheet_uri(),
+        array('td-design-tokens', 'td-base', 'td-components'),  // Depends on design system
+        '3.2.0'
     );
     
     // Font Awesome - fallback if Better Font Awesome plugin not active
@@ -29,6 +58,14 @@ add_action('wp_enqueue_scripts', function() {
             '6.5.1'
         );
     }
+    
+    // Google Fonts - Red Hat Display Black 900 (for site logo)
+    wp_enqueue_style(
+        'google-font-red-hat-display',
+        'https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@900&display=swap',
+        array(),
+        null
+    );
     
     // Registration form assets (only on registration page)
     // Debug: Always enqueue to test if this is the issue
@@ -44,7 +81,7 @@ add_action('wp_enqueue_scripts', function() {
             wp_enqueue_style(
                 'td-registration-form',
                 get_stylesheet_directory_uri() . '/assets/css/registration-form.css',
-                array('blocksy-child-style'),
+                array('td-design-tokens', 'blocksy-child-style'),
                 '1.0.1'  // Bumped version to force reload
             );
             

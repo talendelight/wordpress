@@ -1,0 +1,217 @@
+/**
+ * HireAccord Components
+ * Reusable UI components and utilities
+ * 
+ * @package HireAccord
+ * @since 3.2.0
+ * @requires design-tokens.css, base.css
+ * @lastUpdated 2026-03-08
+ */
+
+/* =====================================
+   BUTTONS - PRIMARY SYSTEM
+   ===================================== */
+
+.td-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+
+  min-width: 180px;
+  min-height: 44px;
+
+  padding: 14px 22px;
+  border-radius: var(--border-radius-pill);
+
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  transition: var(--transition-base);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  box-sizing: border-box;
+}
+
+/* Primary variant - Light Blue (Accent) */
+.td-btn--primary {
+  background: var(--color-accent-blue);
+  color: var(--color-white);
+  border-color: var(--color-accent-blue);
+}
+
+.td-btn--primary:hover {
+  background: var(--color-navy-hover);
+  border-color: var(--color-navy-hover);
+  transform: translateY(-1px);
+}
+
+.td-btn--primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary variant - Grey */
+.td-btn--secondary {
+  background: var(--color-grey-light);
+  color: var(--color-grey-dark);
+  border-color: var(--color-grey-light);
+}
+
+.td-btn--secondary:hover {
+  background: var(--color-grey-medium-hover);
+  border-color: var(--color-grey-medium-hover);
+  transform: translateY(-1px);
+}
+
+.td-btn--secondary:active {
+  transform: translateY(0);
+}
+
+/* Navy variant - High trust actions */
+.td-btn--navy {
+  background: var(--color-navy);
+  color: var(--color-white);
+  border-color: var(--color-navy);
+}
+
+.td-btn--navy:hover {
+  background: var(--color-navy-hover);
+  border-color: var(--color-navy-hover);
+  transform: translateY(-1px);
+}
+
+.td-btn--navy:active {
+  transform: translateY(0);
+}
+
+/* Full width helper (mobile CTAs) */
+.td-btn--full {
+  width: 100%;
+  min-width: unset;
+}
+
+/* =====================================
+   LEGACY BUTTON CLASSES (backwards compat)
+   ===================================== */
+
+.btn-blue {
+  background-color: var(--color-accent-blue) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-accent-blue) !important;
+  border-radius: var(--border-radius-pill) !important;
+  padding: 14px 22px !important;
+  min-width: 180px !important;
+  min-height: 44px !important;
+  cursor: pointer !important;
+  transition: var(--transition-base) !important;
+}
+
+.btn-blue:hover {
+  background-color: var(--color-navy-hover) !important;
+  border-color: var(--color-navy-hover) !important;
+  transform: translateY(-1px);
+}
+
+.btn-blue:active {
+  transform: translateY(0);
+}
+
+.btn-grey {
+  background-color: var(--color-grey-light) !important;
+  color: var(--color-grey-dark) !important;
+  border-color: var(--color-grey-light) !important;
+  border-radius: var(--border-radius-pill) !important;
+  padding: 14px 22px !important;
+  min-width: 180px !important;
+  min-height: 44px !important;
+  cursor: pointer !important;
+  transition: var(--transition-base) !important;
+}
+
+.btn-grey:hover {
+  background-color: var(--color-grey-medium-hover) !important;
+  border-color: var(--color-grey-medium-hover) !important;
+  transform: translateY(-1px);
+}
+
+.btn-grey:active {
+  transform: translateY(0);
+}
+
+/* =====================================
+   WORDPRESS CORE BUTTON CONSISTENCY
+   ===================================== */
+
+button,
+input[type="submit"],
+input[type="button"],
+a.button,
+.button,
+.wp-block-button__link {
+  min-height: 44px;
+  border-radius: var(--border-radius-pill);
+  transition: var(--transition-base);
+}
+
+/* =====================================
+   MANAGER ADMIN ACTION BUTTONS (special sizing)
+   ===================================== */
+
+button.td-approve-btn,
+button.td-reject-btn,
+button.td-undo-btn,
+button.td-assign-btn {
+  min-width: unset !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 6px !important;
+  border-radius: 6px !important;
+}
+
+/* =====================================
+   UTILITIES
+   ===================================== */
+
+.td-text-muted {
+  color: var(--color-grey-medium-text);
+  font-size: var(--font-size-sm);
+}
+
+.td-text-small {
+  font-size: var(--font-size-sm);
+}
+
+.td-text-caption {
+  font-size: var(--font-size-xs);
+  color: var(--color-grey-medium-text);
+}
+
+/* =====================================
+   MOBILE RESPONSIVE
+   ===================================== */
+
+@media (max-width: 768px) {
+  /* Full width buttons on mobile for better UX */
+  .td-btn,
+  .btn-blue,
+  .btn-grey,
+  .wp-block-button__link,
+  input[type="submit"],
+  input[type="button"],
+  button:not(.td-approve-btn):not(.td-reject-btn):not(.td-undo-btn):not(.td-assign-btn) {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Comfortable tap targets */
+  button,
+  input[type="submit"],
+  input[type="button"],
+  .button,
+  a.button,
+  .td-btn {
+    min-height: 44px;
+    padding: var(--space-md) var(--space-lg);
+  }
+}

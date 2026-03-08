@@ -55,9 +55,9 @@ input[type="button"].btn-blue:hover,
 .elementor .elementor-button.btn-blue:hover,
 a.button.btn-blue:hover,
 .button.btn-blue:hover {
-  background-color: #2980b9 !important;
-  border-color: #2980b9 !important;
-  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+  background-color: #0062e3 !important;
+  border-color: #0062e3 !important;
+  box-shadow: 0 3px 6px rgba(0, 98, 227, 0.4) !important;
 }
 
 /* Grey button - use class "btn-grey" */
@@ -105,9 +105,9 @@ a.button,
 
 .wpum-form input[type="submit"].button:hover,
 .wpum-form input[name="submit_login"]:hover {
-  background-color: #2980b9 !important;
-  border-color: #2980b9 !important;
-  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+  background-color: #0062e3 !important;
+  border-color: #0062e3 !important;
+  box-shadow: 0 3px 6px rgba(0, 98, 227, 0.4) !important;
 }
 
 /* Next button - btn-blue style */
@@ -119,9 +119,9 @@ a.button,
 }
 
 #td-role-next:hover {
-  background-color: #2980b9 !important;
-  border-color: #2980b9 !important;
-  box-shadow: 0 3px 6px rgba(52, 152, 219, 0.4) !important;
+  background-color: #0062e3 !important;
+  border-color: #0062e3 !important;
+  box-shadow: 0 3px 6px rgba(0, 98, 227, 0.4) !important;
 }
 
 /* Back button - btn-grey style */

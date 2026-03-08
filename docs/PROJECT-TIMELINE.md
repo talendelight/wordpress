@@ -6,6 +6,47 @@
 
 ---
 
+## 🎯 Strategic Context
+
+### Business Model: Option C (Hybrid Model)
+
+**HireAccord Brand:** Operating as HireAccord externally (TalenDelight is internal codename).
+
+**Phase 1 (Months 0-12): Screening & Assessment Focus**
+- Primary service: Technical and behavioral screening reports (€200-€500 packages)
+- Value proposition: Signal amplification layer reducing hiring uncertainty
+- Positioning: Talent signal expert (NOT generic recruiter)
+- Target: Java Backend + DevOps/Cloud engineers (Baltics + Nordics)
+- Differentiator: 48-hour structured evaluation reports
+
+**Phase 2 (Month 12+): Direct Placement Expansion**
+- Add contingency placement fees on top of assessment base
+- Requires: Clean employer exit, risk clarity, validated pipeline
+
+### Why WordPress?
+
+WordPress serves as the **primary application for Phase 1** because:
+
+1. **Speed to market:** Faster MVP than custom Angular/Java build
+2. **Marketing foundation:** Public pages communicate screening service value proposition
+3. **Candidate intake:** CV submission workflow with consent capture
+4. **Role-based access:** Operator/Manager/Scout workflows for assisted submissions
+5. **Proof of competence:** Professional presence builds trust before first client conversations
+6. **Low overhead:** Managed hosting (Hostinger) reduces maintenance burden during stealth phase
+
+**Strategic Alignment:**
+- Supports screening-first model (not transactional recruiting)
+- Enables candidate asset building (Phase 1: 40-80 profiles over 6 months)
+- Maintains compliance (GDPR, consent, separation from employer)
+- Allows validation before scaling (test service delivery, refine processes)
+
+**Related Strategic Documents:**
+- [HIREACCORD-STRATEGIC-PLAN.md](../../../../Documents/HIREACCORD-STRATEGIC-PLAN.md) - Complete strategic plan
+- [ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md) - Revenue operations approach
+- [STEALTH-MODE-OPERATIONS-GUIDE.md](../../../../Documents/STEALTH-MODE-OPERATIONS-GUIDE.md) - 90-day asset building program
+
+---
+
 ## 📅 Complete Timeline
 
 ### Pre-Week: December 29-31, 2025
@@ -809,7 +850,65 @@
 
 ---
 
-**Document Created:** Februa9, 2026 at 20:00 (added PENG-071 version upgrade activity Feb 17-20)  
-**Next Update:** February 21, 2026 (after version upgrade completion)  
-**Coverage:** 52 days (December 29, 2025 - February 19rk begins)  
-**Coverage:** 47 days (December 29, 2025 - February 13, 2026)
+**Last Historical Update:** February 19, 2026 (coverage: December 29, 2025 - February 19, 2026)
+
+---
+---
+
+# Current Program Timeline (March 2026 - June 2026)
+
+**Program:** 90-Day Stealth Asset Building (Week 0-13)  
+**Mode:** Phase 1 - Quiet Asset Building (NO employer outreach)  
+**Status:** ACTIVE  
+**Last Updated:** March 6, 2026
+
+---
+
+## Week-to-Date Mapping
+
+**Current Week:** Week 0 (Sprint 0 - Extended - Governance & Architecture)  
+Calendar: March 3-16, 2026 (2 weeks)  
+Status: IN PROGRESS
+
+### Sprint 0: Governance & Architecture (Extended)
+- **Week 0:** March 3-16, 2026 (2-week setup, NO external activity, includes training completion)
+
+### Sprint 1-13: Stealth Asset Building (90 Days)
+- **Week 1:** March 17-23, 2026 (Sprint 1 - Soft Activation)
+- **Week 2:** March 24-30, 2026 (Sprint 2)
+- **Week 3:** March 31 - April 6, 2026 (Sprint 3)
+- **Week 4:** April 7-13, 2026 (Sprint 4)
+- **Week 5:** April 14-20, 2026 (Sprint 5)
+- **Week 6:** April 21-27, 2026 (Sprint 6)
+- **Week 7:** April 28 - May 4, 2026 (Sprint 7)
+- **Week 8:** May 5-11, 2026 (Sprint 8)
+- **Week 9:** May 12-18, 2026 (Sprint 9)
+- **Week 10:** May 19-25, 2026 (Sprint 10)
+- **Week 11:** May 26 - June 1, 2026 (Sprint 11)
+- **Week 12:** June 2-8, 2026 (Sprint 12)
+- **Week 13:** June 9-15, 2026 (Sprint 13 - Final week, Phase 2 readiness review)
+
+---
+
+## Update Log
+
+- **March 6, 2026:** Extended Sprint 0 by one week (now March 3-16) to allow training completion. Sprint 1 now starts March 17. All subsequent weeks shifted by 7 days. 90-day program now runs March 17 - June 15.
+- **March 4, 2026:** Added current program timeline (Week 0-13). Strategic pivot from Revenue First to Stealth Asset Building.
+
+---
+
+## Usage Notes
+
+**For AI Assistant - Daily Query Pattern:**
+1. When user asks "What are we doing today in HireAccord?"
+2. Check current date
+3. Map date to Week number using table above
+4. Reference [THIS-WEEK-PLAN.md](../../../../Documents/THIS-WEEK-PLAN.md) for week-specific guidance
+5. Provide day-specific activities from Sprint 0 or Sprint 1-13 daily rhythm
+
+**Week Number Rule:**
+- Planning documents use Week numbers only (Week 0, Week 1-13)
+- This file maintains calendar date mappings
+- Update this section when Week numbers shift or timeline changes
+
+---

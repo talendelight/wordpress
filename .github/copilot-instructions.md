@@ -26,6 +26,42 @@
 
 ---
 
+## Phase & Sprint Awareness (CRITICAL - Check First)
+
+**⚠️ ALWAYS check phase/sprint status before recommending work or answering planning questions**
+
+**Master Reference:** [CURRENT-PHASE-STAGE-AWARENESS.md](../../Documents/CURRENT-PHASE-STAGE-AWARENESS.md)
+
+This file contains:
+- Current Sprint number and dates (Sprint 0, 1, 2, etc.)
+- Current Phase (Phase 0: Stealth Preparation, Phase 1: Asset Building, etc.)
+- Sprint deliverables status (completed, in progress, todo)
+- Operational constraints (what's allowed/forbidden in current sprint)
+- Next milestones and dates
+- Complete folder structure reference
+- Key reference documents index
+
+**When to check:**
+- ✅ At start of EVERY session - confirm current sprint/phase
+- ✅ When user asks "What's our plan today?" or "What should we work on?"
+- ✅ Before recommending any external activities (sourcing, outreach, messaging)
+- ✅ When discussing timelines or deliverables
+- ✅ Before suggesting work that might violate sprint constraints
+
+**Quick Phase Check:**
+- **Sprint 0 (Extended: Mar 3-16):** NO external activity (no sourcing, outreach, calls, monetization) - Focus: governance, templates, training
+- **Sprint 1+ (Starts Mar 17):** Soft activation - candidate asset building ONLY (3-5/day, 1-2 calls/week MAX, no employer outreach)
+- **Phase 2 (6-12 months minimum):** Employer outreach allowed (requires 5 criteria: Secretary + BMSL-011 + LFTC-015 + LFTC-002 + 6-9mo runway)
+
+**Critical Files for Phase Awareness:**
+1. [CURRENT-PHASE-STAGE-AWARENESS.md](../../Documents/CURRENT-PHASE-STAGE-AWARENESS.md) - Real-time status (CHECK FIRST)
+2. [DOCUMENT-LIFECYCLE-GUIDE.md](../../Documents/DOCUMENT-LIFECYCLE-GUIDE.md) - Which documents needed at each stage (Stage 0-9 mapping)
+3. [THIS-WEEK-PLAN.md](../../Documents/THIS-WEEK-PLAN.md) - Current week focus
+4. [STEALTH-MODE-OPERATIONS-GUIDE.md](../../Documents/STEALTH-MODE-OPERATIONS-GUIDE.md) - 90-day program rules
+5. [docs/PROJECT-TIMELINE.md](../docs/PROJECT-TIMELINE.md) - Week-to-date calendar mappings
+
+---
+
 ## Rules
 
 1. **Always request review before modifying files** - propose changes, don't implement them automatically
@@ -42,7 +78,26 @@
    - ✅ Update docs/FUNCTIONAL-TEST-CASES.md (update test status when features implemented/tested)
    - ⚠️ Ask user about updating: VERSION-HISTORY.md, feature docs (WP-*.md), SESSION-SUMMARY-*.md, OPEN-ACTIONS.md
    - 🗑️ Delete docs/ELEMENTOR-TO-GUTENBERG-MIGRATION.md after migration complete (PENG-070)
-7. **ALWAYS check references before running commands:**
+7. **GitHub Issues = Active Tasks ONLY** - GitHub issues track active work, not future plans:
+   - ✅ Create issues ONLY for tasks in WORDPRESS-ALL-TASKS.csv (active work)
+   - ✅ Sync issue details with WORDPRESS-ALL-TASKS.md (additional context, notes, dependencies)
+   - ❌ DO NOT create issues for WORDPRESS-BACKLOG.csv items (future plans tracked in CSV/docs only)
+   - ❌ DO NOT create issues for "NOT IN 90 DAYS" deferred items (return to active tasks when Phase 2 criteria met)
+   - ✅ Close issues when tasks move to backlog or get deferred
+   - 📋 Rule applies to ALL task types (PENG, COPS, MKTB, ROPS, LFTC, BMSL, etc.)
+8. **Week numbers in planning documents** - Use Week numbers, NOT dates:
+   - ✅ Use "Week 0", "Week 1-13" in all planning documents (THIS-WEEK-PLAN.md, STEALTH-MODE-OPERATIONS-GUIDE.md, PHASE-2-GATE-CHECKLIST.md, sprint plans)
+   - ✅ Maintain date mappings in WEEK-TRACKING.md (internal reference only)
+   - ❌ DO NOT add dates to plan/stage/sprint/phase/program files
+   - ✅ EXCEPTIONS (dates allowed): Archive files, deployment logs, release files, version history, session summaries, "Last Updated" footers, change timestamps
+   - 📋 When user asks "What are we doing today?", check today's date → map to Week number in [docs/PROJECT-TIMELINE.md](../docs/PROJECT-TIMELINE.md) → reference planning documents
+   - 📋 Rationale: Week numbers are stable across timeline shifts; dates create maintenance burden and confusion when plans adjust
+9. **Sprint Boundary Rule** - Sprints ALWAYS start on Monday:
+   - ✅ If Sprint ends early: Stop Sprint work, use gap days (Fri-Sun) for technical improvements (automation, website, bug fixes, documentation)
+   - ✅ If Sprint runs late: Complete deliverables first, next Sprint starts following Monday (not immediately)
+   - ✅ Gap day priorities: Credibility > Efficiency > Cost Impact
+   - 📋 Rationale: Consistent Monday start = easier planning, clear boundaries, prevents burnout, allows system maintenance
+10. **ALWAYS check references before running commands:**
    - ✅ Check [Container Names](#container-names) - NEVER run `podman ps` or container discovery commands
    - ✅ Check [COMMAND-REGISTRY.md](COMMAND-REGISTRY.md) - Find proven commands for user management, database queries, backups, etc.
    - ✅ Check [TASK-REGISTRY.md](TASK-REGISTRY.md) - Find multi-step procedures for deployments, cleanups, migrations, etc.
@@ -51,12 +106,18 @@
    - ❌ DO NOT reinvent commands - if similar operation exists in registry, use it
    - ❌ DO NOT run discovery commands when references exist
    - ❌ DO NOT create ad-hoc procedures - check TASK-REGISTRY.md for established workflows
-8. **Verify before implementing** - When user reports issues:
+11. **Verify before implementing** - When user reports issues:
    - ✅ Ask clarifying questions: "What was the expected behavior?" "What actually happened?" "Can you show me an example?"
    - ✅ Confirm the actual problem with evidence (database queries, log files, code inspection)
    - ✅ Propose solution and get approval before implementing
    - ❌ DO NOT jump straight to code changes based on initial report
    - ❌ DO NOT assume you understand the full context without verification
+12. **Documents folder naming convention** - ALL CAPS for filenames:
+   - ✅ Create files in Documents folder with ALL CAPS names: MKTB-021-LINKEDIN-VISIBILITY-PROTOCOL.md, LFTC-013-DATA-BREACH-RESPONSE-PROCEDURE.md
+   - ✅ Use hyphens to separate words in filename (kebab-case, but uppercase)
+   - ✅ Include task ID prefix when applicable (PENG-014, COPS-001, ROPS-012, etc.)
+   - ❌ DO NOT use lowercase or mixed case for Documents folder files
+   - 📋 Rationale: Consistent naming convention for strategic/operational documents; improves readability and file organization
 
 ## Known Issues & Solutions
 
@@ -83,6 +144,18 @@ See [docs/HOSTINGER.md](docs/HOSTINGER.md) for complete production environment d
 
 This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman Compose for local development, with production deployment to Hostinger via Git integration.
 
+**Strategic Model: Option C (Hybrid Model)**
+- **Brand:** HireAccord (external) / TalenDelight (internal codename)
+- **Phase 1 (Current):** Screening & Assessment Focus - Structured technical and behavioral evaluation reports for Java Backend + DevOps/Cloud engineers (€200-€500 packages, 48h turnaround)
+- **Phase 2 (Month 12+):** Direct Placement Expansion - Layer placement fees on assessment base
+- **Positioning:** Signal amplification layer reducing hiring uncertainty (NOT generic recruiter)
+- **Market:** Baltics + Nordics tech companies (10-200 employees)
+- **Why WordPress:** Primary application for Phase 1 - faster MVP, marketing foundation, candidate intake with consent, proof of competence, low overhead during stealth phase
+- **Strategic Docs:** 
+- [HIREACCORD-STRATEGIC-PLAN.md](../../Documents/HIREACCORD-STRATEGIC-PLAN.md) - Complete strategic plan
+- [ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md) - Revenue operations approach
+- [STEALTH-MODE-OPERATIONS-GUIDE.md](../../Documents/STEALTH-MODE-OPERATIONS-GUIDE.md) - 90-day stealth program with Sprint 0-13 objectives, DoD, targets, and gap days backlog
+
 **Directory Structure:**
 - **[infra/dev/](infra/dev/)** - Podman Compose config for local development environment
 - **[infra/shared/scripts/](infra/shared/scripts/)** - Reusable automation scripts (backup, restore, verify, deployment)
@@ -99,10 +172,11 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 - When asked about next release version, always read VERSION-HISTORY.md first
 
 **Session Continuity:**
+- **⚠️ ALWAYS CHECK FIRST:** [CURRENT-PHASE-STAGE-AWARENESS.md](../../Documents/CURRENT-PHASE-STAGE-AWARENESS.md) - Real-time sprint/phase/deliverables status
 - Always check [docs/SESSION-SUMMARY-*.md](docs/) files for recent work context
-- Current active session: [docs/SESSION-SUMMARY-FEB-27.md](docs/SESSION-SUMMARY-FEB-27.md) - Deployment verification + Revenue Execution Mode implementation
-- Previous sessions: [JAN-23](docs/SESSION-SUMMARY-JAN-23.md), [JAN-18](docs/SESSION-SUMMARY-JAN-18.md), [JAN-13-14](docs/SESSION-SUMMARY-JAN-13-14.md), [JAN-11](docs/SESSION-SUMMARY-JAN-11.md)
-- If user mentions laptop restart or lost context, read latest session summary first
+- Current active session: [docs/SESSION-SUMMARY-MAR-05.md](docs/SESSION-SUMMARY-MAR-05.md) - Sprint 0 deliverables progress
+- Previous sessions: [MAR-04](docs/SESSION-SUMMARY-MAR-04.md), [MAR-01](docs/SESSION-SUMMARY-MAR-01.md), [FEB-27](docs/SESSION-SUMMARY-FEB-27.md)
+- If user mentions laptop restart or lost context, read CURRENT-PHASE-STAGE-AWARENESS.md + latest session summary first
 - Progress tracking in [docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md](docs/COMPLIANCE-IMPLEMENTATION-GUIDE.md)
 
 **Task Management:**
@@ -138,140 +212,30 @@ This is a WordPress 6.9.0 (PHP 8.3) development environment managed via Podman C
 **Key plugins**: WooCommerce, Elementor, Blocksy Companion, WPForms Lite, Akismet  
 **Active theme**: Blocksy (primary)
 
-## Revenue Execution Mode (ACTIVE - February 27, 2026)
+## Current Operational Mode
 
-**⚠️ CRITICAL: You are now in Revenue Execution Mode - revenue operations DOMINATE all work**
+**⚠️ Operational mode changes by Sprint - Always check [CURRENT-PHASE-STAGE-AWARENESS.md](../../Documents/CURRENT-PHASE-STAGE-AWARENESS.md)**
 
-**Strategic Context:**
-- **Time allocation:** 70% Revenue / 20% Candidates / 10% Systems (n8n max 90 min/week)
-- **Weekly capacity:** 10-14 hours (weekdays 1-2h/day, weekends 3-4h/day)
-- **Revenue validation milestone:** 4-6 weeks from Mar 2 (10 conversations, 2 discussions, 1 shortlist)
-- **Initial niche:** Java backend + DevOps/Cloud, Baltics + Nordics ("48h screening reports")
+**Current Mode (As of March 6, 2026):**
+- **Sprint 0 (Mar 3-16):** Stealth Preparation - Governance & Architecture
+  - NO external activity (no sourcing, messaging, calls, monetization)
+  - Focus: Templates, protocols, checklists, training completion
+  - See [THIS-WEEK-PLAN.md](../../Documents/THIS-WEEK-PLAN.md) for Sprint 0 deliverables
 
-### 📚 Key Revenue Documents (ALWAYS reference these)
+**Next Mode (Starting March 17, 2026):**
+- **Sprint 1-13 (Mar 17 - Jun 15):** Soft Activation - Candidate Asset Building
+  - Candidate sourcing ALLOWED (3-5/day, 1-2 calls/week MAX)
+  - Employer outreach FORBIDDEN (until Phase 2 criteria met)
+  - See [STEALTH-MODE-OPERATIONS-GUIDE.md](../../Documents/STEALTH-MODE-OPERATIONS-GUIDE.md) for 90-day program rules
 
-**Strategy & Execution:**
-- **[ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md)** - Complete revenue guide (14 sections: niche, offer, ICP, weekly targets, outreach sequence, CRM structure, n8n rules, success criteria)
-- **[THIS-WEEK-PLAN.md](../../Documents/THIS-WEEK-PLAN.md)** - Current week execution plan with "Weekly Rhythm" section (Mon-Sun day-by-day schedule)
-- **[WORDPRESS-ALL-TASKS.csv](../../Documents/WORDPRESS-ALL-TASKS.csv)** - Master task list with 11 ROPS tasks (2 complete, 9 planned)
+**Future Mode (6-12 months minimum):**
+- **Phase 2:** Employer outreach allowed (requires 5 criteria: Secretary + BMSL-011 + LFTC-015 + LFTC-002 + 6-9mo runway)
+  - See [ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md) for revenue operations approach
 
-**Weekly Revenue Targets (Starting w/s 2026-03-02):**
-- **Employer:** 20 leads, 15 outbound, 25 follow-ups, ≥3 replies, ≥1 call, ≥1 opportunity
-- **Candidate:** 15 identified, 10 outreach, 3 consented, 2 profiles
-
-### 🎯 Revenue Behavioral Rules (MANDATORY)
-
-**When user asks generic questions, ALWAYS translate to revenue-focused:**
-
-**User says:** "What are our plans for TalenDelight today?"  
-**You translate to:** "What are today's revenue-critical tasks to stay on track for TalenDelight?"
-
-**Reason:** User's brain naturally drifts toward system refinement, automation tweaking, documentation polishing. Your job: redirect to outbound sent, follow-ups executed, calls booked.
-
-### 📅 Day-Specific Prompt Patterns (Use These Automatically)
-
-**🟦 Monday/Wednesday (Employer Focus Days):**
-```
-It's [Monday/Wednesday] (Employer Day).
-You have [X] minutes available.
-What exact lead discovery and outreach actions should you execute today to stay on weekly target?
-
-Current weekly progress: [if known, state it]
-```
-
-**🟩 Tuesday/Thursday (Candidate Focus Days):**
-```
-It's [Tuesday/Thursday] (Candidate Day).
-You have [X] minutes available.
-What candidate sourcing and outreach actions should you execute to hit weekly pipeline targets?
-
-Current weekly progress: [if known, state it]
-```
-
-**🟦 Friday (Follow-Up + KPI Day):**
-```
-It's Friday.
-What follow-ups must be sent today to maximize reply probability before week end?
-
-Then: Update KPIs (10 minutes) - track weekly numbers vs targets.
-```
-
-**🟨 Sunday (Review Day - 30 minutes):**
-```
-It's Sunday Review time.
-Please share this week's final numbers: [user provides KPIs]
-
-Then analyze:
-1. Where did we underperform vs targets?
-2. What should change next week?
-3. What one improvement to implement?
-```
-
-### ⚙️ Adaptive Enforcement Rules (Apply Automatically)
-
-**Time-based adjustments:**
-
-| User Says                    | Your Response                                                                 |
-|------------------------------|-------------------------------------------------------------------------------|
-| "I only have 45 minutes"     | Reduce volume, keep follow-ups first, protect revenue engine                  |
-| "I have 2 hours"             | Increase outbound count, add deeper lead research, improve personalization    |
-
-**Target-based corrections (by mid-week Wednesday):**
-
-**If BEHIND targets:**
-```
-⚠️ RECOVERY MODE ACTIVATED
-
-Today is 100% employer recovery:
-- Add 8 leads (catch-up)
-- Send 5 outbound
-- Send 10 follow-ups
-- NO system work today
-
-Weekend must close the gap.
-```
-
-**If AHEAD of targets:**
-```
-✅ AHEAD OF PACE
-
-Today reduce volume, improve quality:
-- Reduce to 3 leads (deeper research)
-- Personalize outbound messages (no templates)
-- Prepare stronger proof asset
-- Strengthen candidate side
-```
-
-### 🎯 Critical Question (Ask This Every Session)
-
-**Before recommending ANY work:**
-> "What actions today directly increase the probability of an employer conversation?"
-
-**If activity doesn't clearly lead to conversations → CHALLENGE IT**
-
-**Examples:**
-- ✅ YES: Writing outbound templates, adding leads, sending follow-ups, preparing proof assets
-- ⚠️ MAYBE: CRM improvements (only if blocking outreach), email automation (only if saves >30 min/week)
-- ❌ NO: WordPress features, UI polish, documentation, system optimization (deferred until revenue validated)
-
-### 🚫 Explicitly Deferred Until Revenue Validation
-
-**Do NOT recommend these until milestone achieved (10 conversations, 2 discussions, 1 shortlist):**
-- WordPress development (PENG-* tasks)
-- Advanced n8n automation (>90 min/week)
-- UI/UX polish
-- Documentation improvements
-- System optimization
-- Mobile testing
-- Additional features
-
-**Exception:** Only recommend if user explicitly requests AND you first remind them of revenue priority.
+**Historical Note:**
+- February 27 - March 2, 2026: Revenue Execution Mode was briefly active before strategic pivot to Stealth Preparation mode on March 3
 
 ---
-
-**Revenue Execution Mode Status: ACTIVE**  
-**Next milestone review:** April 5-12, 2026 (4-6 weeks from Mar 2)  
-**Update this section:** When strategic pivot occurs or milestone achieved
 
 ## Container Names
 
@@ -703,6 +667,7 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 - **[WORDPRESS-DEPLOYMENT.md](../../Documents/WORDPRESS-DEPLOYMENT.md)** - Hostinger deployment configuration, SSH keys, Git integration
 - **[WORDPRESS-DATABASE.md](../../Documents/WORDPRESS-DATABASE.md)** - Database schema, migration strategy, backup/restore procedures
 - **[WORDPRESS-TECHNICAL-DESIGN.md](../../Documents/WORDPRESS-TECHNICAL-DESIGN.md)** - Architecture, plugin choices, technical decisions
+- **[WORDPRESS-ARCHITECTURE-DECISIONS.md](../../Documents/Internal/Architecture/WORDPRESS-ARCHITECTURE-DECISIONS.md)** - ADR registry tracking significant architectural decisions (M365 EU region, n8n automation, data residency)
 - **[WORDPRESS-BUSINESS-FUNCTIONALITY.md](../../Documents/WORDPRESS-BUSINESS-FUNCTIONALITY.md)** - Business requirements, user flows, feature specifications
 - **[WORDPRESS-UI-DESIGN.md](../../Documents/WORDPRESS-UI-DESIGN.md)** - Design system, component library, styling guidelines
 - **[COMMON-UI-DESIGN.md](../../Documents/COMMON-UI-DESIGN.md)** - Shared UI patterns across all applications
@@ -717,6 +682,7 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 - **Before any command:** Check COMMAND-REGISTRY for proven commands
 - **Before any procedure:** Check TASK-REGISTRY for established workflows
 - **Before development:** Check BACKLOG, BUSINESS-FUNCTIONALITY, TECHNICAL-DESIGN, UI-DESIGN
+- **Before architectural changes:** Review WORDPRESS-ARCHITECTURE-DECISIONS for existing ADRs (M365 region, automation patterns, data residency)
 - **During development:** Reference UI-DESIGN, COMMON-UI-DESIGN, lessons/ for patterns
 - **Before deployment:** Review DEPLOYMENT, PAGE-SYNC-MANIFEST, SECURITY, TASK-REGISTRY
 - **After issues:** Consult lessons/, OPEN-ACTIONS, TECHNICAL-DESIGN, TASK-REGISTRY (disaster recovery)

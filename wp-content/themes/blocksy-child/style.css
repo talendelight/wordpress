@@ -17,7 +17,7 @@ Description: Custom child theme with unified design system for TalenDelight
     
     /* Primary Colors */
     --color-navy: #063970;              /* Hero backgrounds, headings, primary button text */
-    --color-blue: #2872fa;              /* Icons, links, accents, hover states */
+    --color-blue: #0062e3;              /* Icons, links, accents, hover states */
     
     /* Neutral Colors */
     --color-gray-dark: #333333;         /* Primary body text, form labels */
@@ -205,10 +205,16 @@ input[type="submit"],
     color: var(--color-navy);
 }
 
+/* Explicit color overrides for buttons with is-style-fill */
+.wp-block-button.is-style-fill .wp-block-button__link.has-navy-background-color {
+    background-color: var(--color-navy) !important;
+    color: var(--color-white) !important;
+}
+
 /* All buttons hover - base rule */
 .wp-block-button__link:hover,
 .wp-element-button:hover {
-    background-color: #2872fa !important;
+    background-color: var(--color-navy-hover) !important;
     color: var(--color-gray-off-white) !important;
 }
 
@@ -217,7 +223,7 @@ input[type="submit"],
 .button-primary:hover,
 .has-background.wp-block-button__link:hover,
 .has-white-background-color.wp-block-button__link:hover {
-    background-color: #2872fa !important;
+    background-color: var(--color-navy-hover) !important;
     color: var(--color-gray-off-white) !important;
     box-shadow: var(--shadow-md);
     text-decoration: none;
@@ -347,7 +353,71 @@ a.has-background.has-text-color.wp-block-button__link:hover,
 .has-white-background-color.has-navy-color:hover,
 a.wp-block-button__link.has-white-background-color[href="/register"]:hover,
 .wp-block-button a[style*="border-radius"]:hover {
-    background-color: #2872fa !important;
+    background-color: var(--color-navy-hover) !important;
     color: #F8F9FA !important;
-    border-color: #2872fa !important;
+    border-color: var(--color-navy-hover) !important;
+}
+
+/* ============================================================================
+   CUSTOM FONTS - Red Hat Display for Site Logo
+   ============================================================================ */
+
+/* Apply Red Hat Display Black 900 to site branding/logo text */
+.site-branding .site-title,
+.site-title,
+.site-title a,
+.custom-logo-link + .site-title,
+header .site-branding h1,
+header .site-branding p.site-title {
+    font-family: var(--font-logo) !important;
+    font-weight: var(--font-weight-black) !important;
+    font-size: 24px !important;
+    letter-spacing: -0.5px;
+    color: var(--color-navy) !important;  /* #063970 */
+}
+
+/* Ensure logo text is visible if used alongside image */
+.custom-logo-link + .site-title {
+    display: inline-block !important;
+    margin-left: 12px;
+    vertical-align: middle;
+}
+
+/* ============================================================================
+   NAVIGATION MENU & HEADER ICONS - Navy Color
+   ============================================================================ */
+
+/* Menu items - default state */
+header .menu-item a,
+header nav a,
+.header-menu-container .menu-item a,
+nav.primary-menu a,
+.ct-header .menu-item a,
+#main-navigation a {
+    color: var(--color-navy) !important;  /* #063970 */
+}
+
+/* Menu items - active/current page state */
+header .current-menu-item a,
+header .current_page_item a,
+header .current-menu-ancestor a,
+.header-menu-container .current-menu-item a,
+nav.primary-menu .current-menu-item a,
+.ct-header .current-menu-item a,
+#main-navigation .current-menu-item a {
+    color: var(--color-navy-hover) !important;  /* #0062e3 */
+    font-weight: 600 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 4px;
+}
+
+/* Search icon/button */
+.ct-search-button,
+.ct-icon-search,
+.search-icon,
+header .ct-search-button svg,
+header .search-icon svg,
+.ct-header-search svg {
+    color: var(--color-navy) !important;  /* #063970 */
+    fill: var(--color-navy) !important;   /* For SVG icons */
 }

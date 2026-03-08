@@ -1,0 +1,231 @@
+/**
+ * HireAccord Design Tokens
+ * Central design system variables for consistent styling across all pages
+ * 
+ * @package HireAccord
+ * @since 3.2.0
+ * @lastUpdated 2026-03-07
+ */
+
+:root {
+  /* =====================================
+     PRIMARY BRAND COLORS
+     ===================================== */
+  --color-navy: #063970;
+  --color-navy-hover: #0062e3;
+  --color-navy-active: #0062e3;  /* Simplified - same as hover */
+  --color-white: #FFFFFF;
+  
+  /* =====================================
+     ACCENT COLORS
+     ===================================== */
+  --color-accent-blue: #3498DB;
+  --color-accent-blue-hover: #0062e3;  /* Unified hover */
+  --color-accent-blue-active: #0062e3;
+  
+  /* =====================================
+     NEUTRAL GREYS (7 shades)
+     ===================================== */
+  --color-grey-white: #FFFFFF;
+  --color-grey-off-white: #f8f9fa;     /* Table headers */
+  --color-grey-light: #ECECEC;         /* Grey buttons, backgrounds */
+  --color-grey-medium-border: #E0E0E0; /* Input borders, cards */
+  --color-grey-medium-hover: #d9d9d9;  /* Grey button hover */
+  --color-grey-border: #dee2e6;        /* Table borders, dividers */
+  --color-grey-dark: #333333;          /* Text, grey button text */
+  
+  /* =====================================
+     ACTION COLORS (Manager Dashboard)
+     ===================================== */
+  --color-action-assign: #063970;   /* Navy - brand trust */
+  --color-action-approve: #4caf50;  /* Green - Material Design */
+  --color-action-reject: #f44336;   /* Red - Material Design */
+  --color-action-undo: #ff9800;     /* Orange - Material Design */
+  --color-action-cancel-bg: #e0e0e0;
+  --color-action-cancel-text: #333333;
+  --color-action-assign-self: #2196F3;  /* Info blue */
+  
+  /* =====================================
+     STATUS BADGE COLORS (Material Design)
+     ===================================== */
+  /* New Status */
+  --color-status-new-bg: #E3F2FD;
+  --color-status-new-text: #1565C0;
+  
+  /* Assigned Status */
+  --color-status-assigned-bg: #FFF9C4;
+  --color-status-assigned-text: #F57C00;
+  
+  /* Approved Status */
+  --color-status-approved-bg: #C8E6C9;
+  --color-status-approved-text: #2E7D32;
+  
+  /* Rejected Status */
+  --color-status-rejected-bg: #FFCDD2;
+  --color-status-rejected-text: #C62828;
+  
+  /* =====================================
+     SEMANTIC COLORS
+     ===================================== */
+  --color-success: #4caf50;
+  --color-warning: #ffc107;
+  --color-warning-bg: #fff3cd;
+  --color-warning-text: #856404;  /* Darker yellow for readability */
+  --color-warning-border: #ffc107;
+  --color-error: #f44336;
+  --color-error-bg: #f8d7da;
+  --color-error-border: #dc3545;
+  --color-info: #2196F3;
+  
+  /* =====================================
+     LINKS
+     ===================================== */
+  --color-link-default: #3498DB;
+  --color-link-hover: #063970;
+  --color-link-visited: #063970;  /* No distinction - brand consistency */
+  
+  /* =====================================
+     TABLE COLORS
+     ===================================== */
+  --color-table-header-bg: #f8f9fa;
+  --color-table-header-text: #063970;
+  --color-table-border: #dee2e6;
+  --color-table-row-hover: rgba(0, 0, 0, 0.02);
+  
+  /* =====================================
+     MODAL/OVERLAY COLORS
+     ===================================== */
+  --color-overlay-bg: rgba(0, 0, 0, 0.5);
+  --color-modal-bg: #FFFFFF;
+  --color-modal-border: #dee2e6;
+  
+  /* =====================================
+     INTERACTIVE STATES
+     ===================================== */
+  --focus-ring: 0 0 0 3px rgba(6, 57, 112, 0.1);
+  --focus-ring-color: rgba(6, 57, 112, 0.1);
+  --input-border-default: #E0E0E0;
+  --input-border-focus: #063970;
+  --input-height: 44px;  /* WCAG touch target minimum */
+  --input-padding: 10px 16px;
+  
+  /* =====================================
+     SPACING SCALE
+     ===================================== */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  
+  /* =====================================
+     TYPOGRAPHY SCALE
+     ===================================== */
+  --font-size-xs: 12px;      /* Caption */
+  --font-size-sm: 14px;      /* Small */
+  --font-size-base: 16px;    /* Body */
+  --font-size-lg: 18px;      /* Large body */
+  --font-size-xl: 20px;      /* Small heading */
+  --font-size-2xl: 24px;     /* H4 */
+  --font-size-3xl: 30px;     /* H3 */
+  --font-size-4xl: 36px;     /* H2 */
+  --font-size-5xl: 48px;     /* H1 */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* =====================================
+     BORDERS & RADIUS
+     ===================================== */
+  --border-width: 1px;
+  --border-width-thick: 2px;
+  --border-style: solid;
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 50%;
+  
+  /* =====================================
+     SHADOWS
+     ===================================== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  
+  /* =====================================
+     ANIMATION & TRANSITIONS
+     ===================================== */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  --easing-standard: ease;
+  --easing-smooth: ease-in-out;
+  --easing-in: ease-in;
+  --easing-out: ease-out;
+  
+  /* =====================================
+     Z-INDEX SCALE
+     ===================================== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* =====================================
+   REDUCED MOTION SUPPORT
+   Respect user's accessibility preferences
+   ===================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================
+   UTILITY CLASSES (Optional)
+   Common helper classes using design tokens
+   ===================================== */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: var(--border-width-thick) var(--border-style) var(--color-navy);
+  outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+*:focus:not(:focus-visible) {
+  outline: none;
+}

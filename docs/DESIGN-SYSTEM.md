@@ -113,7 +113,22 @@
 
 /* Fallback for Headings */
 --font-family-headings: inherit;
+
+/* Site Logo/Branding Font (Google Fonts) */
+--font-logo: 'Red Hat Display', system-ui, -apple-system, 'Segoe UI', sans-serif;
 ```
+
+**Site Logo Font:**
+- **Font Family:** Red Hat Display Black 900 (Google Fonts)
+- **Weight:** 900 (Black)
+- **Size:** 24px
+- **Letter Spacing:** -0.5px
+- **Usage:** Site branding/logo text in header (`.site-title`, `.site-branding h1`)
+- **Source:** https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@900&display=swap
+- **Implementation Files:**
+  - Enqueue: `wp-content/themes/blocksy-child/functions.php`
+  - Token: `wp-content/themes/blocksy-child/design-tokens.css`
+  - Styles: `wp-content/themes/blocksy-child/style.css`
 
 **Note:** Font family extracted from standard WordPress/Blocksy defaults. Verify actual font in production.
 

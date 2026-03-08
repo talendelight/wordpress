@@ -2,11 +2,11 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"}}},"backgroundColor":"navy","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull has-navy-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
     <!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontSize":"56px","fontWeight":"700","lineHeight":"1.2"},"spacing":{"margin":{"bottom":"var:preset|spacing|24"}}},"textColor":"white"} -->
-    <h1 class="wp-block-heading has-text-align-center has-white-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--24);font-size:56px;font-weight:700;line-height:1.2">Register Your Profile</h1>
+    <h1 class="wp-block-heading has-text-align-center has-white-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--24);font-size:var(--font-size-5xl);font-weight:700;line-height:1.2">Register Your Profile</h1>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"20px","lineHeight":"1.6"},"spacing":{"margin":{"bottom":"0"}}},"textColor":"white"} -->
-    <p class="has-text-align-center has-white-color has-text-color" style="margin-bottom:0;font-size:20px;line-height:1.6">Complete your registration by providing the required information below.</p>
+    <p class="has-text-align-center has-white-color has-text-color" style="margin-bottom:0;font-size:var(--font-size-xl);line-height:1.6">Complete your registration by providing the required information below.</p>
     <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
@@ -24,43 +24,43 @@
         
         <!-- Personal Information -->
         <div style="margin-bottom: 32px;">
-            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: #1a1a1a;">Personal Information</h3>
+            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: var(--color-grey-dark);">Personal Information</h3>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <div>
-                    <label for="first_name" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">First Name <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="first_name" name="first_name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <label for="first_name" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">First Name <span style="color: var(--color-error);">*</span></label>
+                    <input type="text" id="first_name" name="first_name" required style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
                 
                 <div>
                     <label for="middle_name" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Middle Name</label>
-                    <input type="text" id="middle_name" name="middle_name" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <input type="text" id="middle_name" name="middle_name" style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
                 
                 <div>
-                    <label for="last_name" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Last Name <span style="color: #d32f2f;">*</span></label>
-                    <input type="text" id="last_name" name="last_name" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <label for="last_name" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Last Name <span style="color: var(--color-error);">*</span></label>
+                    <input type="text" id="last_name" name="last_name" required style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <div>
-                    <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Email Address <span style="color: #d32f2f;">*</span></label>
-                    <input type="email" id="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <label for="email" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Email Address <span style="color: var(--color-error);">*</span></label>
+                    <input type="email" id="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
                 
                 <div>
-                    <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Phone Number <span style="color: #d32f2f;">*</span></label>
-                    <input type="tel" id="phone" name="phone" required pattern="[0-9+s-()]+" minlength="10" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <label for="phone" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">Phone Number <span style="color: var(--color-error);">*</span></label>
+                    <input type="tel" id="phone" name="phone" required pattern="[0-9+s-()]+" minlength="10" style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
             </div>
         </div>
         
         <!-- Professional Information -->
-        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid #eee;">
-            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: #1a1a1a;">Professional Information</h3>
-            <p style="margin-bottom: 16px; font-size: 14px; color: #666;">
-                Please provide at least one of the following: <span style="color: #d32f2f;">*</span>
+        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid var(--color-grey-medium-border);">
+            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: var(--color-grey-dark);">Professional Information</h3>
+            <p style="margin-bottom: 16px; font-size: 14px; color: var(--color-grey-medium-text);">
+                Please provide at least one of the following: <span style="color: var(--color-error);">*</span>
             </p>
             
             <div style="margin-bottom: 24px;">
@@ -71,7 +71,7 @@
                 
                 <div id="linkedin_section" style="display: none; margin-left: 26px; margin-bottom: 16px;">
                     <label for="linkedin_url" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">LinkedIn Profile URL</label>
-                    <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://www.linkedin.com/in/your-profile" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://www.linkedin.com/in/your-profile" style="width: 100%; padding: 12px; border: 1px solid var(--input-border-default); border-radius: 6px; font-size: 16px;">
                 </div>
             </div>
             
@@ -83,31 +83,31 @@
                 
                 <div id="cv_section" style="display: none; margin-left: 26px;">
                     <label for="cv_file" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">CV / Resume</label>
-                    <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Upload your CV or Resume (PDF, DOC, DOCX, or PPTX - Max 10MB)</p>
+                    <p style="margin-bottom: 8px; font-size: 14px; color: var(--color-grey-medium-text);">Upload your CV or Resume (PDF, DOC, DOCX, or PPTX - Max 10MB)</p>
                     <div style="position: relative;">
                         <input type="file" id="cv_file" name="cv_file" accept=".pdf,.doc,.docx,.pptx" style="display: none;">
-                        <button type="button" onclick="document.getElementById('cv_file').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        <button type="button" onclick="document.getElementById('cv_file').click()" class="file-upload-btn" style="background: var(--color-navy); color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                             Choose File
                         </button>
-                        <span id="cv_file_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
+                        <span id="cv_file_name" style="display: block; margin-top: 8px; font-size: 13px; color: var(--color-grey-medium-text);"></span>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Identification Documents -->
-        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid #eee;">
-            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: #1a1a1a;">Identification Documents</h3>
+        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid var(--color-grey-medium-border);">
+            <h3 style="margin-bottom: 24px; font-size: 24px; font-weight: 600; color: var(--color-grey-dark);">Identification Documents</h3>
             
             <div style="margin-bottom: 16px;">
-                <label for="national_id_citizenship" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">National ID (Citizenship) <span style="color: #d32f2f;">*</span></label>
-                <p style="margin-bottom: 8px; font-size: 14px; color: #666;">Upload your National ID from your country of citizenship (PDF, JPEG, PNG - Max 10MB)</p>
+                <label for="national_id_citizenship" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;">National ID (Citizenship) <span style="color: var(--color-error);">*</span></label>
+                <p style="margin-bottom: 8px; font-size: 14px; color: var(--color-grey-medium-text);">Upload your National ID from your country of citizenship (PDF, JPEG, PNG - Max 10MB)</p>
                 <div style="position: relative;">
                     <input type="file" id="national_id_citizenship" name="national_id_citizenship" accept=".pdf,.jpg,.jpeg,.png" required style="display: none;">
-                    <button type="button" onclick="document.getElementById('national_id_citizenship').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button type="button" onclick="document.getElementById('national_id_citizenship').click()" class="file-upload-btn" style="background: var(--color-navy); color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Choose File
                     </button>
-                    <span id="national_id_citizenship_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
+                    <span id="national_id_citizenship_name" style="display: block; margin-top: 8px; font-size: 13px; color: var(--color-grey-medium-text);"></span>
                 </div>
             </div>
             
@@ -119,28 +119,28 @@
             </div>
             
             <div id="residence_id_section" style="display: none; margin-bottom: 16px;">
-                <p style="margin-bottom: 8px; font-size: 14px; color: #666; font-weight: 600;">Upload your National ID from your country of residence (PDF, JPEG, PNG ??? Max 10MB)</p>
+                <p style="margin-bottom: 8px; font-size: 14px; color: var(--color-grey-medium-text); font-weight: 600;">Upload your National ID from your country of residence (PDF, JPEG, PNG ??? Max 10MB)</p>
                 <div style="position: relative;">
                     <input type="file" id="national_id_residence" name="national_id_residence" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
-                    <button type="button" onclick="document.getElementById('national_id_residence').click()" class="file-upload-btn" style="background: #063970; color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    <button type="button" onclick="document.getElementById('national_id_residence').click()" class="file-upload-btn" style="background: var(--color-navy); color: white; padding: 14px 28px; border: none; border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                         Choose File
                     </button>
-                    <span id="national_id_residence_name" style="display: block; margin-top: 8px; font-size: 13px; color: #666;"></span>
+                    <span id="national_id_residence_name" style="display: block; margin-top: 8px; font-size: 13px; color: var(--color-grey-medium-text);"></span>
                 </div>
             </div>
         </div>
         
         <!-- Terms & Consent -->
-        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid #eee;">
+        <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid var(--color-grey-medium-border);">
             <label style="display: flex; align-items: start; font-size: 14px;">
                 <input type="checkbox" id="consent" name="consent" required style="margin-right: 12px; margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
-                <span>I agree to the <a href="/privacy-policy/" target="_blank" style="color: #097BAA; text-decoration: underline;">Privacy Policy</a> and <a href="/terms-conditions/" target="_blank" style="color: #097BAA; text-decoration: underline;">Terms & Conditions</a>, and consent to the processing of my personal data as described. <span style="color: #d32f2f;">*</span></span>
+                <span>I agree to the <a href="/privacy-policy/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Privacy Policy</a> and <a href="/terms-conditions/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Terms & Conditions</a>, and consent to the processing of my personal data as described. <span style="color: var(--color-error);">*</span></span>
             </label>
         </div>
         
         <!-- Submit Button -->
         <div style="text-align: center;">
-            <button type="submit" class="submit-btn" style="background: #063970; color: white; padding: 16px 48px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+            <button type="submit" class="submit-btn" style="background: var(--color-navy); color: white; padding: 16px 48px; border: none; border-radius: 50px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
                 Submit Registration
             </button>
         </div>
@@ -161,12 +161,12 @@
             <div class="wp-block-group">
                 <!-- wp:html -->
                 <div style="text-align: center;">
-                    <img src="/wp-content/themes/blocksy-child/assets/images/shield-grey-border.svg" alt="Secure Data" style="width:48px;height:48px;margin:0 auto;"/>
+                    <img src="/wp-content/themes/blocksy-child/assets/images/shield-grey-border.svg" alt="Secure Data" style="height:18px;vertical-align:middle;margin-right:8px;"/>
                 </div>
                 <!-- /wp:html -->
                 
                 <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-                <p class="has-text-align-center" style="font-size:14px;font-weight:600">Secure & Confidential</p>
+                <p class="has-text-align-center" style="font-size:var(--font-size-sm);font-weight:600">Secure & Confidential</p>
                 <!-- /wp:paragraph -->
             </div>
             <!-- /wp:group -->
@@ -179,12 +179,12 @@
             <div class="wp-block-group">
                 <!-- wp:html -->
                 <div style="text-align: center;">
-                    <img src="/wp-content/themes/blocksy-child/assets/images/padlock-lock-grey.svg" alt="GDPR Compliant" style="width:48px;height:48px;margin:0 auto;"/>
+                    <img src="/wp-content/themes/blocksy-child/assets/images/padlock-lock-grey.svg" alt="GDPR Compliant" style="height:18px;vertical-align:middle;margin-right:8px;"/>
                 </div>
                 <!-- /wp:html -->
                 
                 <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-                <p class="has-text-align-center" style="font-size:14px;font-weight:600">GDPR Compliant</p>
+                <p class="has-text-align-center" style="font-size:var(--font-size-sm);font-weight:600">GDPR Compliant</p>
                 <!-- /wp:paragraph -->
             </div>
             <!-- /wp:group -->
@@ -197,12 +197,12 @@
             <div class="wp-block-group">
                 <!-- wp:html -->
                 <div style="text-align: center;">
-                    <img src="/wp-content/themes/blocksy-child/assets/images/balance-scale-yellow.svg" alt="Legal Compliance" style="width:48px;height:48px;margin:0 auto;"/>
+                    <img src="/wp-content/themes/blocksy-child/assets/images/balance-scale-yellow.svg" alt="Legal Compliance" style="height:18px;vertical-align:middle;margin-right:8px;"/>
                 </div>
                 <!-- /wp:html -->
                 
                 <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-                <p class="has-text-align-center" style="font-size:14px;font-weight:600">Legally Compliant</p>
+                <p class="has-text-align-center" style="font-size:var(--font-size-sm);font-weight:600">Legally Compliant</p>
                 <!-- /wp:paragraph -->
             </div>
             <!-- /wp:group -->
@@ -215,12 +215,12 @@
             <div class="wp-block-group">
                 <!-- wp:html -->
                 <div style="text-align: center;">
-                    <img src="/wp-content/themes/blocksy-child/assets/images/eu-logo.svg" alt="EU Standards" style="width:48px;height:48px;margin:0 auto;"/>
+                    <img src="/wp-content/themes/blocksy-child/assets/images/eu-logo.svg" alt="EU Standards" style="height:18px;vertical-align:middle;margin-right:8px;"/>
                 </div>
                 <!-- /wp:html -->
                 
                 <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"14px","fontWeight":"600"}}} -->
-                <p class="has-text-align-center" style="font-size:14px;font-weight:600">EU Standards</p>
+                <p class="has-text-align-center" style="font-size:var(--font-size-sm);font-weight:600">EU Standards</p>
                 <!-- /wp:paragraph -->
             </div>
             <!-- /wp:group -->
@@ -275,5 +275,7 @@
     <div id="td-floating-message"></div>
     
     
+
+
 
 

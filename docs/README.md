@@ -1,5 +1,37 @@
 ﻿# Documentation Index
 
+## Strategic Context
+
+### Business Model: HireAccord (Option C - Screening First, Placement Later)
+
+**Brand:** HireAccord (external) / TalenDelight (internal codename)
+
+**Phase 1 (Current):** Screening & Assessment Focus
+- Service: Technical and behavioral screening reports for Java Backend + DevOps/Cloud engineers
+- Market: Baltics + Nordics tech companies (10-200 employees)
+- Positioning: Signal amplification layer reducing hiring uncertainty (NOT generic recruiter)
+- Revenue: €200-€500 screening packages, 48-hour turnaround
+- Goal: Build reputation as talent signal expert, validate market demand
+
+**Phase 2 (Month 12+):** Direct Placement Expansion
+- Add contingency placement fees on top of assessment capability
+- Requires: Clean employer exit, validated pipeline, risk clarity
+
+**Strategic Documents:**
+- [HIREACCORD-STRATEGIC-PLAN.md](../../../../Documents/HIREACCORD-STRATEGIC-PLAN.md) - Strategic model, phases, founder strengths
+- [ROPS-REVENUE-OPERATIONS-PLAYBOOK.md](../../../../Documents/ROPS-REVENUE-OPERATIONS-PLAYBOOK.md) - Revenue operations
+- [STEALTH-MODE-OPERATIONS-GUIDE.md](../../../../Documents/STEALTH-MODE-OPERATIONS-GUIDE.md) - 90-day execution plan
+
+### Why WordPress for Phase 1?
+
+1. **Faster MVP:** Validates screening service faster than custom build
+2. **Marketing hub:** Communicates value proposition to employers
+3. **Candidate intake:** CV submission with consent capture workflow
+4. **Proof asset:** Professional presence builds trust before client conversations
+5. **Low overhead:** Managed hosting reduces maintenance during stealth phase
+
+---
+
 ## System Overview
 
 This repository documents the **WordPress Primary Application** (Hostinger) used for marketing and candidate/employer intake while support applications are being built.

@@ -1,168 +1,94 @@
-{
+﻿{
   "version": "3.7.0",
   "type": "minor",
-  "releaseDate": "2026-03-09",
-  "plannedStartDate": "2026-03-02",
-  "status": "in-progress",
-  "description": "Privacy Policy + Terms & Conditions + Registration Request CPT + Record ID Generation System",
+  "releaseDate": "2026-03-10",
+  "plannedStartDate": "2026-03-09",
+  "status": "ready-for-deploy",
+  "description": "Design Token Migration (Help Page) + CSS Improvements + Logo Font + Navigation Styling",
   "tasks": [
     {
-      "taskId": "PENG-014",
-      "title": "Privacy Policy Page",
+      "taskId": "PENG-070",
+      "title": "Help Page Design Token Migration",
       "type": "page",
-      "status": "in-review",
-      "priority": "critical",
+      "status": "completed",
+      "priority": "high",
       "deploymentMethod": "manual-page",
-      "localPageId": 3,
-      "productionPageId": 3,
-      "estimatedDays": 2.0,
-      "dependencies": ["LFTC-002"],
-      "notes": "Draft completed Feb 28, 2026. Updated with HireAccord branding Mar 1, 2026. Deployed to local (page ID 3). GDPR-compliant policy covering data controller, legal basis, processing purpose, international transfers, retention (24 months), data subject rights, security measures. Awaiting lawyer review (LFTC-002)."
+      "localPageId": 7,
+      "productionPageId": 7,
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-069"],
+      "notes": "Completed Mar 9, 2026. Migrated all font sizes to design tokens (7 patterns). Updated branding HireAccord. Fixed footer icons SVG 18px. Fixed buttons navy color. Fixed card borders var(--border-radius-md). Fixed colors navy headers grey-medium-text descriptions. Total CSS variables 40+"
     },
     {
-      "taskId": "PENG-076",
-      "title": "Terms & Conditions Page",
-      "type": "page",
-      "status": "in-review",
-      "priority": "critical",
-      "deploymentMethod": "manual-page",
-      "localPageId": 60,
-      "productionPageId": null,
-      "estimatedDays": 1.0,
-      "dependencies": ["LFTC-002"],
-      "notes": "Draft completed Feb 28, 2026. Updated with HireAccord branding Mar 1, 2026. Deployed to local (page ID 60). Covers company information, scope of services, employer/candidate obligations, fees & payment, confidentiality, liability limitations, governing law, amendments. Awaiting lawyer review (LFTC-002)."
-    },
-    {
-      "taskId": "PENG-015",
-      "title": "CPT td_registration_request",
-      "type": "database",
-      "status": "planned",
-      "priority": "critical",
-      "deploymentMethod": "sql-migration",
-      "sqlFiles": [],
-      "estimatedDays": 3.0,
-      "dependencies": ["PENG-014", "BMSL-001", "PENG-001"],
-      "notes": "Custom post type for registration requests. Stores all submission data before approval. Links to td_user_requests table via request_id. Foundation for registration approval workflow."
-    },
-    {
-      "taskId": "PENG-016",
-      "title": "Record ID Generation System",
-      "type": "code",
-      "status": "planned",
-      "priority": "critical",
+      "taskId": "MKTB-033",
+      "title": "Red Hat Display Black 900 Font for Logo",
+      "type": "css",
+      "status": "completed",
+      "priority": "medium",
       "deploymentMethod": "git-auto-deploy",
-      "files": [
-        "wp-content/mu-plugins/record-id-generator.php"
-      ],
-      "estimatedDays": 2.0,
-      "dependencies": ["PENG-001", "PENG-015"],
-      "notes": "Generate Request IDs (USRQ-YYMMDD-NNNN) for submissions and Record IDs (PRSN-YYMMDD-NNNN, CMPY-YYMMDD-NNNN) for approved entities. Enforces one-to-one-to-one mapping (1 Email = 1 WP User = 1 Record ID = 1 Role)."
+      "files": ["wp-content/themes/blocksy-child/functions.php", "wp-content/themes/blocksy-child/design-tokens.css", "wp-content/themes/blocksy-child/style.css"],
+      "estimatedDays": 0.25,
+      "dependencies": [],
+      "notes": "Completed Mar 9, 2026. Google Fonts enqueue. Design tokens --font-logo --font-weight-black. Applied to site logo 24px navy color. Documented in 3 design docs."
+    },
+    {
+      "taskId": "MKTB-034",
+      "title": "Navigation Menu Styling",
+      "type": "css",
+      "status": "completed",
+      "priority": "medium",
+      "deploymentMethod": "git-auto-deploy",
+      "files": ["wp-content/themes/blocksy-child/style.css"],
+      "estimatedDays": 0.25,
+      "dependencies": ["MKTB-033"],
+      "notes": "Completed Mar 9, 2026. Logo navy. Menu items navy default. Menu items active blue underline. Search icon navy."
+    },
+    {
+      "taskId": "PENG-071",
+      "title": "Button Styling Fix",
+      "type": "css",
+      "status": "completed",
+      "priority": "high",
+      "deploymentMethod": "git-auto-deploy",
+      "files": ["wp-content/themes/blocksy-child/style.css"],
+      "estimatedDays": 0.1,
+      "dependencies": [],
+      "notes": "Completed Mar 9, 2026. Fixed is-style-fill buttons with has-navy-background-color showing grey. Added CSS override rule."
+    },
+    {
+      "taskId": "MKTB-032",
+      "title": "Footer Copyright Custom Override",
+      "type": "code",
+      "status": "completed",
+      "priority": "medium",
+      "deploymentMethod": "git-auto-deploy",
+      "files": ["wp-content/themes/blocksy-child/footer.php", "infra/shared/db/260308-1600-update-footer-copyright.sql"],
+      "estimatedDays": 0.25,
+      "dependencies": ["HIREACCORD-BRAND-STRATEGY"],
+      "notes": "Completed Mar 8-9, 2026. Custom footer.php override. HireAccord copyright text."
     }
   ],
-  "gitCommits": [],
-  "deploymentSteps": [
-    {
-      "step": 1,
-      "description": "Backup production",
-      "command": "powershell -File infra/shared/scripts/wp-action.ps1 backup",
-      "critical": true
-    },
-    {
-      "step": 2,
-      "description": "Deploy code to main branch",
-      "command": "git checkout main && git merge develop --no-edit && git push origin main",
-      "critical": true
-    },
-    {
-      "step": 3,
-      "description": "Wait for Hostinger auto-deployment",
-      "command": "Start-Sleep -Seconds 30",
-      "critical": true
-    },
-    {
-      "step": 4,
-      "description": "Verify deployment (post-deployment check)",
-      "command": "powershell -File infra/shared/scripts/wp-action.ps1 verify-deployment",
-      "critical": true,
-      "notes": "NEW in v3.6.4: Mandatory verification to detect deployment failures"
-    },
-    {
-      "step": 5,
-      "description": "Deploy database migration (SQL files)",
-      "command": "scp SQL files to production, import via phpMyAdmin or wp-cli",
-      "critical": true,
-      "notes": "Apply PENG-015 SQL migration for td_registration_request CPT"
-    },
-    {
-      "step": 6,
-      "description": "Deploy Privacy Policy and Terms & Conditions pages",
-      "command": "Manual page deployment via restore-page-X.php script",
-      "critical": true,
-      "notes": "Deploy both pages using POST-DEPLOYMENT-CHECKLIST.md workflow. Privacy Policy (page 3), Terms & Conditions (page 60)"
-    },
-    {
-      "step": 7,
-      "description": "Clear production cache",
-      "command": "ssh production 'cd public_html && wp cache flush --allow-root'",
-      "critical": false
-    },
-    {
-      "step": 8,
-      "description": "Run health check",
-      "command": "powershell -File infra/shared/scripts/wp-action.ps1 verify",
-      "critical": true
-    },
-    {
-      "step": 9,
-      "description": "Functional testing",
-      "command": "User tests Privacy Policy page, Record ID generation, CPT creation",
-      "critical": true
-    }
-  ],
-  "verificationChecklist": [
-    "Privacy Policy page exists and displays correctly (/privacy-policy/)",
-    "Terms & Conditions page exists and displays correctly (/terms-conditions/)",
-    "All Privacy Policy sections present: data controller, legal basis, processing purpose, retention, data subject rights, security",
-    "All Terms & Conditions sections present: services, user obligations, fees, liability, governing law",
-    "Registration form links to both pages work correctly",
-    "CPT td_registration_request created in database",
-    "Record ID generation works for test submissions",
-    "Request IDs format: USRQ-YYMMDD-NNNN",
-    "Record IDs format: PRSN-YYMMDD-NNNN (people), CMPY-YYMMDD-NNNN (companies)",
-    "One-to-one-to-one mapping enforced (1 Email = 1 WP User = 1 Record ID)",
-    "No errors in production logs",
-    "Health check passes (all 18+ checks)"
-  ],
-  "rollbackProcedure": "powershell -File infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -RestorePages $true",
-  "knownIssues": [],
-  "breakingChanges": false,
   "affectedPages": [
     {
-      "pageName": "Privacy Policy",
-      "pageSlug": "privacy-policy",
-      "localId": 3,
-      "productionId": 3,
+      "pageName": "Help",
+      "pageSlug": "help",
+      "localId": 7,
+      "productionId": 7,
       "changeType": "major-update",
-      "notes": "Comprehensive GDPR-compliant privacy policy. Updated with HireAccord branding Mar 1, 2026. Awaiting lawyer review."
-    },
-    {
-      "pageName": "Terms & Conditions",
-      "pageSlug": "terms-conditions",
-      "localId": 60,
-      "productionId": null,
-      "changeType": "new-page",
-      "notes": "New legal page covering service terms. Updated with HireAccord branding Mar 1, 2026. Awaiting lawyer review."
+      "notes": "Complete design token migration. 40+ CSS variables. HireAccord branding. SVG footer icons. Navy buttons."
     }
   ],
-  "documentation": [
-    "Documents/PENG-014-Privacy-Policy.md - Privacy Policy draft (awaiting lawyer review)",
-    "Documents/PENG-076-Terms-Conditions.md - Terms & Conditions draft (awaiting lawyer review)",
-    "restore/pages/privacy-policy-3.html - Privacy Policy page backup (local page ID 3)",
-    "restore/pages/terms-conditions-60.html - Terms & Conditions page backup (local page ID 60)",
-    "docs/PENG-001-CANDIDATEID-STRATEGY-V2.md - Record ID strategy",
-    "deliverables/COPS-001-CV-LIFECYCLE-POLICY.md - CV handling and consent",
-    "deliverables/LFTC-002-GDPR-RETENTION-POLICY.md - Retention policy (pending lawyer)",
-    "docs/procedures/POST-DEPLOYMENT-CHECKLIST.md - Deployment verification"
+  "affectedFiles": [
+    "restore/pages/help-7.html",
+    "tmp/restore-help-7.php",
+    "wp-content/themes/blocksy-child/footer.php",
+    "wp-content/themes/blocksy-child/functions.php",
+    "wp-content/themes/blocksy-child/design-tokens.css",
+    "wp-content/themes/blocksy-child/style.css",
+    "infra/shared/db/260308-1600-update-footer-copyright.sql",
+    "Documents/WORDPRESS-UI-DESIGN.md",
+    "Documents/COMMON-UI-DESIGN.md",
+    "docs/DESIGN-SYSTEM.md"
   ],
   "releaseNotes": ".github/releases/RELEASE-NOTES-v3.7.0.md"
 }

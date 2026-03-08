@@ -1,10 +1,20 @@
 /* Registration Form Styles */
 .file-upload-btn:hover {
-    background: #2872fa !important;
+    background: var(--color-navy-hover) !important;
+    transform: translateY(-1px);
+}
+
+.file-upload-btn:active {
+    transform: translateY(0);
 }
 
 .submit-btn:hover {
-    background: #2872fa !important;
+    background: var(--color-navy-hover) !important;
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
 }
 
 /* Floating Message */
