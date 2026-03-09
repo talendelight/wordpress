@@ -66,6 +66,18 @@
       "estimatedDays": 0.25,
       "dependencies": ["HIREACCORD-BRAND-STRATEGY"],
       "notes": "Completed Mar 8-9, 2026. Custom footer.php override. HireAccord copyright text."
+    },
+    {
+      "taskId": "MKTB-035",
+      "title": "Logo and Favicon Deployment",
+      "type": "assets",
+      "status": "pending",
+      "priority": "high",
+      "deploymentMethod": "manual-upload",
+      "files": ["restore/assets/images/HireAccord-logo-blue-big.png", "restore/assets/images/favicon.ico", "restore/assets/images/apple-touch-icon.png"],
+      "estimatedDays": 0.1,
+      "dependencies": ["HIREACCORD-BRAND-STRATEGY"],
+      "notes": "Upload logo and favicon to production. Set site_icon and custom_logo via wp-cli."
     }
   ],
   "affectedPages": [
@@ -86,6 +98,9 @@
     "wp-content/themes/blocksy-child/design-tokens.css",
     "wp-content/themes/blocksy-child/style.css",
     "infra/shared/db/260308-1600-update-footer-copyright.sql",
+    "restore/assets/images/HireAccord-logo-blue-big.png",
+    "restore/assets/images/favicon.ico",
+    "restore/assets/images/apple-touch-icon.png",
     "Documents/WORDPRESS-UI-DESIGN.md",
     "Documents/COMMON-UI-DESIGN.md",
     "docs/DESIGN-SYSTEM.md"

@@ -106,6 +106,26 @@ This release continues the design token migration (Phase 2B - 18% complete: 4 of
 
 ---
 
+### 6. Logo and Favicon Deployment (MKTB-035)
+**Status:** ⏳ Pending | **Priority:** HIGH
+
+**Assets:**
+- `HireAccord-logo-blue-big.png` (1.3MB) - Site logo
+- `favicon.ico` (42KB) - Browser tab icon
+- `apple-touch-icon.png` (14KB) - iOS home screen icon
+
+**Implementation:**
+- Upload assets to production WordPress Media Library
+- Set `site_icon` option (favicon)
+- Set `custom_logo` theme mod (header logo)
+
+**Files:**
+- `restore/assets/images/HireAccord-logo-blue-big.png`
+- `restore/assets/images/favicon.ico`
+- `restore/assets/images/apple-touch-icon.png`
+
+---
+
 ## 📄 Affected Pages
 
 | Page | Slug | Local ID | Prod ID | Change Type | Notes |
@@ -152,20 +172,47 @@ This release continues the design token migration (Phase 2B - 18% complete: 4 of
 6. Deploy Help page:
    ```powershell
    scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/pages/help-7.html" u909075950@45.84.205.129:/tmp/
-   scp -P 65002 -i "tmp/hostinger_deploy_key" "tmp/restore-help-7.php" u909075950@45.84.205.129:/home/u909075950/domains/talendelight.com/public_html/
-   ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && php restore-help-7.php && rm restore-help-7.php"
+   scp -P 65002 -i "tmp/hostinger_deploy_key" "tmp/restore-help-7.php" u909075950@45.84.205.129:/home/u909075950/domains/hireaccord.com/public_html/
+   ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && php restore-help-7.php && rm restore-help-7.php"
    ```
 
 7. Update footer copyright (production):
    ```bash
    ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129
-   cd /home/u909075950/domains/talendelight.com/public_html
+   cd /home/u909075950/domains/hireaccord.com/public_html
    wp theme mod set copyright_text 'Copyright &copy; {current_year} - HireAccord. A brand of Lochness Technologies LLP. All rights reserved.' --allow-root --skip-plugins
    wp cache flush --allow-root
    ```
 
-8. Clear cache: `wp cache flush --allow-root`
-9. Health check: `pwsh infra/shared/scripts/wp-action.ps1 verify`
+8. Upload logo and favicon:
+   ```powershell
+   # Upload assets to production
+   scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/assets/images/HireAccord-logo-blue-big.png" u909075950@45.84.205.129:/tmp/
+   scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/assets/images/favicon.ico" u909075950@45.84.205.129:/tmp/
+   scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/assets/images/apple-touch-icon.png" u909075950@45.84.205.129:/tmp/
+   
+   # Import to WordPress Media Library and set
+   ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129
+   cd /home/u909075950/domains/hireaccord.com/public_html
+   
+   # Import logo to media library
+   LOGO_ID=$(wp media import /tmp/HireAccord-logo-blue-big.png --porcelain --allow-root --skip-plugins)
+   wp theme mod set custom_logo $LOGO_ID --allow-root --skip-plugins
+   
+   # Import favicon to media library
+   FAVICON_ID=$(wp media import /tmp/favicon.ico --porcelain --allow-root --skip-plugins)
+   wp option update site_icon $FAVICON_ID --allow-root --skip-plugins
+   
+   # Import apple touch icon (reference)
+   wp media import /tmp/apple-touch-icon.png --allow-root --skip-plugins
+   
+   # Cleanup
+   rm /tmp/HireAccord-logo-blue-big.png /tmp/favicon.ico /tmp/apple-touch-icon.png
+   wp cache flush --allow-root
+   ```
+
+9. Clear cache: `wp cache flush --allow-root`
+10. Health check: `pwsh infra/shared/scripts/wp-action.ps1 verify`
 
 ---
 
@@ -184,6 +231,8 @@ This release continues the design token migration (Phase 2B - 18% complete: 4 of
 - [ ] Search icon shows navy color
 - [ ] Footer copyright displays: "Copyright © 2026 - HireAccord. A brand of Lochness Technologies LLP. All rights reserved."
 - [ ] Footer copyright shows © symbol (not &copy;)
+- [ ] Site logo displays in header (HireAccord logo)
+- [ ] Favicon displays in browser tab
 - [ ] No grey buttons on Help page
 - [ ] No errors in browser console
 - [ ] No errors in production logs
