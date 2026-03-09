@@ -1,0 +1,98 @@
+{
+  "version": "3.7.1",
+  "type": "patch",
+  "releaseDate": "2026-03-10",
+  "plannedStartDate": "2026-03-09",
+  "status": "in-progress",
+  "description": "Design Token Migration - Auth Flow Pages (Register, Password Reset, Account, Profile)",
+  "tasks": [
+    {
+      "taskId": "PENG-072",
+      "title": "Register Page Design Token Migration",
+      "type": "page",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-page",
+      "localPageId": 16,
+      "productionPageId": "TBD",
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-070"],
+      "notes": "Migrate Register page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+    },
+    {
+      "taskId": "PENG-073",
+      "title": "Password Reset Page Design Token Migration",
+      "type": "page",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-page",
+      "localPageId": 15,
+      "productionPageId": "TBD",
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-070"],
+      "notes": "Migrate Password Reset page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+    },
+    {
+      "taskId": "PENG-074",
+      "title": "Account Page Design Token Migration",
+      "type": "page",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-page",
+      "localPageId": 17,
+      "productionPageId": "TBD",
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-070"],
+      "notes": "Migrate Account page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+    },
+    {
+      "taskId": "PENG-075",
+      "title": "Profile Page Design Token Migration",
+      "type": "page",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-page",
+      "localPageId": 18,
+      "productionPageId": "TBD",
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-070"],
+      "notes": "Migrate Profile page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+    }
+  ],
+  "affectedPages": [
+    {
+      "pageName": "Register",
+      "pageSlug": "register",
+      "localId": 16,
+      "productionId": "TBD",
+      "changeType": "major-update",
+      "notes": "Design token migration"
+    },
+    {
+      "pageName": "Password Reset",
+      "pageSlug": "password-reset",
+      "localId": 15,
+      "productionId": "TBD",
+      "changeType": "major-update",
+      "notes": "Design token migration"
+    },
+    {
+      "pageName": "Account",
+      "pageSlug": "account",
+      "localId": 17,
+      "productionId": "TBD",
+      "changeType": "major-update",
+      "notes": "Design token migration"
+    },
+    {
+      "pageName": "Profile",
+      "pageSlug": "profile",
+      "localId": 18,
+      "productionId": "TBD",
+      "changeType": "major-update",
+      "notes": "Design token migration"
+    }
+  ],
+  "affectedFiles": [],
+  "releaseNotes": ".github/releases/RELEASE-NOTES-v3.7.1.md"
+}
