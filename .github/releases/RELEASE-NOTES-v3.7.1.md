@@ -36,7 +36,38 @@ This release continues Phase 2B design token migration (Round 2: Landing Pages).
 
 ---
 
-### 2. Candidates Landing Page Design Token Migration (PENG-090)
+### 2. Replace Logo and Favicon with HireAccord Files (MKTB-037)
+**Status:** ⏳ Not Started | **Priority:** HIGH
+
+**Changes:**
+- Replace site logo with HireAccord_logo_original.png (139KB high-res PNG)
+- Replace favicon with apple-touch-icon.png (19KB)
+- Files located in: `restore/assets/images/hireaccord/`
+- Local: Logo ID 73, Favicon ID 74
+- Production: TBD (deploy during v3.7.1)
+
+**Deployment Commands:**
+```powershell
+# Copy files to production
+scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/assets/images/hireaccord/HireAccord_logo_original.png" u909075950@45.84.205.129:/tmp/hireaccord-logo.png
+scp -P 65002 -i "tmp/hostinger_deploy_key" "restore/assets/images/hireaccord/apple-touch-icon.png" u909075950@45.84.205.129:/tmp/hireaccord-favicon.png
+
+# Import to WordPress media library and update settings
+ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 << 'EOF'
+cd /home/u909075950/domains/hireaccord.com/public_html
+LOGO_ID=$(wp media import /tmp/hireaccord-logo.png --title="HireAccord Logo" --porcelain --allow-root)
+FAVICON_ID=$(wp media import /tmp/hireaccord-favicon.png --title="HireAccord Favicon" --porcelain --allow-root)
+wp theme mod set custom_logo $LOGO_ID --allow-root
+wp option update site_icon $FAVICON_ID --allow-root
+rm /tmp/hireaccord-logo.png /tmp/hireaccord-favicon.png
+wp cache flush --allow-root
+echo "Logo ID: $LOGO_ID, Favicon ID: $FAVICON_ID"
+EOF
+```
+
+---
+
+### 3. Candidates Landing Page Design Token Migration (PENG-090)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -58,7 +89,7 @@ This release continues Phase 2B design token migration (Round 2: Landing Pages).
 
 ---
 
-### 3. Employers Landing Page Design Token Migration (PENG-091)
+### 4. Employers Landing Page Design Token Migration (PENG-091)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -80,7 +111,7 @@ This release continues Phase 2B design token migration (Round 2: Landing Pages).
 
 ---
 
-### 4. Scouts Landing Page Design Token Migration (PENG-092)
+### 5. Scouts Landing Page Design Token Migration (PENG-092)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -102,7 +133,7 @@ This release continues Phase 2B design token migration (Round 2: Landing Pages).
 
 ---
 
-### 5. Managers Landing Page Design Token Migration (PENG-093)
+### 6. Managers Landing Page Design Token Migration (PENG-093)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -124,7 +155,7 @@ This release continues Phase 2B design token migration (Round 2: Landing Pages).
 
 ---
 
-### 6. Operators Landing Page Design Token Migration (PENG-094)
+### 7. Operators Landing Page Design Token Migration (PENG-094)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**

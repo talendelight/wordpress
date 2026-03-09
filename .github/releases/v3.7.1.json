@@ -81,6 +81,17 @@
       "estimatedDays": 0.1,
       "dependencies": ["MKTB-035"],
       "notes": "Modified .site-branding container to use flexbox row layout with 12px gap. Logo image displays left of text (horizontal) instead of above (vertical). Set logo max-height 48px."
+    },
+    {
+      "taskId": "MKTB-037",
+      "title": "Replace Logo and Favicon with HireAccord Files",
+      "type": "media",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-media",
+      "estimatedDays": 0.1,
+      "dependencies": ["MKTB-036"],
+      "notes": "Replace site logo with HireAccord_logo_original.png and favicon with apple-touch-icon.png from restore/assets/images/hireaccord. Local IDs: Logo 73, Favicon 74. Production IDs: TBD."
     }
   ],
   "affectedPages": [
