@@ -362,6 +362,16 @@ a.wp-block-button__link.has-white-background-color[href="/register"]:hover,
    CUSTOM FONTS - Red Hat Display for Site Logo
    ============================================================================ */
 
+/* Site branding container - horizontal layout */
+.site-branding,
+header .site-branding,
+.site-header .site-branding {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px;
+}
+
 /* Apply Red Hat Display Black 900 to site branding/logo text */
 .site-branding .site-title,
 .site-title,
@@ -374,13 +384,20 @@ header .site-branding p.site-title {
     font-size: 24px !important;
     letter-spacing: -0.5px;
     color: var(--color-navy) !important;  /* #063970 */
+    margin: 0 !important;
 }
 
-/* Ensure logo text is visible if used alongside image */
-.custom-logo-link + .site-title {
-    display: inline-block !important;
-    margin-left: 12px;
-    vertical-align: middle;
+/* Logo image sizing */
+.custom-logo-link,
+.site-branding .custom-logo-link {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.custom-logo,
+.site-branding .custom-logo {
+    max-height: 48px !important;
+    width: auto !important;
 }
 
 /* ============================================================================

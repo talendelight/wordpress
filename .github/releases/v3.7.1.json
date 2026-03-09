@@ -4,95 +4,134 @@
   "releaseDate": "2026-03-10",
   "plannedStartDate": "2026-03-09",
   "status": "in-progress",
-  "description": "Design Token Migration - Auth Flow Pages (Register, Password Reset, Account, Profile)",
+  "description": "Design Token Migration - Landing Pages (Candidates, Employers, Scouts, Managers, Operators) + Logo Layout Fix",
   "tasks": [
     {
-      "taskId": "PENG-072",
-      "title": "Register Page Design Token Migration",
+      "taskId": "PENG-090",
+      "title": "Candidates Landing Page Design Token Migration",
       "type": "page",
       "status": "not-started",
       "priority": "high",
       "deploymentMethod": "manual-page",
-      "localPageId": 16,
-      "productionPageId": "TBD",
+      "localPageId": 21,
+      "productionPageId": 17,
       "estimatedDays": 0.5,
       "dependencies": ["PENG-070"],
-      "notes": "Migrate Register page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+      "notes": "Migrate Candidates landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
     },
     {
-      "taskId": "PENG-073",
-      "title": "Password Reset Page Design Token Migration",
+      "taskId": "PENG-091",
+      "title": "Employers Landing Page Design Token Migration",
       "type": "page",
       "status": "not-started",
       "priority": "high",
       "deploymentMethod": "manual-page",
-      "localPageId": 15,
-      "productionPageId": "TBD",
+      "localPageId": 22,
+      "productionPageId": 16,
       "estimatedDays": 0.5,
       "dependencies": ["PENG-070"],
-      "notes": "Migrate Password Reset page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+      "notes": "Migrate Employers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
     },
     {
-      "taskId": "PENG-074",
-      "title": "Account Page Design Token Migration",
+      "taskId": "PENG-092",
+      "title": "Scouts Landing Page Design Token Migration",
       "type": "page",
       "status": "not-started",
       "priority": "high",
       "deploymentMethod": "manual-page",
-      "localPageId": 17,
-      "productionPageId": "TBD",
+      "localPageId": 23,
+      "productionPageId": 18,
       "estimatedDays": 0.5,
       "dependencies": ["PENG-070"],
-      "notes": "Migrate Account page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+      "notes": "Migrate Scouts landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
     },
     {
-      "taskId": "PENG-075",
-      "title": "Profile Page Design Token Migration",
+      "taskId": "PENG-093",
+      "title": "Managers Landing Page Design Token Migration",
       "type": "page",
       "status": "not-started",
       "priority": "high",
       "deploymentMethod": "manual-page",
-      "localPageId": 18,
-      "productionPageId": "TBD",
+      "localPageId": 24,
+      "productionPageId": 19,
       "estimatedDays": 0.5,
       "dependencies": ["PENG-070"],
-      "notes": "Migrate Profile page to design tokens. Convert font sizes, colors, spacing. Update branding HireAccord."
+      "notes": "Migrate Managers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+    },
+    {
+      "taskId": "PENG-094",
+      "title": "Operators Landing Page Design Token Migration",
+      "type": "page",
+      "status": "not-started",
+      "priority": "high",
+      "deploymentMethod": "manual-page",
+      "localPageId": 25,
+      "productionPageId": 20,
+      "estimatedDays": 0.5,
+      "dependencies": ["PENG-070"],
+      "notes": "Migrate Operators landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+    },
+    {
+      "taskId": "MKTB-036",
+      "title": "Logo Layout Horizontal (Image Left of Text)",
+      "type": "theme",
+      "status": "completed",
+      "priority": "medium",
+      "deploymentMethod": "code-deploy",
+      "estimatedDays": 0.1,
+      "dependencies": ["MKTB-035"],
+      "notes": "Modified .site-branding container to use flexbox row layout with 12px gap. Logo image displays left of text (horizontal) instead of above (vertical). Set logo max-height 48px."
     }
   ],
   "affectedPages": [
     {
-      "pageName": "Register",
-      "pageSlug": "register",
-      "localId": 16,
-      "productionId": "TBD",
+      "pageName": "Candidates",
+      "pageSlug": "candidates",
+      "localId": 21,
+      "productionId": 17,
       "changeType": "major-update",
       "notes": "Design token migration"
     },
     {
-      "pageName": "Password Reset",
-      "pageSlug": "password-reset",
-      "localId": 15,
-      "productionId": "TBD",
+      "pageName": "Employers",
+      "pageSlug": "employers",
+      "localId": 22,
+      "productionId": 16,
       "changeType": "major-update",
       "notes": "Design token migration"
     },
     {
-      "pageName": "Account",
-      "pageSlug": "account",
-      "localId": 17,
-      "productionId": "TBD",
+      "pageName": "Scouts",
+      "pageSlug": "scouts",
+      "localId": 23,
+      "productionId": 18,
       "changeType": "major-update",
       "notes": "Design token migration"
     },
     {
-      "pageName": "Profile",
-      "pageSlug": "profile",
-      "localId": 18,
-      "productionId": "TBD",
+      "pageName": "Managers",
+      "pageSlug": "managers",
+      "localId": 24,
+      "productionId": 19,
+      "changeType": "major-update",
+      "notes": "Design token migration"
+    },
+    {
+      "pageName": "Operators",
+      "pageSlug": "operators",
+      "localId": 25,
+      "productionId": 20,
       "changeType": "major-update",
       "notes": "Design token migration"
     }
   ],
-  "affectedFiles": [],
+  "affectedFiles": [
+    {
+      "file": "wp-content/themes/blocksy-child/style.css",
+      "changeType": "modified",
+      "lines": "355-390",
+      "notes": "MKTB-036: Added flexbox horizontal layout for logo"
+    }
+  ],
   "releaseNotes": ".github/releases/RELEASE-NOTES-v3.7.1.md"
 }

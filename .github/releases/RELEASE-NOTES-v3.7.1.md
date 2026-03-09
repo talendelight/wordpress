@@ -9,77 +9,140 @@
 
 ## 📦 Release Summary
 
-**Theme:** Design Token Migration - Auth Flow Pages
+**Theme:** Design Token Migration - Landing Pages
 
-This release continues Phase 2B design token migration (Round 2: Auth Flow). Migrating 4 authentication/user flow pages: Register, Password Reset, Account, and Profile. All pages will use consistent design tokens for fonts, colors, spacing, and branding with HireAccord identity.
+This release continues Phase 2B design token migration (Round 2: Landing Pages). Migrating 5 role-based landing pages: Candidates, Employers, Scouts, Managers, and Operators. All pages will use consistent design tokens for fonts, colors, spacing, and branding with HireAccord identity. Also includes logo layout improvement (horizontal: image left of text).
 
 **Type:** PATCH (incremental migration work, no new features)
 
 ---
 
-## 🎯 Planned Features
+## 🎯 Features
 
-### 1. Register Page Design Token Migration (PENG-072)
-**Status:** ⏳ Not Started | **Priority:** HIGH
+### 1. Logo Layout Horizontal (MKTB-036)
+**Status:** ✅ Completed | **Priority:** MEDIUM
 
 **Changes:**
-- Font size tokens (all patterns)
-- Color tokens (navy headers, grey text)
-- Spacing tokens (margins, padding)
-- HireAccord branding
-- Border radius tokens
+- Modified `.site-branding` container to use flexbox layout
+- Changed logo layout from vertical (logo above text) to horizontal (logo left of text)
+- Added `flex-direction: row`, `align-items: center`, `gap: 12px`
+- Set logo image `max-height: 48px`, `width: auto`
+- Maintained Red Hat Display Black 900 font for "HireAccord" text
 
 **Files:**
-- `restore/pages/register-16.html` (to be created)
-- `tmp/restore-register-{prod_id}.php` (deployment script)
+- `wp-content/themes/blocksy-child/style.css` (lines 355-390)
+
+**Deployment:** Include in code deployment (theme CSS)
 
 ---
 
-### 2. Password Reset Page Design Token Migration (PENG-073)
+### 2. Candidates Landing Page Design Token Migration (PENG-090)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
-- Font size tokens (all patterns)
-- Color tokens (navy headers, grey text)
-- Spacing tokens (margins, padding)
-- HireAccord branding
-- Border radius tokens
+- Font size tokens (headings, body text, CTAs)
+- Color tokens (navy headers, grey text, blue buttons)
+- Spacing tokens (margins, padding, gaps)
+- Border radius tokens (cards, buttons)
+- HireAccord branding (logo, footer, copyright)
+- SVG icon standardization (18px)
+
+**Page IDs:**
+- Local: 21
+- Production: 17
+- URL: `/candidates/`
 
 **Files:**
-- `restore/pages/password-reset-15.html` (to be created)
-- `tmp/restore-password-reset-{prod_id}.php` (deployment script)
+- `restore/pages/candidates-21.html` (to be created)
+- `tmp/restore-candidates-17.php` (deployment script)
 
 ---
 
-### 3. Account Page Design Token Migration (PENG-074)
+### 3. Employers Landing Page Design Token Migration (PENG-091)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
-- Font size tokens (all patterns)
-- Color tokens (navy headers, grey text)
-- Spacing tokens (margins, padding)
-- HireAccord branding
-- Border radius tokens
+- Font size tokens (headings, body text, CTAs)
+- Color tokens (navy headers, grey text, blue buttons)
+- Spacing tokens (margins, padding, gaps)
+- Border radius tokens (cards, buttons)
+- HireAccord branding (logo, footer, copyright)
+- SVG icon standardization (18px)
+
+**Page IDs:**
+- Local: 22
+- Production: 16
+- URL: `/employers/`
 
 **Files:**
-- `restore/pages/account-17.html` (to be created)
-- `tmp/restore-account-{prod_id}.php` (deployment script)
+- `restore/pages/employers-22.html` (to be created)
+- `tmp/restore-employers-16.php` (deployment script)
 
 ---
 
-### 4. Profile Page Design Token Migration (PENG-075)
+### 4. Scouts Landing Page Design Token Migration (PENG-092)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
-- Font size tokens (all patterns)
-- Color tokens (navy headers, grey text)
-- Spacing tokens (margins, padding)
-- HireAccord branding
-- Border radius tokens
+- Font size tokens (headings, body text, CTAs)
+- Color tokens (navy headers, grey text, blue buttons)
+- Spacing tokens (margins, padding, gaps)
+- Border radius tokens (cards, buttons)
+- HireAccord branding (logo, footer, copyright)
+- SVG icon standardization (18px)
+
+**Page IDs:**
+- Local: 23
+- Production: 18
+- URL: `/scouts/`
 
 **Files:**
-- `restore/pages/profile-18.html` (to be created)
-- `tmp/restore-profile-{prod_id}.php` (deployment script)
+- `restore/pages/scouts-23.html` (to be created)
+- `tmp/restore-scouts-18.php` (deployment script)
+
+---
+
+### 5. Managers Landing Page Design Token Migration (PENG-093)
+**Status:** ⏳ Not Started | **Priority:** HIGH
+
+**Changes:**
+- Font size tokens (headings, body text, CTAs)
+- Color tokens (navy headers, grey text, blue buttons)
+- Spacing tokens (margins, padding, gaps)
+- Border radius tokens (cards, buttons)
+- HireAccord branding (logo, footer, copyright)
+- SVG icon standardization (18px)
+
+**Page IDs:**
+- Local: 24
+- Production: 19
+- URL: `/managers/`
+
+**Files:**
+- `restore/pages/managers-24.html` (to be created)
+- `tmp/restore-managers-19.php` (deployment script)
+
+---
+
+### 6. Operators Landing Page Design Token Migration (PENG-094)
+**Status:** ⏳ Not Started | **Priority:** HIGH
+
+**Changes:**
+- Font size tokens (headings, body text, CTAs)
+- Color tokens (navy headers, grey text, blue buttons)
+- Spacing tokens (margins, padding, gaps)
+- Border radius tokens (cards, buttons)
+- HireAccord branding (logo, footer, copyright)
+- SVG icon standardization (18px)
+
+**Page IDs:**
+- Local: 25
+- Production: 20
+- URL: `/operators/`
+
+**Files:**
+- `restore/pages/operators-25.html` (to be created)
+- `tmp/restore-operators-20.php` (deployment script)
 
 ---
 
@@ -143,10 +206,10 @@ pwsh infra/shared/scripts/wp-action.ps1 restore -BackupTimestamp latest -Restore
 
 **Phase 2B: Design Token Migration**
 - **Previous (v3.7.0):** 4 pages (Welcome, Select Role, Register Profile, Help)
-- **This Release (v3.7.1):** 4 pages (Register, Password Reset, Account, Profile)
-- **Total After v3.7.1:** 8 of 22 pages (36%)
-- **Remaining:** 14 pages (landing pages 5, admin 3, utility 6)
-- **Next release:** v3.7.2 - Landing pages (Candidates, Employers, Scouts, Managers, Operators)
+- **This Release (v3.7.1):** 5 landing pages (Candidates, Employers, Scouts, Managers, Operators) + logo layout improvement
+- **Total After v3.7.1:** 9 of 22 pages (41%)
+- **Remaining:** 13 pages (auth 4, admin 3, utility 6)
+- **Next release:** v3.7.2 - Auth flow pages OR Admin pages (decide based on priority)
 
 ---
 
@@ -172,12 +235,18 @@ None - all changes backward-compatible
 
 ## 🎯 Next Release
 
-**v3.7.2** - Landing Pages Migration:
-- Candidates landing page
-- Employers landing page
-- Scouts landing page
-- Managers landing page
-- Operators landing page
+**v3.7.2** - Auth Flow Pages OR Admin Pages (TBD):
+
+**Option A - Auth Flow:**
+- Register page (ID 16)
+- Password Reset page (ID 15)
+- Account page (ID 17)
+- Profile page (ID 18)
+
+**Option B - Admin Pages:**
+- Manager Admin page
+- Manager Actions page
+- Operator Actions page
 
 **Target:** Complete all 22 pages before Sprint 1 (March 17, 2026)
 
