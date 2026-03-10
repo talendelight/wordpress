@@ -223,6 +223,64 @@ add_filter('wp_nav_menu_objects', function($items, $args) {
     
     $logged_in = is_user_logged_in();
     
+    // Add "Home" menu item for logged-in users (role-specific landing page)
+    if ($logged_in) {
+        $current_user = wp_get_current_user();
+        $home_url = '';
+        
+        // Map roles to their landing pages
+        $role_landing_pages = [
+            'td_candidate' => '/candidates/',
+            'td_employer' => '/employers/',
+            'td_scout' => '/scouts/',
+            'td_manager' => '/managers/',
+            'td_operator' => '/operators/',
+        ];
+        
+        // Find user's role and corresponding landing page
+        foreach ($current_user->roles as $role) {
+            if (isset($role_landing_pages[$role])) {
+                $home_url = home_url($role_landing_pages[$role]);
+                break;
+            }
+        }
+        
+        // Add Home menu item if we found a landing page
+        if (!empty($home_url)) {
+            $home_item = new stdClass();
+            $home_item->ID = 999999; // Unique ID
+            $home_item->db_id = 999999;
+            $home_item->title = 'Home';
+            $home_item->url = $home_url;
+            $home_item->menu_order = 0; // First position
+            $home_item->menu_item_parent = 0;
+            $home_item->type = 'custom';
+            $home_item->object = 'custom';
+            $home_item->object_id = 999999;
+            $home_item->classes = array('menu-item-home');
+            
+            // Add current-menu-item class if we're on the user's landing page
+            $current_url = $_SERVER['REQUEST_URI'];
+            $landing_page_slug = str_replace(home_url(), '', $home_url);
+            if (strpos($current_url, $landing_page_slug) === 0) {
+                $home_item->classes[] = 'current-menu-item';
+                $home_item->classes[] = 'current_page_item';
+                error_log("Home menu item marked as current (on landing page)");
+            }
+            
+            $home_item->target = '';
+            $home_item->attr_title = '';
+            $home_item->description = '';
+            $home_item->xfn = '';
+            $home_item->status = '';
+            
+            // Insert at the beginning
+            array_unshift($items, $home_item);
+            
+            error_log("Added Home menu item pointing to: {$home_url}");
+        }
+    }
+    
     foreach ($items as $key => $item) {
         $url = $item->url;
         error_log("Menu item: {$item->title} - URL: {$url}");

@@ -67,7 +67,81 @@ EOF
 
 ---
 
-### 3. Candidates Landing Page Design Token Migration (PENG-090)
+### 3. Rename Welcome Page to About Us (MKTB-038)
+**Status:** ✅ Completed | **Priority:** MEDIUM
+
+**Changes:**
+- Renamed "Welcome" page to "About Us"
+- Updated page title: "Welcome" → "About Us"
+- Updated page slug: `welcome` → `about-us`
+- Updated Primary Menu item: "Welcome" → "About Us"
+- File renamed: `restore/pages/welcome-6.html` → `restore/pages/about-us-6.html`
+
+**Page IDs:**
+- Local: 6
+- Production: 6
+- URL: `/about-us/` (was `/welcome/`)
+
+**Menu Item IDs:**
+- Local: 40 (Primary Menu)
+- Production: TBD
+
+**Deployment Commands:**
+```bash
+# Production deployment
+ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 << 'EOF'
+cd /home/u909075950/domains/hireaccord.com/public_html
+
+# Update page title and slug
+wp post update 6 --post_title="About Us" --post_name="about-us" --allow-root
+
+# Find menu item ID for Welcome in Primary Menu
+MENU_ITEM_ID=$(wp menu item list 2 --fields=db_id,title --format=csv --allow-root | grep "Welcome" | cut -d',' -f1)
+
+# Update menu item title
+wp menu item update $MENU_ITEM_ID --title="About Us" --allow-root
+
+# Flush cache
+wp cache flush --allow-root
+
+echo "Page renamed and menu updated successfully"
+EOF
+```
+
+---
+
+### 4. Add Conditional Home Menu Item (PENG-095)
+**Status:** ✅ Completed | **Priority:** MEDIUM
+
+**Changes:**
+- Added "Home" menu item that appears only for logged-in users
+- Menu item displays at first position (before "About Us")
+- Role-based landing page mapping:
+  - Candidates → `/candidates/`
+  - Employers → `/employers/`
+  - Scouts → `/scouts/`
+  - Managers → `/managers/`
+  - Operators → `/operators/`
+- Administrators don't see Home menu item (no dedicated landing page)
+
+**Implementation:**
+- Modified `wp_nav_menu_objects` filter in functions.php
+- Dynamically adds Home menu item based on user's role
+- Menu item ID: 999999 (programmatically generated)
+
+**Files:**
+- `wp-content/themes/blocksy-child/functions.php` (lines 226-285)
+
+**Deployment:** Include in code deployment (theme functions.php)
+
+**User Experience:**
+- **Logged out**: Menu shows → About Us | Register | Login | Help
+- **Logged in**: Menu shows → **Home** | About Us | Profile | Help | Logout
+  - Home points to role-specific landing page
+
+---
+
+### 5. Candidates Landing Page Design Token Migration (PENG-090)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -89,7 +163,7 @@ EOF
 
 ---
 
-### 4. Employers Landing Page Design Token Migration (PENG-091)
+### 6. Employers Landing Page Design Token Migration (PENG-091)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -111,7 +185,7 @@ EOF
 
 ---
 
-### 5. Scouts Landing Page Design Token Migration (PENG-092)
+### 7. Scouts Landing Page Design Token Migration (PENG-092)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -133,7 +207,7 @@ EOF
 
 ---
 
-### 6. Managers Landing Page Design Token Migration (PENG-093)
+### 8. Managers Landing Page Design Token Migration (PENG-093)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -155,7 +229,7 @@ EOF
 
 ---
 
-### 7. Operators Landing Page Design Token Migration (PENG-094)
+### 9. Operators Landing Page Design Token Migration (PENG-094)
 **Status:** ⏳ Not Started | **Priority:** HIGH
 
 **Changes:**
@@ -174,6 +248,27 @@ EOF
 **Files:**
 - `restore/pages/operators-25.html` (to be created)
 - `tmp/restore-operators-20.php` (deployment script)
+
+---
+
+### 10. Remove Search Icon and Modal from Header (MKTB-039)
+**Status:** ✅ Completed | **Priority:** LOW
+
+**Changes:**
+- Hidden search button/icon in header navigation
+- Hidden search modal/overlay that appears on click
+- Used CSS `display: none !important` to hide all search-related elements
+- Targets: `.ct-search-button`, `.ct-icon-search`, `.search-icon`, `.ct-header-search`, `.ct-search-modal`, `.ct-search-box`
+
+**Rationale:**
+- Search functionality not needed for current site structure
+- Simplifies header navigation UI
+- Reduces visual clutter for users
+
+**Files:**
+- `wp-content/themes/blocksy-child/style.css` (lines 431-448)
+
+**Deployment:** Include in code deployment (theme CSS)
 
 ---
 

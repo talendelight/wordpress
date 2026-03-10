@@ -428,13 +428,22 @@ nav.primary-menu .current-menu-item a,
     text-underline-offset: 4px;
 }
 
-/* Search icon/button */
+/* Search icon/button - HIDDEN */
 .ct-search-button,
 .ct-icon-search,
 .search-icon,
-header .ct-search-button svg,
-header .search-icon svg,
-.ct-header-search svg {
-    color: var(--color-navy) !important;  /* #063970 */
-    fill: var(--color-navy) !important;   /* For SVG icons */
+header .ct-search-button,
+header .search-icon,
+.ct-header-search,
+[data-id="search"] {
+    display: none !important;
+}
+
+/* Search modal/overlay - HIDDEN */
+.ct-search-modal,
+.ct-search-box,
+.ct-modal-search,
+#search-modal,
+.search-modal-overlay {
+    display: none !important;
 }
