@@ -69,7 +69,7 @@ jobs:
             exit 1
           fi
           
-          echo "âœ“ Release instructions are valid"
+          echo "[OK] Release instructions are valid"
 
       - name: Check for Elementor Deployment
         id: check_elementor
@@ -207,7 +207,7 @@ jobs:
             # Remove twentytwenty* themes (not used, consuming ~13.6MB)
             for theme in twentytwentythree twentytwentyfour twentytwentyfive; do
               if [ -d "$theme" ]; then
-                rm -rf "$theme" && echo "âœ“ Removed: $theme" || echo "âš  Failed to remove: $theme"
+                rm -rf "$theme" && echo "[ERROR]“ Removed: $theme" || echo "âš  Failed to remove: $theme"
               else
                 echo "âš  Not found: $theme (already removed)"
               fi
@@ -302,7 +302,7 @@ jobs:
             for sql_file in ~/db-deploy/*.sql; do
               if [ -f "$sql_file" ]; then
                 echo "Executing: $(basename $sql_file)"
-                wp db query < "$sql_file" && echo "âœ“ Success" || echo "âœ— Failed: $sql_file"
+                wp db query < "$sql_file" && echo "[ERROR]“ Success" || echo "[ERROR] Failed: $sql_file"
               fi
             done
             
@@ -343,9 +343,9 @@ jobs:
             echo "Activating theme: $THEME"
             
             if wp theme activate "$THEME"; then
-              echo "âœ“ Theme activated: $THEME"
+              echo "[ERROR]“ Theme activated: $THEME"
             else
-              echo "âœ— Theme activation failed: $THEME"
+              echo "[ERROR] Theme activation failed: $THEME"
               exit 1
             fi
 
@@ -378,13 +378,13 @@ jobs:
               
               # Check if already active
               if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
-                echo "âœ“ Plugin already active: $plugin"
+                echo "[ERROR]“ Plugin already active: $plugin"
                 continue
               fi
               
               # Activate plugin
               if wp plugin activate "$plugin" --allow-root; then
-                echo "âœ“ Plugin activated: $plugin"
+                echo "[ERROR]“ Plugin activated: $plugin"
               else
                 echo "âŒ Plugin activation failed: $plugin"
               fi
@@ -438,12 +438,12 @@ jobs:
               fi
               
               if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
-                echo "âœ“ Already active: $plugin"
+                echo "[ERROR]“ Already active: $plugin"
                 continue
               fi
               
               if wp plugin activate "$plugin" --allow-root; then
-                echo "âœ“ Activated: $plugin"
+                echo "[ERROR]“ Activated: $plugin"
               else
                 echo "âŒ Failed: $plugin"
               fi
@@ -509,25 +509,25 @@ jobs:
             echo "Clearing caches..."
             
             # Clear WordPress cache
-            wp cache flush --allow-root && echo "âœ“ WordPress cache cleared" || echo "âš  WordPress cache clear failed"
+            wp cache flush --allow-root && echo "[ERROR]“ WordPress cache cleared" || echo "âš  WordPress cache clear failed"
             
             # Flush rewrite rules
-            wp rewrite flush --allow-root && echo "âœ“ Rewrite rules flushed" || echo "âš  Rewrite flush failed"
+            wp rewrite flush --allow-root && echo "[ERROR]“ Rewrite rules flushed" || echo "âš  Rewrite flush failed"
             
             # Clear Elementor cache
             if wp elementor flush_css --allow-root 2>/dev/null; then
-              echo "âœ“ Elementor cache cleared"
+              echo "[ERROR]“ Elementor cache cleared"
             else
               echo "âš  Elementor cache clear failed or plugin not active"
             fi
             
             # Clear LiteSpeed cache (if available)
             if command -v litespeed 2>/dev/null; then
-              wp litespeed-purge all --allow-root 2>/dev/null && echo "âœ“ LiteSpeed cache cleared" || echo "âš  LiteSpeed cache clear failed"
+              wp litespeed-purge all --allow-root 2>/dev/null && echo "[ERROR]“ LiteSpeed cache cleared" || echo "âš  LiteSpeed cache clear failed"
             fi
             
             # Clear WordPress transients
-            wp transient delete --all --allow-root 2>/dev/null && echo "âœ“ WordPress transients cleared" || true
+            wp transient delete --all --allow-root 2>/dev/null && echo "[ERROR]“ WordPress transients cleared" || true
             
             echo "Cache clearing complete"
 
@@ -548,7 +548,7 @@ jobs:
             if [ -f ~/verify-production-health.php ]; then
               if wp eval-file ~/verify-production-health.php --allow-root; then
                 echo ""
-                echo "âœ… All health checks passed!"
+                echo "[ERROR]… All health checks passed!"
                 exit 0
               else
                 echo ""
