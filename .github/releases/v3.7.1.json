@@ -1,203 +1,233 @@
-{
-  "version": "3.7.1",
-  "type": "patch",
-  "releaseDate": "2026-03-10",
-  "plannedStartDate": "2026-03-09",
-  "status": "in-progress",
-  "description": "Design Token Migration - Landing Pages (Candidates, Employers, Scouts, Managers, Operators) + Logo Layout Fix",
-  "tasks": [
-    {
-      "taskId": "PENG-090",
-      "title": "Candidates Landing Page Design Token Migration",
-      "type": "page",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-page",
-      "localPageId": 21,
-      "productionPageId": 17,
-      "estimatedDays": 0.5,
-      "dependencies": ["PENG-070"],
-      "notes": "Migrate Candidates landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
-    },
-    {
-      "taskId": "PENG-091",
-      "title": "Employers Landing Page Design Token Migration",
-      "type": "page",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-page",
-      "localPageId": 22,
-      "productionPageId": 16,
-      "estimatedDays": 0.5,
-      "dependencies": ["PENG-070"],
-      "notes": "Migrate Employers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
-    },
-    {
-      "taskId": "PENG-092",
-      "title": "Scouts Landing Page Design Token Migration",
-      "type": "page",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-page",
-      "localPageId": 23,
-      "productionPageId": 18,
-      "estimatedDays": 0.5,
-      "dependencies": ["PENG-070"],
-      "notes": "Migrate Scouts landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
-    },
-    {
-      "taskId": "PENG-093",
-      "title": "Managers Landing Page Design Token Migration",
-      "type": "page",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-page",
-      "localPageId": 24,
-      "productionPageId": 19,
-      "estimatedDays": 0.5,
-      "dependencies": ["PENG-070"],
-      "notes": "Migrate Managers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
-    },
-    {
-      "taskId": "PENG-094",
-      "title": "Operators Landing Page Design Token Migration",
-      "type": "page",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-page",
-      "localPageId": 25,
-      "productionPageId": 20,
-      "estimatedDays": 0.5,
-      "dependencies": ["PENG-070"],
-      "notes": "Migrate Operators landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
-    },
-    {
-      "taskId": "MKTB-036",
-      "title": "Logo Layout Horizontal (Image Left of Text)",
-      "type": "theme",
-      "status": "completed",
-      "priority": "medium",
-      "deploymentMethod": "code-deploy",
-      "estimatedDays": 0.1,
-      "dependencies": ["MKTB-035"],
-      "notes": "Modified .site-branding container to use flexbox row layout with 12px gap. Logo image displays left of text (horizontal) instead of above (vertical). Set logo max-height 48px."
-    },
-    {
-      "taskId": "MKTB-037",
-      "title": "Replace Logo and Favicon with HireAccord Files",
-      "type": "media",
-      "status": "not-started",
-      "priority": "high",
-      "deploymentMethod": "manual-media",
-      "estimatedDays": 0.1,
-      "dependencies": ["MKTB-036"],
-      "notes": "Replace site logo with HireAccord_logo_original.png and favicon with apple-touch-icon.png from restore/assets/images/hireaccord. Local IDs: Logo 73, Favicon 74. Production IDs: TBD."
-    },
-    {
-      "taskId": "MKTB-038",
-      "title": "Rename Welcome Page to About Us",
-      "type": "content",
-      "status": "completed",
-      "priority": "medium",
-      "deploymentMethod": "manual-page",
-      "localPageId": 6,
-      "productionPageId": 6,
-      "estimatedDays": 0.1,
-      "dependencies": [],
-      "notes": "Rename 'Welcome' page to 'About Us'. Update page title, slug (welcome -> about-us), and menu item title. Menu item ID: 40 (local), TBD (production)."
-    },
-    {
-      "taskId": "PENG-095",
-      "title": "Add Conditional Home Menu Item",
-      "type": "theme",
-      "status": "completed",
-      "priority": "medium",
-      "deploymentMethod": "code-deploy",
-      "estimatedDays": 0.1,
-      "dependencies": [],
-      "notes": "Add 'Home' menu item that appears only for logged-in users. Maps user role to landing page: Candidates->/candidates/, Employers->/employers/, Scouts->/scouts/, Managers->/managers/, Operators->/operators/. Menu item displays at first position."
-    },
-    {
-      "taskId": "MKTB-039",
-      "title": "Remove Search Icon and Modal from Header",
-      "type": "theme",
-      "status": "completed",
-      "priority": "low",
-      "deploymentMethod": "code-deploy",
-      "estimatedDays": 0.05,
-      "dependencies": [],
-      "notes": "Hide search button/icon in header and search modal overlay using CSS display:none. Removes unused search functionality from site navigation."
-    }
-  ],
-  "affectedPages": [
-    {
-      "pageName": "About Us",
-      "pageSlug": "about-us",
-      "localId": 6,
-      "productionId": 6,
-      "changeType": "minor-update",
-      "notes": "Renamed from 'Welcome' - title, slug, and menu item updated"
-    },
-    {
-      "pageName": "Candidates",
-      "pageSlug": "candidates",
-      "localId": 21,
-      "productionId": 17,
-      "changeType": "major-update",
-      "notes": "Design token migration"
-    },
-    {
-      "pageName": "Employers",
-      "pageSlug": "employers",
-      "localId": 22,
-      "productionId": 16,
-      "changeType": "major-update",
-      "notes": "Design token migration"
-    },
-    {
-      "pageName": "Scouts",
-      "pageSlug": "scouts",
-      "localId": 23,
-      "productionId": 18,
-      "changeType": "major-update",
-      "notes": "Design token migration"
-    },
-    {
-      "pageName": "Managers",
-      "pageSlug": "managers",
-      "localId": 24,
-      "productionId": 19,
-      "changeType": "major-update",
-      "notes": "Design token migration"
-    },
-    {
-      "pageName": "Operators",
-      "pageSlug": "operators",
-      "localId": 25,
-      "productionId": 20,
-      "changeType": "major-update",
-      "notes": "Design token migration"
-    }
-  ],
-  "affectedFiles": [
-    {
-      "file": "wp-content/themes/blocksy-child/style.css",
-      "changeType": "modified",
-      "lines": "355-390",
-      "notes": "MKTB-036: Added flexbox horizontal layout for logo"
-    },
-    {
-      "file": "wp-content/themes/blocksy-child/functions.php",
-      "changeType": "modified",
-      "lines": "226-285",
-      "notes": "PENG-095: Added conditional Home menu item for logged-in users with role-based landing page mapping"
-    },
-    {
-      "file": "wp-content/themes/blocksy-child/style.css",
-      "changeType": "modified",
-      "lines": "431-448",
-      "notes": "MKTB-039: Hidden search icon/button and search modal using display:none"
-    }
-  ],
-  "releaseNotes": ".github/releases/RELEASE-NOTES-v3.7.1.md"
+﻿{
+    "version":  "3.7.1",
+    "type":  "patch",
+    "releaseDate":  "2026-03-10",
+    "plannedStartDate":  "2026-03-09",
+    "status":  "deployed",
+    "deploymentMethod":  "manual",
+    "deploymentDate":  "2026-03-11",
+    "steps":  [
+                  {
+                      "type":  "manual_deployment",
+                      "description":  "v3.7.1 deployed manually via SSH",
+                      "completed":  true,
+                      "notes":  "Theme files, landing pages, About Us rename, and logo/favicon deployed successfully to production"
+                  }
+              ],
+    "description":  "Design Token Migration - Landing Pages (Candidates, Employers, Scouts, Managers, Operators) + Logo Layout Fix",
+    "tasks":  [
+                  {
+                      "taskId":  "PENG-090",
+                      "title":  "Candidates Landing Page Design Token Migration",
+                      "type":  "page",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  21,
+                      "productionPageId":  17,
+                      "estimatedDays":  0.5,
+                      "dependencies":  [
+                                           "PENG-070"
+                                       ],
+                      "notes":  "Migrate Candidates landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+                  },
+                  {
+                      "taskId":  "PENG-091",
+                      "title":  "Employers Landing Page Design Token Migration",
+                      "type":  "page",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  22,
+                      "productionPageId":  16,
+                      "estimatedDays":  0.5,
+                      "dependencies":  [
+                                           "PENG-070"
+                                       ],
+                      "notes":  "Migrate Employers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+                  },
+                  {
+                      "taskId":  "PENG-092",
+                      "title":  "Scouts Landing Page Design Token Migration",
+                      "type":  "page",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  23,
+                      "productionPageId":  18,
+                      "estimatedDays":  0.5,
+                      "dependencies":  [
+                                           "PENG-070"
+                                       ],
+                      "notes":  "Migrate Scouts landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+                  },
+                  {
+                      "taskId":  "PENG-093",
+                      "title":  "Managers Landing Page Design Token Migration",
+                      "type":  "page",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  24,
+                      "productionPageId":  19,
+                      "estimatedDays":  0.5,
+                      "dependencies":  [
+                                           "PENG-070"
+                                       ],
+                      "notes":  "Migrate Managers landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+                  },
+                  {
+                      "taskId":  "PENG-094",
+                      "title":  "Operators Landing Page Design Token Migration",
+                      "type":  "page",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  25,
+                      "productionPageId":  20,
+                      "estimatedDays":  0.5,
+                      "dependencies":  [
+                                           "PENG-070"
+                                       ],
+                      "notes":  "Migrate Operators landing page to design tokens. Convert font sizes, colors, spacing, borders. Update branding HireAccord."
+                  },
+                  {
+                      "taskId":  "MKTB-036",
+                      "title":  "Logo Layout Horizontal (Image Left of Text)",
+                      "type":  "theme",
+                      "status":  "completed",
+                      "priority":  "medium",
+                      "deploymentMethod":  "code-deploy",
+                      "estimatedDays":  0.1,
+                      "dependencies":  [
+                                           "MKTB-035"
+                                       ],
+                      "notes":  "Modified .site-branding container to use flexbox row layout with 12px gap. Logo image displays left of text (horizontal) instead of above (vertical). Set logo max-height 48px."
+                  },
+                  {
+                      "taskId":  "MKTB-037",
+                      "title":  "Replace Logo and Favicon with HireAccord Files",
+                      "type":  "media",
+                      "status":  "completed",
+                      "priority":  "high",
+                      "deploymentMethod":  "manual-media",
+                      "estimatedDays":  0.1,
+                      "dependencies":  [
+                                           "MKTB-036"
+                                       ],
+                      "notes":  "Replace site logo with HireAccord_logo_original.png and favicon with apple-touch-icon.png from restore/assets/images/hireaccord. Local IDs: Logo 73, Favicon 74. Production IDs: TBD."
+                  },
+                  {
+                      "taskId":  "MKTB-038",
+                      "title":  "Rename Welcome Page to About Us",
+                      "type":  "content",
+                      "status":  "completed",
+                      "priority":  "medium",
+                      "deploymentMethod":  "manual-page",
+                      "localPageId":  6,
+                      "productionPageId":  6,
+                      "estimatedDays":  0.1,
+                      "dependencies":  [
+
+                                       ],
+                      "notes":  "Rename \u0027Welcome\u0027 page to \u0027About Us\u0027. Update page title, slug (welcome -\u003e about-us), and menu item title. Menu item ID: 40 (local), TBD (production)."
+                  },
+                  {
+                      "taskId":  "PENG-095",
+                      "title":  "Add Conditional Home Menu Item",
+                      "type":  "theme",
+                      "status":  "completed",
+                      "priority":  "medium",
+                      "deploymentMethod":  "code-deploy",
+                      "estimatedDays":  0.1,
+                      "dependencies":  [
+
+                                       ],
+                      "notes":  "Add \u0027Home\u0027 menu item that appears only for logged-in users. Maps user role to landing page: Candidates-\u003e/candidates/, Employers-\u003e/employers/, Scouts-\u003e/scouts/, Managers-\u003e/managers/, Operators-\u003e/operators/. Menu item displays at first position."
+                  },
+                  {
+                      "taskId":  "MKTB-039",
+                      "title":  "Remove Search Icon and Modal from Header",
+                      "type":  "theme",
+                      "status":  "completed",
+                      "priority":  "low",
+                      "deploymentMethod":  "code-deploy",
+                      "estimatedDays":  0.05,
+                      "dependencies":  [
+
+                                       ],
+                      "notes":  "Hide search button/icon in header and search modal overlay using CSS display:none. Removes unused search functionality from site navigation."
+                  }
+              ],
+    "affectedPages":  [
+                          {
+                              "pageName":  "About Us",
+                              "pageSlug":  "about-us",
+                              "localId":  6,
+                              "productionId":  6,
+                              "changeType":  "minor-update",
+                              "notes":  "Renamed from \u0027Welcome\u0027 - title, slug, and menu item updated"
+                          },
+                          {
+                              "pageName":  "Candidates",
+                              "pageSlug":  "candidates",
+                              "localId":  21,
+                              "productionId":  17,
+                              "changeType":  "major-update",
+                              "notes":  "Design token migration"
+                          },
+                          {
+                              "pageName":  "Employers",
+                              "pageSlug":  "employers",
+                              "localId":  22,
+                              "productionId":  16,
+                              "changeType":  "major-update",
+                              "notes":  "Design token migration"
+                          },
+                          {
+                              "pageName":  "Scouts",
+                              "pageSlug":  "scouts",
+                              "localId":  23,
+                              "productionId":  18,
+                              "changeType":  "major-update",
+                              "notes":  "Design token migration"
+                          },
+                          {
+                              "pageName":  "Managers",
+                              "pageSlug":  "managers",
+                              "localId":  24,
+                              "productionId":  19,
+                              "changeType":  "major-update",
+                              "notes":  "Design token migration"
+                          },
+                          {
+                              "pageName":  "Operators",
+                              "pageSlug":  "operators",
+                              "localId":  25,
+                              "productionId":  20,
+                              "changeType":  "major-update",
+                              "notes":  "Design token migration"
+                          }
+                      ],
+    "affectedFiles":  [
+                          {
+                              "file":  "wp-content/themes/blocksy-child/style.css",
+                              "changeType":  "modified",
+                              "lines":  "355-390",
+                              "notes":  "MKTB-036: Added flexbox horizontal layout for logo"
+                          },
+                          {
+                              "file":  "wp-content/themes/blocksy-child/functions.php",
+                              "changeType":  "modified",
+                              "lines":  "226-285",
+                              "notes":  "PENG-095: Added conditional Home menu item for logged-in users with role-based landing page mapping"
+                          },
+                          {
+                              "file":  "wp-content/themes/blocksy-child/style.css",
+                              "changeType":  "modified",
+                              "lines":  "431-448",
+                              "notes":  "MKTB-039: Hidden search icon/button and search modal using display:none"
+                          }
+                      ],
+    "releaseNotes":  ".github/releases/RELEASE-NOTES-v3.7.1.md"
 }
