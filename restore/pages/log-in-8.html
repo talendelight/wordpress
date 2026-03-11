@@ -1,0 +1,78 @@
+﻿<!-- Log In Page with Custom Link Styling -->
+<!-- Updated: March 11, 2026 - Removed duplicate links, added hover effects -->
+
+<!-- Custom CSS for Login Page -->
+<!-- wp:html -->
+<style>
+/* Hide WP User Manager default links (first occurrence) */
+.wpum-login-links,
+.wpum-login-form p.wpum-lost-password-link,
+.wpum-login-form p.wpum-register-link {
+    display: none !important;
+}
+
+/* Custom link styling for our links */
+.login-page-links a {
+    color: #063970 !important;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.login-page-links a:hover {
+    text-decoration: underline;
+    transform: translateY(-1px);
+}
+</style>
+<!-- /wp:html -->
+
+<!-- Centered Container with Card -->
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70"},"margin":{"top":"0","bottom":"0"}}},"backgroundColor":"gray-lightest","layout":{"type":"constrained","contentSize":"600px"}} -->
+<div class="wp-block-group alignfull has-gray-lightest-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--70);padding-bottom:var(--wp--preset--spacing--70)">
+    
+    <!-- Login Form Card -->
+    <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60","left":"var:preset|spacing|50","right":"var:preset|spacing|50"}},"border":{"radius":"12px"}},"backgroundColor":"white","className":"is-style-card","layout":{"type":"constrained"}} -->
+    <div class="wp-block-group is-style-card has-white-background-color has-background" style="border-radius:12px;padding-top:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--50)">
+        
+        <!-- Page Heading -->
+        <!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontSize":"32px","fontWeight":"700"},"spacing":{"margin":{"bottom":"var:preset|spacing|40"}}},"textColor":"navy"} -->
+        <h1 class="wp-block-heading has-text-align-center has-navy-color has-text-color" style="margin-bottom:var(--wp--preset--spacing--40);font-size:32px;font-weight:700">Log In</h1>
+        <!-- /wp:heading -->
+        
+        <!-- Login Form -->
+        <!-- wp:wpum/login-form /-->
+        
+        <!-- Spacer -->
+        <!-- wp:spacer {"height":"24px"} -->
+        <div style="height:24px" aria-hidden="true" class="wp-block-spacer"></div>
+        <!-- /wp:spacer -->
+        
+        <!-- Separator Line -->
+        <!-- wp:separator {"style":{"spacing":{"margin":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"backgroundColor":"gray-light","className":"is-style-wide"} -->
+        <hr class="wp-block-separator has-text-color has-gray-light-color has-alpha-channel-opacity has-gray-light-background-color has-background is-style-wide" style="margin-top:var(--wp--preset--spacing--30);margin-bottom:var(--wp--preset--spacing--30)"/>
+        <!-- /wp:separator -->
+        
+        <!-- Additional Options with Custom Styling -->
+        <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"className":"login-page-links","layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+        <div class="wp-block-group login-page-links">
+            
+            <!-- Don't have an account? Register now -->
+            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"15px"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"textColor":"gray-dark-text"} -->
+            <p class="has-text-align-center has-gray-dark-text-color has-text-color" style="margin-top:0;margin-bottom:0;font-size:15px">Don't have an account? <a href="/register/">Register now ┬╗</a></p>
+            <!-- /wp:paragraph -->
+            
+            <!-- Lost your password? -->
+            <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"15px"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"textColor":"gray-dark-text"} -->
+            <p class="has-text-align-center has-gray-dark-text-color has-text-color" style="margin-top:0;margin-bottom:0;font-size:15px"><a href="/password-reset/">Lost your password?</a></p>
+            <!-- /wp:paragraph -->
+            
+        </div>
+        <!-- /wp:group -->
+        
+    </div>
+    <!-- /wp:group -->
+    
+</div>
+<!-- /wp:group -->
+
