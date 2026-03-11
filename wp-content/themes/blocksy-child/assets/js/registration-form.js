@@ -14,9 +14,9 @@
         setTimeout(function() {
             messageEl.classList.remove('show');
             if (type === 'success') {
-                // Redirect to Welcome page after animation completes
+                // Redirect to About Us (home page) after animation completes
                 setTimeout(function() {
-                    window.location.href = '/welcome/';
+                    window.location.href = '/about-us/';
                 }, 300);
             }
         }, 2000);

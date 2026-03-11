@@ -89,7 +89,7 @@ add_action('wp_enqueue_scripts', function() {
                 'td-registration-form',
                 get_stylesheet_directory_uri() . '/assets/js/registration-form.js',
                 array(),
-                '1.0.6',  // Added form data debugging
+                '1.0.7',  // Fixed redirect from /welcome to /about-us
                 true
             );
             

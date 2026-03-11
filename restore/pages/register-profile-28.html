@@ -18,7 +18,7 @@
     <!-- wp:html -->
     <form id="td-registration-form" method="post" enctype="multipart/form-data" style="max-width: 800px; margin: 0 auto; background: white; padding: 48px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         
-        <input type="hidden" name="td_registration_nonce" id="td_registration_nonce" value="<?php echo wp_create_nonce('td_registration_form'); ?>">
+        <input type="hidden" name="td_registration_nonce" id="td_registration_nonce" value="[td_registration_nonce]">
         <input type="hidden" name="td_user_role" id="td_user_role" value="">
         <input type="hidden" name="action" value="td_process_registration">
         
@@ -134,7 +134,7 @@
         <div style="margin-bottom: 32px; padding-top: 32px; border-top: 1px solid var(--color-grey-medium-border);">
             <label style="display: flex; align-items: start; font-size: 14px;">
                 <input type="checkbox" id="consent" name="consent" required style="margin-right: 12px; margin-top: 4px; width: 18px; height: 18px; flex-shrink: 0;">
-                <span>I agree to the <a href="/privacy-policy/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Privacy Policy</a> and <a href="/terms-conditions/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Terms & Conditions</a>, and consent to the processing of my personal data as described. <span style="color: var(--color-error);">*</span></span>
+                <span>I agree to the <a href="/privacy-policy/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Privacy Policy</a>, <a href="/cookie-policy/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Cookie Policy</a>, and <a href="/terms-conditions/" target="_blank" style="color: var(--color-accent-blue); text-decoration: underline;">Terms & Conditions</a>, and consent to the processing of my personal data as described. <span style="color: var(--color-error);">*</span></span>
             </label>
         </div>
         
@@ -275,6 +275,8 @@
     <div id="td-floating-message"></div>
     
     
+
+
 
 
 
