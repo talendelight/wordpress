@@ -3,9 +3,10 @@
     "type":  "patch",
     "releaseDate":  "2026-03-10",
     "plannedStartDate":  "2026-03-09",
-    "status":  "deployed",
+    "status":  "complete",
     "deploymentMethod":  "manual",
     "deploymentDate":  "2026-03-11",
+    "completedDate":  "2026-03-11",
     "steps":  [
                   {
                       "type":  "manual_deployment",
