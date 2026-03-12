@@ -359,17 +359,33 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 
 ### Deploy page content (Complete Workflow)
 
-**✅ RECOMMENDED: Unified Deployment Script**
+**✅ RECOMMENDED: Unified Deployment Script (All Use Cases)**
 
-**Deploy to any environment with single script:**
+**Use deploy-pages.ps1 for ALL page updates:**
+- ✅ Individual page updates during development
+- ✅ Multiple page updates
+- ✅ Batch production deployments
+- ✅ No need to create ad-hoc PHP scripts
+
+**Examples:**
+
 ```powershell
-# Deploy to production
+# Individual page update during development (Local)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Local -PageNames 'candidates'
+
+# Multiple page updates (Local)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Local -PageNames 'candidates','employers','scouts'
+
+# Deploy to production (single page)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames 'privacy-policy'
+
+# Deploy to production (multiple pages)
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames 'privacy-policy','cookie-policy'
 
-# Deploy all pages to production
+# Deploy all pages to production (batch release)
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production
 
-# Restore to local (development/testing)
+# Restore to local from backup (development/testing)
 pwsh infra/shared/scripts/wp-action.ps1 restore-pages -PageNames 'welcome'
 
 # Dry run to preview changes
@@ -378,22 +394,32 @@ pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -Dr
 
 **Features:**
 - ✅ Single script for all environments (Local + Production)
+- ✅ Uses PHP template for consistent updates (avoids stdin corruption)
 - ✅ Finds pages by slug dynamically (no ID mapping needed)
 - ✅ Creates pages if they don't exist
 - ✅ Slug is stable identifier across environments
 - ✅ Environment-specific execution (podman for Local, SSH for Production)
 - ✅ Flushes caches automatically
 - ✅ Supports dry-run mode
+- ✅ Handles single page, multiple pages, or all pages
 
 **Script:** [infra/shared/scripts/deploy-pages.ps1](../infra/shared/scripts/deploy-pages.ps1)  
+**Template:** [infra/shared/scripts/update-page-template.php](../infra/shared/scripts/update-page-template.php)  
 **Task:** See [TASK-REGISTRY.md: Deploy WordPress Page to Production](TASK-REGISTRY.md#task-deploy-wordpress-page-to-production)
+
+**When to use this script:**
+- 🔄 During development: After updating page content in restore/pages/, deploy to local
+- 🧪 Testing: Deploy to local for manual review before production
+- 🚀 Production releases: Deploy single page, multiple pages, or batch deployments
+- 📦 Restore: Pull pages from backup to local environment
 
 ---
 
 ### Deploy page content (Manual Method - Legacy)
-**⚠️ MANUAL METHOD - Use repeatable script above instead**
+**⚠️ MANUAL METHOD - Use deploy-pages.ps1 script above instead**
+**⚠️ DO NOT create individual PHP scripts - deploy-pages.ps1 handles everything**
 
-**Step 1: Create PHP deployment script**
+**Step 1: Create PHP deployment script (DEPRECATED - use deploy-pages.ps1)**
 ```powershell
 $pageId = 21  # Change to target page ID
 $htmlFile = "register-profile-custom-form.html"  # Change to your HTML file

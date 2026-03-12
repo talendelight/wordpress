@@ -1,11 +1,11 @@
-﻿<!-- Operator Actions Page - Built from Block Patterns -->
+﻿<!-- Manager Actions Page - Built from Block Patterns -->
 <!-- Migrated from Elementor to Gutenberg on February 12, 2026 -->
 
 <!-- Hero Section -->
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"},"margin":{"top":"0","bottom":"0"}}},"backgroundColor":"navy","textColor":"gray-off-white","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull has-gray-off-white-color has-navy-background-color has-text-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
     <!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontSize":"48px","fontWeight":"700"}}} -->
-    <h1 class="wp-block-heading has-text-align-center" style="font-size:48px;font-weight:700">Operator Actions</h1>
+    <h1 class="wp-block-heading has-text-align-center" style="font-size:48px;font-weight:700">Manager Actions</h1>
     <!-- /wp:heading -->
 
     <!-- wp:paragraph {"align":"center","style":{"typography":{"fontSize":"20px"},"spacing":{"margin":{"top":"var:preset|spacing|24"}}}} -->
@@ -18,26 +18,26 @@
 <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","bottom":"var:preset|spacing|80"},"margin":{"top":"0","bottom":"0"}}},"backgroundColor":"gray-off-white","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull has-gray-off-white-background-color has-background" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--80);padding-bottom:var(--wp--preset--spacing--80)">
     <!-- wp:heading {"textAlign":"center","level":2,"style":{"spacing":{"margin":{"bottom":"48px"}},"color":{"text":"#063970"}}} -->
-    <h2 class="wp-block-heading has-text-align-center has-text-color" style="margin-bottom:48px;color:#063970">User Request Approvals</h2>
+    <h2 class="wp-block-heading has-text-align-center has-text-color" style="margin-bottom:48px;color:var(--color-navy)">User Request Approvals</h2>
     <!-- /wp:heading -->
 
     <!-- wp:html -->
     <div class="td-tabs-container" style="max-width:1400px;margin:0 auto;">
         <!-- Tab Navigation -->
-        <div class="td-tab-nav" style="display:flex;border-bottom:2px solid #E0E0E0;margin-bottom:32px;">
-            <button class="td-tab-button active" data-tab="new" data-color="#E3F2FD" style="flex:1;padding:16px 24px;background:#E3F2FD;border:none;border-bottom:3px solid #3498DB;color:#063970;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+        <div class="td-tab-nav" style="display:flex;border-bottom:2px solid var(--color-grey-medium-border);margin-bottom:32px;">
+            <button class="td-tab-button active" data-tab="new" data-color="var(--color-status-new-bg)" style="flex:1;padding:16px 24px;background:var(--color-status-new-bg);border:none;border-bottom:3px solid var(--color-accent-blue);color:var(--color-navy);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
                 New
             </button>
-            <button class="td-tab-button" data-tab="assigned" data-color="#FFF9C4" style="flex:1;padding:16px 24px;background:#f8f8f8;border:none;border-bottom:3px solid transparent;color:#666;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            <button class="td-tab-button" data-tab="assigned" data-color="var(--color-status-assigned-bg)" style="flex:1;padding:16px 24px;background:var(--color-grey-off-white);border:none;border-bottom:3px solid transparent;color:var(--color-grey-medium-text);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
                 Assigned
             </button>
-            <button class="td-tab-button" data-tab="approved" data-color="#C8E6C9" style="flex:1;padding:16px 24px;background:#f8f8f8;border:none;border-bottom:3px solid transparent;color:#666;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            <button class="td-tab-button" data-tab="approved" data-color="var(--color-status-approved-bg)" style="flex:1;padding:16px 24px;background:var(--color-grey-off-white);border:none;border-bottom:3px solid transparent;color:var(--color-grey-medium-text);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
                 Approved
             </button>
-            <button class="td-tab-button" data-tab="rejected" data-color="#FFCDD2" style="flex:1;padding:16px 24px;background:#f8f8f8;border:none;border-bottom:3px solid transparent;color:#666;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            <button class="td-tab-button" data-tab="rejected" data-color="var(--color-status-rejected-bg)" style="flex:1;padding:16px 24px;background:var(--color-grey-off-white);border:none;border-bottom:3px solid transparent;color:var(--color-grey-medium-text);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
                 Rejected
             </button>
-            <button class="td-tab-button" data-tab="all" data-color="#F5F5F5" style="flex:1;padding:16px 24px;background:#f8f8f8;border:none;border-bottom:3px solid transparent;color:#666;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
+            <button class="td-tab-button" data-tab="all" data-color="var(--color-grey-off-white)" style="flex:1;padding:16px 24px;background:var(--color-grey-off-white);border:none;border-bottom:3px solid transparent;color:var(--color-grey-medium-text);font-size:16px;font-weight:600;cursor:pointer;transition:all 0.3s;">
                 All
             </button>
         </div>
@@ -47,35 +47,35 @@
             <!-- New Tab -->
             <div class="td-tab-content active" id="tab-new" style="padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [operator_actions_table status="new" limit="50"]
+                [manager_actions_table status="new" limit="50"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Assigned Tab -->
             <div class="td-tab-content" id="tab-assigned" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [operator_actions_table status="assigned" limit="50"]
+                [manager_actions_table status="assigned" limit="50"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Approved Tab -->
             <div class="td-tab-content" id="tab-approved" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [operator_actions_table status="approved" limit="50" days="90"]
+                [manager_actions_table status="approved" limit="50" days="90"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- Rejected Tab -->
             <div class="td-tab-content" id="tab-rejected" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [operator_actions_table status="rejected" limit="50" days="90"]
+                [manager_actions_table status="rejected" limit="50" days="90"]
                 <!-- /wp:shortcode -->
             </div>
 
             <!-- All Tab -->
             <div class="td-tab-content" id="tab-all" style="display:none;padding:40px 20px;">
                 <!-- wp:shortcode -->
-                [operator_actions_table status="all" limit="100" days="90"]
+                [manager_actions_table status="all" limit="100" days="90"]
                 <!-- /wp:shortcode -->
             </div>
         </div>
@@ -176,6 +176,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 
 

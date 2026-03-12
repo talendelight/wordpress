@@ -1,24 +1,48 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Deploy WordPress pages to any environment
+    Deploy WordPress pages to any environment (Local or Production)
 .DESCRIPTION
-    Unified script to deploy page content from restore/pages/ to Local or Production
-    Finds pages by slug dynamically - no ID mapping needed
-    Creates pages if they don't exist
+    Unified script for ALL page deployments - supports single page updates, multiple pages, or batch deployments.
+    
+    Key features:
+    - Finds pages by slug dynamically (no ID mapping needed)
+    - Creates pages if they don't exist
+    - Uses PHP template for consistent updates (avoids stdin corruption)
+    - Works for both development iterations and production releases
+    - Supports dry-run mode for preview
+    
+    Use cases:
+    - Individual page updates during development: -Environment Local -PageNames 'candidates'
+    - Multiple page updates: -Environment Local -PageNames 'candidates','employers','scouts'
+    - Production deployments: -Environment Production -PageNames 'privacy-policy','cookie-policy'
+    - Batch releases: -Environment Production (deploys all available pages)
+    
 .PARAMETER Environment
     Target environment: 'Local' or 'Production' (default: Local)
 .PARAMETER PageNames
     Array of page slugs to deploy (e.g., 'privacy-policy', 'cookie-policy')
-    If not specified, prompts user to select from available pages
+    If not specified, prompts user to select from available pages in restore/pages/
 .PARAMETER DryRun
     Preview deployment without making changes
 .EXAMPLE
-    .\deploy-pages.ps1 -Environment Production -PageNames 'privacy-policy','cookie-policy'
+    .\deploy-pages.ps1 -Environment Local -PageNames 'candidates'
+    Deploy single page to local environment (individual update during development)
 .EXAMPLE
-    .\deploy-pages.ps1 -Environment Local -PageNames 'welcome'
+    .\deploy-pages.ps1 -Environment Local -PageNames 'candidates','employers','scouts'
+    Deploy multiple pages to local environment
+.EXAMPLE
+    .\deploy-pages.ps1 -Environment Production -PageNames 'privacy-policy','cookie-policy'
+    Deploy specific pages to production
+.EXAMPLE
+    .\deploy-pages.ps1 -Environment Production
+    Deploy all available pages to production (batch release)
 .EXAMPLE
     .\deploy-pages.ps1 -DryRun
+    Preview what would be deployed without making changes
+.NOTES
+    Script uses infra/shared/scripts/update-page-template.php for consistent page updates.
+    No need to create individual PHP scripts - this handles everything.
 #>
 
 param(
@@ -137,25 +161,37 @@ foreach ($page in $pagesToDeploy) {
     
     if (-not $DryRun) {
         if ($Environment -eq 'Local') {
-            # Local deployment using WP-CLI via podman
+            # Local deployment using PHP template (consistent with Production approach)
             # Get page ID by slug
             $pageId = podman exec wp bash -c "wp post list --post_type=page --name=$slug --field=ID --allow-root --skip-plugins 2>/dev/null" 2>$null
             
             if ($pageId) {
                 Write-Host "  Found in local: ID $pageId" -ForegroundColor Green
                 
-                # Update page content
-                Get-Content $htmlFile -Raw | podman exec -i wp bash -c "cat > /tmp/page-$pageId.html && wp post update $pageId /tmp/page-$pageId.html --post_content --allow-root --skip-plugins 2>/dev/null && rm /tmp/page-$pageId.html" 2>$null | Out-Null
+                # Copy HTML file to container
+                podman cp $htmlFile wp:/tmp/$slug-content.html 2>$null | Out-Null
                 
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Host "  ✅ Updated successfully" -ForegroundColor Green
+                # Copy PHP template to container
+                podman cp infra/shared/scripts/update-page-template.php wp:/tmp/ 2>$null | Out-Null
+                
+                # Execute PHP script with page ID and HTML file path
+                $updateResult = podman exec wp bash -c "cd /var/www/html && php /tmp/update-page-template.php $pageId /tmp/$slug-content.html && rm /tmp/$slug-content.html /tmp/update-page-template.php" 2>$null
+                
+                if ($LASTEXITCODE -eq 0 -and $updateResult -match 'SUCCESS') {
+                    # Extract byte count if available
+                    if ($updateResult -match '(\d+) bytes') {
+                        $bytes = $Matches[1]
+                        Write-Host "  ✅ Updated successfully ($bytes bytes)" -ForegroundColor Green
+                    } else {
+                        Write-Host "  ✅ Updated successfully" -ForegroundColor Green
+                    }
                     $deployed++
                 } else {
-                    Write-Host "  ❌ Update failed" -ForegroundColor Red
+                    Write-Host "  ❌ Update failed: $updateResult" -ForegroundColor Red
                     $failed++
                 }
             } else {
-                # Create new page
+                # Create new page using wp-cli
                 Write-Host "  Page does not exist, creating new..." -ForegroundColor Yellow
                 
                 $escapedTitle = $title -replace "'", "\'"

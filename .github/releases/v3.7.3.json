@@ -1,0 +1,128 @@
+{
+    "version": "3.7.3",
+    "type": "patch",
+    "releaseDate": "TBD",
+    "plannedStartDate": "2026-03-12",
+    "status": "in-progress",
+    "description": "JavaScript Refactoring: Move Inline Scripts to External .js Files",
+    "tasks": [
+        {
+            "taskId": "PENG-109",
+            "title": "Create External JavaScript File (tab-switching.js)",
+            "type": "refactoring",
+            "status": "not-started",
+            "priority": "high",
+            "deploymentMethod": "theme-file",
+            "estimatedDays": 0.2,
+            "dependencies": [],
+            "notes": "Extract inline JavaScript from Manager Actions and Operator Actions Pages into external file: wp-content/themes/blocksy-child/assets/js/tab-switching.js. Better caching, no WordPress filtering issues."
+        },
+        {
+            "taskId": "PENG-110",
+            "title": "Enqueue JavaScript in functions.php",
+            "type": "refactoring",
+            "status": "not-started",
+            "priority": "high",
+            "deploymentMethod": "theme-file",
+            "estimatedDays": 0.1,
+            "dependencies": ["PENG-109"],
+            "notes": "Add wp_enqueue_script() call in blocksy-child/functions.php to load tab-switching.js only on action pages. Includes version for cache busting."
+        },
+        {
+            "taskId": "PENG-111",
+            "title": "Update Manager Actions Page (Remove Inline Script)",
+            "type": "page",
+            "status": "not-started",
+            "priority": "high",
+            "deploymentMethod": "manual-page",
+            "localPageId": 27,
+            "productionPageId": 105,
+            "estimatedDays": 0.1,
+            "dependencies": ["PENG-109", "PENG-110"],
+            "notes": "Remove inline <script> tags from Manager Actions page (ID 27 local, 105 production). Replace with HTML block referencing external file or rely on functions.php enqueue."
+        },
+        {
+            "taskId": "PENG-112",
+            "title": "Update Operator Actions Page (Remove Inline Script)",
+            "type": "page",
+            "status": "not-started",
+            "priority": "high",
+            "deploymentMethod": "manual-page",
+            "localPageId": 49,
+            "productionPageId": 84,
+            "estimatedDays": 0.1,
+            "dependencies": ["PENG-109", "PENG-110"],
+            "notes": "Remove inline <script> tags from Operator Actions page (ID 49 local, 84 production). Replace with HTML block referencing external file or rely on functions.php enqueue."
+        },
+        {
+            "taskId": "PENG-113",
+            "title": "Test Tab Switching Functionality (Local)",
+            "type": "testing",
+            "status": "not-started",
+            "priority": "critical",
+            "deploymentMethod": "local-testing",
+            "estimatedDays": 0.1,
+            "dependencies": ["PENG-111", "PENG-112"],
+            "notes": "Verify tab switching works on both Manager Actions and Operator Actions pages in local environment. Test tab clicks, hover effects, active tab styling."
+        },
+        {
+            "taskId": "PENG-114",
+            "title": "Deploy to Production",
+            "type": "deployment",
+            "status": "not-started",
+            "priority": "high",
+            "deploymentMethod": "git-push",
+            "estimatedDays": 0.1,
+            "dependencies": ["PENG-113"],
+            "notes": "Deploy theme files (tab-switching.js, functions.php) and updated pages to production. Flush caches. Verify tab switching works on production."
+        }
+    ],
+    "summary": {
+        "totalTasks": 6,
+        "tasksCompleted": 0,
+        "pagesMigrated": 2,
+        "bugsFix": 0,
+        "refactoringTasks": 4,
+        "testingTasks": 1,
+        "deploymentTasks": 1,
+        "estimatedDays": 0.7,
+        "actualDays": null
+    },
+    "testingNotes": [
+        "Test Manager Actions tab switching on local (https://wp.local/managers/actions/)",
+        "Test Operator Actions tab switching on local (https://wp.local/operators/actions/)",
+        "Verify JavaScript file loads (check browser DevTools Network tab)",
+        "Verify no JavaScript errors in browser console",
+        "Test tab hover effects (inactive tabs should highlight)",
+        "Test tab click behavior (content switches, active tab styling changes)",
+        "Verify page loads faster (external JS cached after first load)",
+        "Test on production after deployment",
+        "Verify no inline <script> tags visible in page source"
+    ],
+    "deploymentNotes": [
+        "Theme files to deploy: wp-content/themes/blocksy-child/assets/js/tab-switching.js, wp-content/themes/blocksy-child/functions.php",
+        "Pages to deploy: Manager Actions (105), Operator Actions (84)",
+        "Deploy via git push (theme files) + deploy-pages.ps1 (page content)",
+        "No specialized script tag preservation needed (using external file)",
+        "Flush all caches after deployment",
+        "Verify JavaScript loads correctly in browser DevTools"
+    ],
+    "technicalDetails": {
+        "approach": "Option 1 - Theme-based enqueue",
+        "jsFileLocation": "wp-content/themes/blocksy-child/assets/js/tab-switching.js",
+        "enqueueLocation": "wp-content/themes/blocksy-child/functions.php",
+        "enqueueFunction": "td_enqueue_tab_switching_script()",
+        "conditionalLoad": "is_page(['actions', 'manager-actions'])",
+        "version": "1.0.0",
+        "loadInFooter": true,
+        "benefits": [
+            "No WordPress security filtering issues",
+            "Better browser caching",
+            "Cleaner page content",
+            "Reusable across multiple pages",
+            "Proper WordPress enqueue pattern",
+            "Version control for cache busting",
+            "Can be minified for production"
+        ]
+    }
+}

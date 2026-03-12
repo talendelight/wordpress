@@ -185,44 +185,71 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 ### Task: Deploy WordPress Page to Production
 **Environment:** 🔄 BOTH (develop local, deploy to any environment)  
 **Script:** [infra/shared/scripts/deploy-pages.ps1](../infra/shared/scripts/deploy-pages.ps1)  
-**Frequency:** Every page update (multiple times per week)  
-**Duration:** 5-10 minutes
+**Template:** [infra/shared/scripts/update-page-template.php](../infra/shared/scripts/update-page-template.php)  
+**Frequency:** Multiple times per day (development iterations) + planned production releases  
+**Duration:** 2-10 minutes depending on number of pages
 
 **Overview:**
+This is the UNIFIED script for ALL page deployments:
+1. ✅ Individual page updates during development (Local)
+2. ✅ Multiple page updates for testing (Local)
+3. ✅ Single page production deployments (Production)
+4. ✅ Multiple page production deployments (Production)
+5. ✅ Batch production releases (Production)
+
+**Use Cases:**
+- **Development iteration**: Update single page locally after making changes
+- **Testing**: Deploy multiple pages locally for user review
+- **Production release**: Deploy one or more pages to production
+- **Restore from backup**: Pull pages from restore/pages/ to local environment
+
+**Workflow:**
 1. Develop page in local environment (https://wp.local/)
-2. Get user approval after testing
-3. Create/update backup in restore/pages/
-4. Deploy using unified script (supports Local or Production)
-5. Verify deployment (line count, visual inspection, functionality)
+2. Deploy to local using: `deploy-pages -Environment Local -PageNames '<slug>'`
+3. Get user approval after testing
+4. Create/update backup in restore/pages/
+5. Deploy to production using: `deploy-pages -Environment Production -PageNames '<slug>'`
+6. Verify deployment (line count, visual inspection, functionality)
 
 **Critical Rules:**
 - ✅ Always develop in local first
+- ✅ Use deploy-pages.ps1 for ALL page updates (individual or batch)
 - ✅ Get user approval before production deployment
-- ✅ Use unified deploy-pages.ps1 script with -Environment parameter
+- ✅ Script uses PHP template for consistent updates (avoids stdin corruption)
 - ✅ Script queries by slug (stable identifier across environments)
 - ✅ Script creates pages if they don't exist
-- ❌ Never create temporary scripts in tmp/ for deployments
+- ❌ DO NOT create individual PHP scripts in tmp/ - deploy-pages.ps1 handles everything
+- ❌ DO NOT use wp-cli stdin piping - script uses PHP template
 - ❌ Never use hardcoded IDs - always query by slug
 - ❌ Never deploy to production without backup
 
 **Key Commands:**
 ```powershell
-# 1. Backup page from local
+# Individual page update (Local - during development)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Local -PageNames "candidates"
+
+# Multiple page updates (Local - testing)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Local -PageNames "candidates","employers","scouts"
+
+# Backup page from local
 podman exec wp bash -c "wp post get <LOCAL_ID> --field=post_content --allow-root 2>/dev/null" | Out-File -Encoding utf8 restore\pages\<page-name>-<LOCAL_ID>.html
 
-# 2. Deploy to production (RECOMMENDED)
+# Deploy to production (single page)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames "privacy-policy"
+
+# Deploy to production (multiple pages)
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames "privacy-policy","cookie-policy"
 
-# Or deploy all pages to production
+# Deploy all pages to production (batch release)
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production
 
-# Deploy to local (for testing/restoring)
+# Restore to local from backup
 pwsh infra/shared/scripts/wp-action.ps1 restore-pages -PageNames "welcome"
 
 # Dry run to preview
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -DryRun
 
-# 3. Verify
+# Verify production
 ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/hireaccord.com/public_html && wp post list --post_type=page --fields=ID,post_title,post_status"
 ```
 
@@ -230,13 +257,19 @@ ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/
 1. Script reads page HTML from restore/pages/ (e.g., privacy-policy-3.html)
 2. Extracts slug from filename (privacy-policy)
 3. Queries target environment by slug using get_page_by_path() - no ID mapping needed
-4. If page exists → updates it
-5. If page doesn't exist → creates it with correct slug
+4. If page exists → updates it using PHP template (Local) or remote PHP script (Production)
+5. If page doesn't exist → creates it with correct slug using wp-cli
 6. Flushes all caches automatically (environment-specific)
 
 **Environment Support:**
-- **Local**: Uses `podman exec wp` + WP-CLI commands
+- **Local**: Uses `podman exec wp` + PHP template (update-page-template.php) for consistent updates
 - **Production**: Uses SSH + remote PHP scripts (avoids encoding issues)
+
+**Why PHP Template?**
+- ✅ Avoids PowerShell stdin corruption (lesson learned from previous issues)
+- ✅ Consistent update method across environments
+- ✅ Better error handling and reporting
+- ✅ Direct wp_update_post() calls for reliable updates
 
 **Related:**
 - PATTERN: Pattern Usage Rules (always read pattern file before using)

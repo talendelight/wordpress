@@ -96,13 +96,14 @@ $SCRIPT_REGISTRY = @{
     
     'deploy-pages' = @{
         script = 'deploy-pages.ps1'
-        description = 'Deploy WordPress pages (Local or Production, finds pages by slug)'
+        description = 'Deploy WordPress pages - ALL use cases (individual updates, multiple pages, batch releases)'
         usage = 'wp-action deploy-pages [-Environment <Local|Production>] [-PageNames <slugs>] [-DryRun]'
         examples = @(
-            'wp-action deploy-pages -Environment Production',
-            'wp-action deploy-pages -Environment Local -PageNames "welcome"',
-            'wp-action deploy-pages -Environment Production -PageNames "privacy-policy","cookie-policy"',
-            'wp-action deploy-pages -Environment Production -DryRun'
+            'wp-action deploy-pages -Environment Local -PageNames "candidates" # Individual page update',
+            'wp-action deploy-pages -Environment Local -PageNames "candidates","employers" # Multiple pages',
+            'wp-action deploy-pages -Environment Production -PageNames "privacy-policy" # Single production deploy',
+            'wp-action deploy-pages -Environment Production # Batch release (all pages)',
+            'wp-action deploy-pages -Environment Production -DryRun # Preview changes'
         )
     }
     

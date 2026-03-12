@@ -118,16 +118,28 @@ This file contains:
    - ✅ Include task ID prefix when applicable (PENG-014, COPS-001, ROPS-012, etc.)
    - ❌ DO NOT use lowercase or mixed case for Documents folder files
    - 📋 Rationale: Consistent naming convention for strategic/operational documents; improves readability and file organization
-13. **Repeatable deployments and documentation** - Capture successful procedures:
-   - ✅ **Development/exploration**: Create scripts in tmp/ during problem-solving (ALLOWED)
+13. **Page deployments use unified script** - ALL page updates go through deploy-pages.ps1:
+   - ✅ **Individual page updates (Local)**: `deploy-pages -Environment Local -PageNames 'candidates'`
+   - ✅ **Multiple page updates (Local)**: `deploy-pages -Environment Local -PageNames 'candidates','employers'`
+   - ✅ **Production deployments**: `deploy-pages -Environment Production -PageNames 'privacy-policy'`
+   - ✅ **Batch releases**: `deploy-pages -Environment Production` (all pages)
+   - ✅ **Uses PHP template**: `infra/shared/scripts/update-page-template.php` for consistent updates
+   - ❌ **DO NOT create individual PHP scripts** in tmp/ for page updates
+   - ❌ **DO NOT use wp-cli stdin piping** - causes corruption, always use deploy-pages.ps1
+   - ❌ **DO NOT reinvent page deployment** - deploy-pages.ps1 handles everything
+   - 📋 **Check registries first**: COMMAND-REGISTRY.md and TASK-REGISTRY.md document deploy-pages.ps1 usage
+   - 📋 **Rationale**: Single unified script for all page updates eliminates duplication, ensures consistency, prevents stdin corruption
+   - 📋 **Development workflow**: Edit HTML in restore/pages/ → deploy-pages Local → review → backup → deploy-pages Production
+14. **Temporary scripts for exploration** - Create in tmp/ during problem-solving:
+   - ✅ **Development/exploration**: Create scripts in tmp/ during investigation (ALLOWED)
    - ✅ **After success**: Evaluate if procedure is repeatable/reusable
    - ✅ **If repeatable**: Ask user "This script seems repeatable - should I move it to infra/shared/scripts/?"
    - ✅ **If approved**: Move script, register in wp-action.ps1, update TASK-REGISTRY.md documentation
    - ✅ **Maintain configuration files** for environment-specific values when needed
    - ❌ **NEVER use hardcoded IDs/paths** - query dynamically by slug/name or use configuration files
    - ❌ **NEVER skip documentation** when creating permanent scripts
-   - 📋 Rationale: Allow flexible development while capturing repeatable procedures; balance exploration with knowledge preservation
-   - 📋 Example workflow: deploy-v3.7.2-CORRECTED.php (tmp, ad-hoc) → evaluate success → ask user → deploy-pages-production.ps1 (permanent, slug-based lookups)
+   - 📋 **Rationale**: Allow flexible development while capturing repeatable procedures; balance exploration with knowledge preservation
+   - 📋 **Example workflow**: investigate-issue.php (tmp, ad-hoc) → evaluate success → ask user → permanent-solution.ps1 (infra/shared/scripts/, documented)
 
 ## Known Issues & Solutions
 
