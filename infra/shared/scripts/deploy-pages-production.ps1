@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Deploy WordPress pages to production with ID mapping
+    Deploy WordPress pages to production
 .DESCRIPTION
     Deploys page content from restore/pages/ to hireaccord.com production
-    Handles local-to-production ID mapping automatically
+    Finds pages by slug dynamically - no ID mapping needed
     Creates pages if they don't exist
 .PARAMETER PageNames
     Array of page slugs to deploy (e.g., 'privacy-policy', 'cookie-policy')
@@ -30,22 +30,12 @@ $SSH_HOST = "45.84.205.129"
 $SSH_KEY = "tmp/hostinger_deploy_key"
 $WP_ROOT = "domains/hireaccord.com/public_html"
 $PAGES_DIR = "restore/pages"
-$MAPPING_FILE = "infra/shared/config/production-page-ids.json"
 
 Write-Host "=== Production Page Deployment ===" -ForegroundColor Cyan
 Write-Host "Target: hireaccord.com" -ForegroundColor Gray
 
 if ($DryRun) {
     Write-Host "DRY RUN MODE - No changes will be made`n" -ForegroundColor Yellow
-}
-
-# Load or create ID mapping
-if (Test-Path $MAPPING_FILE) {
-    Write-Host "Loading production page ID mappings..." -ForegroundColor Gray
-    $idMapping = Get-Content $MAPPING_FILE | ConvertFrom-Json -AsHashtable
-} else {
-    Write-Host "No ID mapping file found, will query production..." -ForegroundColor Yellow
-    $idMapping = @{}
 }
 
 # Get available pages from restore/pages/
@@ -118,41 +108,22 @@ foreach ($page in $pagesToDeploy) {
     }
     
     Write-Host "  Title: $title" -ForegroundColor Gray
-    Write-Host "  Local ID: $localId" -ForegroundColor Gray
-    
-    # Check if we have a production ID mapping
-    $productionId = $null
-    if ($idMapping.ContainsKey($slug)) {
-        $productionId = $idMapping[$slug]
-        Write-Host "  Production ID (mapped): $productionId" -ForegroundColor Gray
-    }
+    Write-Host "  Local ID: $localId (reference only)" -ForegroundColor Gray
     
     if (-not $DryRun) {
-        # Create temporary PHP deployment script
+        # Create temporary PHP script to check if page exists by slug
         $deployScript = @"
 <?php
 chdir('$WP_ROOT');
 require_once('wp-load.php');
 
 `$slug = '$slug';
-`$title = '$title';
-`$production_id = $productionId;
 
-// Check if page exists
+// Find page by slug (stable identifier)
 `$page = get_page_by_path(`$slug, OBJECT, 'page');
 
 if (`$page) {
-    `$page_id = `$page->ID;
-    echo "EXISTS:`$page_id\n";
-} elseif (`$production_id) {
-    // Check if mapped ID exists
-    `$page = get_post(`$production_id);
-    if (`$page && `$page->post_type === 'page') {
-        `$page_id = `$production_id;
-        echo "EXISTS:`$page_id\n";
-    } else {
-        echo "CREATE\n";
-    }
+    echo "EXISTS:" . `$page->ID . "\n";
 } else {
     echo "CREATE\n";
 }
@@ -170,7 +141,7 @@ if (`$page) {
         
         if ($checkResult -match 'EXISTS:(\d+)') {
             $productionId = [int]$Matches[1]
-            Write-Host "  Page exists in production: ID $productionId" -ForegroundColor Green
+            Write-Host "  Found in production: ID $productionId" -ForegroundColor Green
             
             # Upload HTML and update
             $htmlRemotePath = "/tmp/$slug-content.html"
@@ -215,9 +186,6 @@ unlink('$htmlRemotePath');
             if ($updateResult -match 'UPDATED:(\d+)') {
                 $bytes = $Matches[1]
                 Write-Host "  ✅ Updated successfully ($bytes bytes)" -ForegroundColor Green
-                
-                # Update mapping
-                $idMapping[$slug] = $productionId
                 $deployed++
             } else {
                 Write-Host "  ❌ Update failed: $updateResult" -ForegroundColor Red
@@ -272,9 +240,6 @@ unlink('$htmlRemotePath');
                 $newId = [int]$Matches[1]
                 $bytes = $Matches[2]
                 Write-Host "  ✅ Created successfully (ID: $newId, $bytes bytes)" -ForegroundColor Green
-                
-                # Update mapping
-                $idMapping[$slug] = $newId
                 $deployed++
             } else {
                 Write-Host "  ❌ Creation failed: $createResult" -ForegroundColor Red
@@ -287,17 +252,6 @@ unlink('$htmlRemotePath');
     }
     
     Write-Host ""
-}
-
-# Save updated mapping
-if (-not $DryRun -and $deployed -gt 0) {
-    $mappingDir = Split-Path $MAPPING_FILE -Parent
-    if (-not (Test-Path $mappingDir)) {
-        New-Item -ItemType Directory -Path $mappingDir -Force | Out-Null
-    }
-    
-    $idMapping | ConvertTo-Json -Depth 5 | Out-File -FilePath $MAPPING_FILE -Encoding UTF8
-    Write-Host "Updated production ID mappings: $MAPPING_FILE" -ForegroundColor Cyan
 }
 
 # Flush caches if any pages were deployed

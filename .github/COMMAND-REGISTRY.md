@@ -361,7 +361,7 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 
 **✅ RECOMMENDED: Use Repeatable Deployment Script**
 
-**Automated repeatable method with ID mapping:**
+**Automated repeatable method with slug-based lookups:**
 ```powershell
 # Deploy specific pages to production
 pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -PageNames 'privacy-policy','cookie-policy'
@@ -374,15 +374,14 @@ pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -DryRun
 ```
 
 **Features:**
-- ✅ Handles local→production ID mapping automatically
+- ✅ Finds pages by slug dynamically (no ID mapping needed)
 - ✅ Creates pages if they don't exist
-- ✅ Maintains production-page-ids.json configuration
+- ✅ Slug is stable identifier across environments
 - ✅ Flushes caches automatically
 - ✅ Supports dry-run mode
 - ✅ Registered in wp-action.ps1 dispatcher
 
 **Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
-**Config:** [infra/shared/config/production-page-ids.json](../infra/shared/config/production-page-ids.json)  
 **Task:** See [TASK-REGISTRY.md: Deploy WordPress Page to Production](TASK-REGISTRY.md#task-deploy-wordpress-page-to-production)
 
 ---

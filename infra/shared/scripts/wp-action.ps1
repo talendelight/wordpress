@@ -94,7 +94,7 @@ $SCRIPT_REGISTRY = @{
     
     'deploy-pages' = @{
         script = 'deploy-pages-production.ps1'
-        description = 'Deploy WordPress pages to production with ID mapping'
+        description = 'Deploy WordPress pages to production (finds pages by slug)'
         usage = 'wp-action deploy-pages [-PageNames <slugs>] [-DryRun]'
         examples = @(
             'wp-action deploy-pages',

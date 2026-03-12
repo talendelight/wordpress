@@ -185,7 +185,6 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 ### Task: Deploy WordPress Page to Production
 **Environment:** 🔄 BOTH (develop local, deploy to production)  
 **Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
-**Config:** [infra/shared/config/production-page-ids.json](../infra/shared/config/production-page-ids.json)  
 **Frequency:** Every page update (multiple times per week)  
 **Duration:** 5-10 minutes
 
@@ -193,17 +192,17 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 1. Develop page in local environment (https://wp.local/)
 2. Get user approval after testing
 3. Create/update backup in restore/pages/
-4. Deploy using repeatable script (handles ID mapping automatically)
+4. Deploy using repeatable script (finds pages by slug automatically)
 5. Verify deployment (line count, visual inspection, functionality)
 
 **Critical Rules:**
 - ✅ Always develop in local first
 - ✅ Get user approval before deployment
 - ✅ Use deploy-pages-production.ps1 script (REPEATABLE)
-- ✅ Script maintains production ID mappings in production-page-ids.json
+- ✅ Script queries production by slug (stable identifier)
 - ✅ Script creates pages if they don't exist
 - ❌ Never create temporary scripts in tmp/ for deployments
-- ❌ Never use hardcoded IDs without checking production
+- ❌ Never use hardcoded IDs - always query by slug
 - ❌ Never deploy without backup
 
 **Key Commands:**
@@ -226,17 +225,16 @@ ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/
 
 **How It Works:**
 1. Script reads page HTML from restore/pages/ (e.g., privacy-policy-3.html)
-2. Checks production-page-ids.json for ID mapping
-3. If page exists in production → updates it
-4. If page doesn't exist → creates it with correct slug
-5. Updates production-page-ids.json with actual production IDs
+2. Extracts slug from filename (privacy-policy)
+3. Queries production by slug using get_page_by_path() - no ID mapping needed
+4. If page exists in production → updates it
+5. If page doesn't exist → creates it with correct slug
 6. Flushes all caches automatically
 
 **Related:**
 - PATTERN: Pattern Usage Rules (always read pattern file before using)
 - TASK: Deploy New Release to Production
 - LESSON: ../docs/lessons/powershell-encoding-corruption.md
-- CONFIG: production-page-ids.json (maintains local→production ID mappings)
 
 ---
 
