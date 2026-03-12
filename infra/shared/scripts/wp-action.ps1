@@ -19,6 +19,7 @@ param(
         'restore',
         'restore-pages',
         'restore-menus',
+        'deploy-pages',
         'export-elementor',
         'export-users',
         'get-page-ids',
@@ -88,6 +89,17 @@ $SCRIPT_REGISTRY = @{
         usage = 'wp-action restore-menus'
         examples = @(
             'wp-action restore-menus'
+        )
+    }
+    
+    'deploy-pages' = @{
+        script = 'deploy-pages-production.ps1'
+        description = 'Deploy WordPress pages to production with ID mapping'
+        usage = 'wp-action deploy-pages [-PageNames <slugs>] [-DryRun]'
+        examples = @(
+            'wp-action deploy-pages',
+            'wp-action deploy-pages -PageNames "privacy-policy","cookie-policy"',
+            'wp-action deploy-pages -DryRun'
         )
     }
     

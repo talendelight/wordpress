@@ -184,7 +184,8 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 
 ### Task: Deploy WordPress Page to Production
 **Environment:** 🔄 BOTH (develop local, deploy to production)  
-**File:** [docs/procedures/PAGE-UPDATE-WORKFLOW.md](../docs/procedures/PAGE-UPDATE-WORKFLOW.md)  
+**Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
+**Config:** [infra/shared/config/production-page-ids.json](../infra/shared/config/production-page-ids.json)  
 **Frequency:** Every page update (multiple times per week)  
 **Duration:** 5-10 minutes
 
@@ -192,15 +193,17 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 1. Develop page in local environment (https://wp.local/)
 2. Get user approval after testing
 3. Create/update backup in restore/pages/
-4. Deploy complete page using PHP script method
+4. Deploy using repeatable script (handles ID mapping automatically)
 5. Verify deployment (line count, visual inspection, functionality)
 
 **Critical Rules:**
 - ✅ Always develop in local first
 - ✅ Get user approval before deployment
-- ✅ Use complete page replacement (not partial updates)
-- ✅ Use PHP scripts for content updates (restore-page-X.php template)
-- ❌ Never use wp-cli stdin (causes corruption)
+- ✅ Use deploy-pages-production.ps1 script (REPEATABLE)
+- ✅ Script maintains production ID mappings in production-page-ids.json
+- ✅ Script creates pages if they don't exist
+- ❌ Never create temporary scripts in tmp/ for deployments
+- ❌ Never use hardcoded IDs without checking production
 - ❌ Never deploy without backup
 
 **Key Commands:**
@@ -208,21 +211,32 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 # 1. Backup page from local
 podman exec wp bash -c "wp post get <LOCAL_ID> --field=post_content --allow-root 2>/dev/null" | Out-File -Encoding utf8 restore\pages\<page-name>-<LOCAL_ID>.html
 
-# 2. Deploy to production
-scp -P 65002 -i "tmp\hostinger_deploy_key" "restore\pages\<page-name>-<LOCAL_ID>.html" u909075950@45.84.205.129:/tmp/<page-name>-local.html
+# 2. Deploy to production (REPEATABLE METHOD)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -PageNames "privacy-policy","cookie-policy"
 
-scp -P 65002 -i "tmp\hostinger_deploy_key" "tmp\restore-page-<PROD_ID>.php" u909075950@45.84.205.129:/home/u909075950/domains/talendelight.com/public_html/
+# Or deploy all pages
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages
 
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && php restore-page-<PROD_ID>.php && rm restore-page-<PROD_ID>.php && wp cache flush"
+# Dry run to preview
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -DryRun
 
 # 3. Verify
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp post get <PROD_ID> --field=post_content | wc -l"
+ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/hireaccord.com/public_html && wp post list --post_type=page --fields=ID,post_title,post_status"
 ```
+
+**How It Works:**
+1. Script reads page HTML from restore/pages/ (e.g., privacy-policy-3.html)
+2. Checks production-page-ids.json for ID mapping
+3. If page exists in production → updates it
+4. If page doesn't exist → creates it with correct slug
+5. Updates production-page-ids.json with actual production IDs
+6. Flushes all caches automatically
 
 **Related:**
 - PATTERN: Pattern Usage Rules (always read pattern file before using)
 - TASK: Deploy New Release to Production
 - LESSON: ../docs/lessons/powershell-encoding-corruption.md
+- CONFIG: production-page-ids.json (maintains local→production ID mappings)
 
 ---
 

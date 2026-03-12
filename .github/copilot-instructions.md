@@ -118,6 +118,17 @@ This file contains:
    - ✅ Include task ID prefix when applicable (PENG-014, COPS-001, ROPS-012, etc.)
    - ❌ DO NOT use lowercase or mixed case for Documents folder files
    - 📋 Rationale: Consistent naming convention for strategic/operational documents; improves readability and file organization
+13. **Repeatable deployments and documentation** - NEVER use temporary scripts for production:
+   - ✅ **ALWAYS update existing scripts** in infra/shared/scripts/ for deployment procedures
+   - ✅ **CREATE new scripts** if no suitable script exists (e.g., deploy-pages-production.ps1)
+   - ✅ **Maintain configuration files** for environment-specific values (e.g., production-page-ids.json)
+   - ✅ **Register scripts** in wp-action.ps1 dispatcher for discoverability
+   - ✅ **Update documentation** when adding new scripts or procedures (TASK-REGISTRY.md, README files)
+   - ❌ **NEVER create scripts in tmp/** for production deployments - they will be lost
+   - ❌ **NEVER use hardcoded IDs** - use configuration files or dynamic lookups
+   - ❌ **NEVER skip documentation** - undocumented procedures will be forgotten
+   - 📋 Rationale: Temporary scripts cause deployment failures when restoring or repeating operations; proper scripts with configuration ensure repeatability and knowledge preservation
+   - 📋 Examples: deploy-pages-production.ps1 (repeatable), production-page-ids.json (environment config), wp-action.ps1 (central dispatcher)
 
 ## Known Issues & Solutions
 
