@@ -133,12 +133,20 @@ This is a Windows security restriction and requires manual Administrator access.
 
 ### Hostinger Production Environment
 
-See [docs/HOSTINGER.md](docs/HOSTINGER.md) for complete production environment details including:
+**⚠️ CRITICAL: Production domain is hireaccord.com (NOT talendelight.com)**
+
+See [docs/HOSTINGER-HIREACCORD.md](docs/HOSTINGER-HIREACCORD.md) for complete production environment details including:
 - SSH access configuration and connection examples
 - Database server details and management URLs
 - FTP access information
 - WordPress root paths and directory structure
 - GitHub Actions secrets configuration
+
+**Production Environment Details:**
+- **Domain**: hireaccord.com (CORRECT, CURRENT)
+- **Path**: /home/u909075950/domains/hireaccord.com/public_html
+- **OLD Domain**: talendelight.com (NEVER use for production - legacy only)
+- **SSH**: ssh -i tmp/hostinger_deploy_key -p 65002 u909075950@45.84.205.129
 
 ## Project Overview
 
@@ -377,14 +385,15 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
    Get-Item restore\pages\<page-name>-<LOCAL_ID>.html | Select-Object Name, Length
    ```
 
-4. **Deploy Complete Page to Production**
+4. **Deploy Complete Page to Production (hireaccord.com)**
    ```powershell
+   # ⚠️ CRITICAL: Use hireaccord.com path (NOT talendelight.com)
    # Use PHP script method (NEVER use wp-cli stdin)
    scp -P 65002 -i "tmp\hostinger_deploy_key" "restore\pages\<page-name>-<LOCAL_ID>.html" u909075950@45.84.205.129:/tmp/candidates-local.html
    
-   scp -P 65002 -i "tmp\hostinger_deploy_key" "tmp\restore-page-<PROD_ID>.php" u909075950@45.84.205.129:/home/u909075950/domains/talendelight.com/public_html/
+   scp -P 65002 -i "tmp\hostinger_deploy_key" "tmp\restore-page-<PROD_ID>.php" u909075950@45.84.205.129:/home/u909075950/domains/hireaccord.com/public_html/
    
-   ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && php restore-page-<PROD_ID>.php && rm restore-page-<PROD_ID>.php && wp cache flush"
+   ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && php restore-page-<PROD_ID>.php && rm restore-page-<PROD_ID>.php && wp cache flush"
    ```
 
 5. **Verify Deployment**
@@ -396,8 +405,9 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 ### Critical Rules
 
 **✅ DO:**
+- ✅ **ALWAYS verify production domain is hireaccord.com before deployment** (check docs/HOSTINGER-HIREACCORD.md)
 - ✅ Always develop in local first
-- ✅ Get user approval before production deployment
+- ✅ Get user approval before production deployment  
 - ✅ Use complete page replacement (not partial updates)
 - ✅ Use PHP scripts for page content updates (see restore-page-7.php template)
 - ✅ Use `-Encoding utf8` in PowerShell
@@ -410,6 +420,7 @@ pwsh infra/shared/scripts/wp-action.ps1 help backup
 - ❌ Never deploy without user approval
 - ❌ Never skip backup creation
 - ❌ Never use partial page updates or sed replacements
+- ❌ **Never use talendelight.com for production deployments - OLD domain only**
 
 **See [docs/procedures/PAGE-UPDATE-WORKFLOW.md](docs/procedures/PAGE-UPDATE-WORKFLOW.md) for complete workflow documentation**
 
