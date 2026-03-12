@@ -359,29 +359,33 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 
 ### Deploy page content (Complete Workflow)
 
-**✅ RECOMMENDED: Use Repeatable Deployment Script**
+**✅ RECOMMENDED: Unified Deployment Script**
 
-**Automated repeatable method with slug-based lookups:**
+**Deploy to any environment with single script:**
 ```powershell
-# Deploy specific pages to production
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -PageNames 'privacy-policy','cookie-policy'
+# Deploy to production
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames 'privacy-policy','cookie-policy'
 
-# Deploy all pages from restore/pages/
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages
+# Deploy all pages to production
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production
+
+# Restore to local (development/testing)
+pwsh infra/shared/scripts/wp-action.ps1 restore-pages -PageNames 'welcome'
 
 # Dry run to preview changes
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -DryRun
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -DryRun
 ```
 
 **Features:**
+- ✅ Single script for all environments (Local + Production)
 - ✅ Finds pages by slug dynamically (no ID mapping needed)
 - ✅ Creates pages if they don't exist
 - ✅ Slug is stable identifier across environments
+- ✅ Environment-specific execution (podman for Local, SSH for Production)
 - ✅ Flushes caches automatically
 - ✅ Supports dry-run mode
-- ✅ Registered in wp-action.ps1 dispatcher
 
-**Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
+**Script:** [infra/shared/scripts/deploy-pages.ps1](../infra/shared/scripts/deploy-pages.ps1)  
 **Task:** See [TASK-REGISTRY.md: Deploy WordPress Page to Production](TASK-REGISTRY.md#task-deploy-wordpress-page-to-production)
 
 ---

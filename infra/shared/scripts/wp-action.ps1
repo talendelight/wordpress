@@ -75,12 +75,14 @@ $SCRIPT_REGISTRY = @{
     }
     
     'restore-pages' = @{
-        script = 'restore-all-pages.ps1'
+        script = 'deploy-pages.ps1'
         description = 'Restore WordPress page content from backups to local environment'
-        usage = 'wp-action restore-pages'
+        usage = 'wp-action restore-pages [-PageNames <slugs>]'
         examples = @(
-            'wp-action restore-pages'
+            'wp-action restore-pages',
+            'wp-action restore-pages -PageNames "privacy-policy","cookie-policy"'
         )
+        extraArgs = @('-Environment', 'Local')
     }
     
     'restore-menus' = @{
@@ -93,13 +95,14 @@ $SCRIPT_REGISTRY = @{
     }
     
     'deploy-pages' = @{
-        script = 'deploy-pages-production.ps1'
-        description = 'Deploy WordPress pages to production (finds pages by slug)'
-        usage = 'wp-action deploy-pages [-PageNames <slugs>] [-DryRun]'
+        script = 'deploy-pages.ps1'
+        description = 'Deploy WordPress pages (Local or Production, finds pages by slug)'
+        usage = 'wp-action deploy-pages [-Environment <Local|Production>] [-PageNames <slugs>] [-DryRun]'
         examples = @(
-            'wp-action deploy-pages',
-            'wp-action deploy-pages -PageNames "privacy-policy","cookie-policy"',
-            'wp-action deploy-pages -DryRun'
+            'wp-action deploy-pages -Environment Production',
+            'wp-action deploy-pages -Environment Local -PageNames "welcome"',
+            'wp-action deploy-pages -Environment Production -PageNames "privacy-policy","cookie-policy"',
+            'wp-action deploy-pages -Environment Production -DryRun'
         )
     }
     
@@ -344,9 +347,18 @@ try {
     Write-Host "Executing: $Action" -ForegroundColor Cyan
     Write-Host "Script: $($scriptInfo.script)`n" -ForegroundColor Gray
     
-    # Execute with arguments
+    # Merge extraArgs from registry with user-provided args
+    $scriptArgs = @()
+    if ($scriptInfo.extraArgs) {
+        $scriptArgs += $scriptInfo.extraArgs
+    }
     if ($RemainingArgs.Count -gt 0) {
-        & $scriptPath @RemainingArgs
+        $scriptArgs += $RemainingArgs
+    }
+    
+    # Execute with arguments
+    if ($scriptArgs.Count -gt 0) {
+        & $scriptPath $scriptArgs
     } else {
         & $scriptPath
     }

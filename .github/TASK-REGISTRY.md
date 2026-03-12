@@ -183,8 +183,8 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 ---
 
 ### Task: Deploy WordPress Page to Production
-**Environment:** 🔄 BOTH (develop local, deploy to production)  
-**Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
+**Environment:** 🔄 BOTH (develop local, deploy to any environment)  
+**Script:** [infra/shared/scripts/deploy-pages.ps1](../infra/shared/scripts/deploy-pages.ps1)  
 **Frequency:** Every page update (multiple times per week)  
 **Duration:** 5-10 minutes
 
@@ -192,32 +192,35 @@ See [POST-DEPLOYMENT-CHECKLIST.md](../docs/procedures/POST-DEPLOYMENT-CHECKLIST.
 1. Develop page in local environment (https://wp.local/)
 2. Get user approval after testing
 3. Create/update backup in restore/pages/
-4. Deploy using repeatable script (finds pages by slug automatically)
+4. Deploy using unified script (supports Local or Production)
 5. Verify deployment (line count, visual inspection, functionality)
 
 **Critical Rules:**
 - ✅ Always develop in local first
-- ✅ Get user approval before deployment
-- ✅ Use deploy-pages-production.ps1 script (REPEATABLE)
-- ✅ Script queries production by slug (stable identifier)
+- ✅ Get user approval before production deployment
+- ✅ Use unified deploy-pages.ps1 script with -Environment parameter
+- ✅ Script queries by slug (stable identifier across environments)
 - ✅ Script creates pages if they don't exist
 - ❌ Never create temporary scripts in tmp/ for deployments
 - ❌ Never use hardcoded IDs - always query by slug
-- ❌ Never deploy without backup
+- ❌ Never deploy to production without backup
 
 **Key Commands:**
 ```powershell
 # 1. Backup page from local
 podman exec wp bash -c "wp post get <LOCAL_ID> --field=post_content --allow-root 2>/dev/null" | Out-File -Encoding utf8 restore\pages\<page-name>-<LOCAL_ID>.html
 
-# 2. Deploy to production (REPEATABLE METHOD)
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -PageNames "privacy-policy","cookie-policy"
+# 2. Deploy to production (RECOMMENDED)
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -PageNames "privacy-policy","cookie-policy"
 
-# Or deploy all pages
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages
+# Or deploy all pages to production
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production
+
+# Deploy to local (for testing/restoring)
+pwsh infra/shared/scripts/wp-action.ps1 restore-pages -PageNames "welcome"
 
 # Dry run to preview
-pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -DryRun
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -Environment Production -DryRun
 
 # 3. Verify
 ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/hireaccord.com/public_html && wp post list --post_type=page --fields=ID,post_title,post_status"
@@ -226,10 +229,14 @@ ssh -p 65002 -i "tmp/hostinger_deploy_key" u909075950@45.84.205.129 "cd domains/
 **How It Works:**
 1. Script reads page HTML from restore/pages/ (e.g., privacy-policy-3.html)
 2. Extracts slug from filename (privacy-policy)
-3. Queries production by slug using get_page_by_path() - no ID mapping needed
-4. If page exists in production → updates it
+3. Queries target environment by slug using get_page_by_path() - no ID mapping needed
+4. If page exists → updates it
 5. If page doesn't exist → creates it with correct slug
-6. Flushes all caches automatically
+6. Flushes all caches automatically (environment-specific)
+
+**Environment Support:**
+- **Local**: Uses `podman exec wp` + WP-CLI commands
+- **Production**: Uses SSH + remote PHP scripts (avoids encoding issues)
 
 **Related:**
 - PATTERN: Pattern Usage Rules (always read pattern file before using)
