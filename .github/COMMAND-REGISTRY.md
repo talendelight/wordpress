@@ -120,7 +120,7 @@ podman exec wp-db mariadb -u root -ppassword wordpress -e "SELECT ID, post_title
 
 **Production:**
 ```bash
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp db query 'SELECT ID, post_title, post_name, post_status FROM wp_posts WHERE post_type=\"page\" ORDER BY ID'"
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && wp db query 'SELECT ID, post_title, post_name, post_status FROM wp_posts WHERE post_type=\"page\" ORDER BY ID'"
 ```
 
 ### Check plugins activated
@@ -328,7 +328,7 @@ podman exec wp bash -c "wp post get <PAGE_ID> --field=post_content --allow-root 
 
 **Production:**
 ```bash
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp post get <PAGE_ID> --field=post_content --allow-root --skip-plugins" > tmp/<page-name>-prod-<ID>.html
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && wp post get <PAGE_ID> --field=post_content --allow-root --skip-plugins" > tmp/<page-name>-prod-<ID>.html
 ```
 
 ### Get page ID from slug
@@ -341,7 +341,7 @@ podman exec wp-db mariadb -u root -ppassword wordpress -e "SELECT ID, post_title
 
 **Production:**
 ```bash
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp db query 'SELECT ID, post_title FROM wp_posts WHERE post_name = \"<slug>\" AND post_type = \"page\"'"
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && wp db query 'SELECT ID, post_title FROM wp_posts WHERE post_name = \"<slug>\" AND post_type = \"page\"'"
 ```
 
 ### List all pages
@@ -354,11 +354,41 @@ podman exec wp wp post list --post_type=page --allow-root --skip-plugins --forma
 
 **Production:**
 ```bash
-ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/talendelight.com/public_html && wp post list --post_type=page --allow-root --skip-plugins --format=table"
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && wp post list --post_type=page --allow-root --skip-plugins --format=table"
 ```
 
 ### Deploy page content (Complete Workflow)
-**⚠️ RELIABLE METHOD - Use PHP script to avoid wp-cli stdin corruption**
+
+**✅ RECOMMENDED: Use Repeatable Deployment Script**
+
+**Automated repeatable method with ID mapping:**
+```powershell
+# Deploy specific pages to production
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -PageNames 'privacy-policy','cookie-policy'
+
+# Deploy all pages from restore/pages/
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages
+
+# Dry run to preview changes
+pwsh infra/shared/scripts/wp-action.ps1 deploy-pages -DryRun
+```
+
+**Features:**
+- ✅ Handles local→production ID mapping automatically
+- ✅ Creates pages if they don't exist
+- ✅ Maintains production-page-ids.json configuration
+- ✅ Flushes caches automatically
+- ✅ Supports dry-run mode
+- ✅ Registered in wp-action.ps1 dispatcher
+
+**Script:** [infra/shared/scripts/deploy-pages-production.ps1](../infra/shared/scripts/deploy-pages-production.ps1)  
+**Config:** [infra/shared/config/production-page-ids.json](../infra/shared/config/production-page-ids.json)  
+**Task:** See [TASK-REGISTRY.md: Deploy WordPress Page to Production](TASK-REGISTRY.md#task-deploy-wordpress-page-to-production)
+
+---
+
+### Deploy page content (Manual Method - Legacy)
+**⚠️ MANUAL METHOD - Use repeatable script above instead**
 
 **Step 1: Create PHP deployment script**
 ```powershell
