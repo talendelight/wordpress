@@ -1,0 +1,28 @@
+{
+    "version": "3.7.4",
+    "type": "patch",
+    "releaseDate": "TBD",
+    "plannedStartDate": "TBD",
+    "status": "planned",
+    "description": "[Brief description of what this release will deliver]",
+    "tasks": [],
+    "filesModified": {
+        "committed": [],
+        "stashed": [],
+        "untracked": []
+    },
+    "summary": {
+        "tasksTotal": 0,
+        "tasksCompleted": 0,
+        "estimatedDays": 0,
+        "actualDays": 0
+    },
+    "verification": {
+        "localTesting": "not-started",
+        "productionDeployment": "not-started",
+        "technicalVerification": "not-started",
+        "userVisualVerification": "not-started",
+        "notes": ""
+    },
+    "nextSteps": []
+}
