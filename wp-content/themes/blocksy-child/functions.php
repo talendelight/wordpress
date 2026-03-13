@@ -95,6 +95,19 @@ add_action('wp_enqueue_scripts', function() {
             
             error_log('Enqueued registration scripts for: ' . $page_slug);
         }
+        
+        // Tab switching script (only on action pages)
+        if (in_array($page_slug, ['actions', 'manager-actions'])) {
+            wp_enqueue_script(
+                'td-tab-switching',
+                get_stylesheet_directory_uri() . '/assets/js/tab-switching.js',
+                array(),  // No dependencies - vanilla JavaScript
+                '1.0.0',  // v3.7.3 - Refactored from inline scripts
+                true      // Load in footer for better performance
+            );
+            
+            error_log('Enqueued tab switching script for: ' . $page_slug);
+        }
     }
 });
 
@@ -381,4 +394,165 @@ add_action('wp_footer', function() {
     </script>
     <?php
 });
+
+// ==============================================================================
+// SHORTCODES FOR COMMON PAGE ELEMENTS
+// ==============================================================================
+// Centralized management of footer badges, hero sections, and CTA sections
+// Added: 2026-03-13 as part of v3.7.4 - Page component centralization
+// ==============================================================================
+
+/**
+ * Footer Trust Badges Shortcode
+ * 
+ * Displays 4 trust badges (GDPR, Secure & Reliable, Equal Opportunity, EU Markets)
+ * Content managed in: wp-content/themes/blocksy-child/includes/footer-badges.html
+ * 
+ * Usage: [td_footer_badges]
+ * 
+ * @since v3.7.4
+ */
+function td_footer_badges_shortcode() {
+    $include_file = get_stylesheet_directory() . '/includes/footer-badges.html';
+    
+    if (file_exists($include_file)) {
+        ob_start();
+        include $include_file;
+        return ob_get_clean();
+    }
+    
+    error_log('TD Shortcode Error: footer-badges.html not found at ' . $include_file);
+    return '<!-- Footer badges file not found -->';
+}
+add_shortcode('td_footer_badges', 'td_footer_badges_shortcode');
+
+/**
+ * Hero Section Shortcode
+ * 
+ * Displays a full-width hero section with optional CTA button
+ * 
+ * Usage: 
+ *   [td_hero title="Your Title" subtitle="Your subtitle"]
+ *   [td_hero title="Your Title" subtitle="Your subtitle" cta_display="Button Text" cta_link="/register"]
+ *   [td_hero title="Privacy Policy" subtitle=""]  <!-- Legal pages without subtitle -->
+ * 
+ * @param array $atts Shortcode attributes
+ *   - title (string) Required: Main heading text
+ *   - subtitle (string) Optional: Subtitle/description text (can be empty for legal pages)
+ *   - cta_display (string) Optional: Button display text (if empty, no button shown)
+ *   - cta_link (string) Optional: Button URL (default: #)
+ * 
+ * @since v3.7.4
+ */
+function td_hero_shortcode($atts) {
+    $atts = shortcode_atts([
+        'title' => '',
+        'subtitle' => '',
+        'cta_display' => '',
+        'cta_link' => '#'
+    ], $atts);
+    
+    // Validate required attributes (only title is required)
+    if (empty($atts['title'])) {
+        error_log('TD Shortcode Error: td_hero requires title attribute');
+        return '<!-- Hero section requires title -->';
+    }
+    
+    // Load template
+    $template_file = get_stylesheet_directory() . '/includes/hero-template.html';
+    if (!file_exists($template_file)) {
+        error_log('TD Shortcode Error: hero-template.html not found at ' . $template_file);
+        return '<!-- Hero template file not found -->';
+    }
+    
+    $html = file_get_contents($template_file);
+    
+    // Replace placeholders
+    $html = str_replace('{{title}}', esc_html($atts['title']), $html);
+    $html = str_replace('{{subtitle}}', esc_html($atts['subtitle']), $html);
+    
+    // Handle optional CTA button
+    if (!empty($atts['cta_display'])) {
+        $cta_html = '<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"},"style":{"spacing":{"margin":{"top":"var(--space-2xl)"}}}} -->' . "\n";
+        $cta_html .= '    <div class="wp-block-buttons" style="margin-top:var(--space-2xl);display:flex;justify-content:center">' . "\n";
+        $cta_html .= '        <!-- wp:button {"className":"is-style-fill"} -->' . "\n";
+        $cta_html .= '        <div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="' . esc_url($atts['cta_link']) . '">' . esc_html($atts['cta_display']) . '</a></div>' . "\n";
+        $cta_html .= '        <!-- /wp:button -->' . "\n";
+        $cta_html .= '    </div>' . "\n";
+        $cta_html .= '    <!-- /wp:buttons -->';
+        
+        $html = str_replace('{{CTA_SECTION}}', $cta_html, $html);
+    } else {
+        // Remove CTA section placeholder
+        $html = str_replace('{{CTA_SECTION}}', '', $html);
+    }
+    
+    return $html;
+}
+add_shortcode('td_hero', 'td_hero_shortcode');
+
+/**
+ * CTA Section Shortcode
+ * 
+ * Displays a full-width call-to-action section with optional button
+ * 
+ * Usage:
+ *   [td_cta title="Ready to Get Started?" subtitle="Create your profile today"]
+ *   [td_cta title="Ready to Get Started?" subtitle="Create your profile today" cta_display="Get Started" cta_link="/register"]
+ * 
+ * @param array $atts Shortcode attributes
+ *   - title (string) Required: Main heading text
+ *   - subtitle (string) Required: Description text
+ *   - cta_display (string) Optional: Button display text (if empty, no button shown)
+ *   - cta_link (string) Optional: Button URL (default: #)
+ * 
+ * @since v3.7.4
+ */
+function td_cta_shortcode($atts) {
+    $atts = shortcode_atts([
+        'title' => '',
+        'subtitle' => '',
+        'cta_display' => '',
+        'cta_link' => '#'
+    ], $atts);
+    
+    // Validate required attributes
+    if (empty($atts['title']) || empty($atts['subtitle'])) {
+        error_log('TD Shortcode Error: td_cta requires title and subtitle attributes');
+        return '<!-- CTA section requires title and subtitle -->';
+    }
+    
+    // Load template
+    $template_file = get_stylesheet_directory() . '/includes/cta-template.html';
+    if (!file_exists($template_file)) {
+        error_log('TD Shortcode Error: cta-template.html not found at ' . $template_file);
+        return '<!-- CTA template file not found -->';
+    }
+    
+    $html = file_get_contents($template_file);
+    
+    // Replace placeholders
+    $html = str_replace('{{title}}', esc_html($atts['title']), $html);
+    $html = str_replace('{{subtitle}}', esc_html($atts['subtitle']), $html);
+    
+    // Handle optional CTA button
+    if (!empty($atts['cta_display'])) {
+        $cta_html = '<!-- wp:buttons {"style":{"spacing":{"margin":{"top":"48px"}}},"layout":{"type":"flex","justifyContent":"center"}} -->' . "\n";
+        $cta_html .= '    <div class="wp-block-buttons" style="margin-top:48px;display:flex;justify-content:center">' . "\n";
+        $cta_html .= '        <!-- wp:button {"className":"is-style-fill"} -->' . "\n";
+        $cta_html .= '        <div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="' . esc_url($atts['cta_link']) . '">' . esc_html($atts['cta_display']) . '</a></div>' . "\n";
+        $cta_html .= '        <!-- /wp:button -->' . "\n";
+        $cta_html .= '    </div>' . "\n";
+        $cta_html .= '    <!-- /wp:buttons -->';
+        
+        $html = str_replace('{{CTA_SECTION}}', $cta_html, $html);
+    } else {
+        // Remove CTA section placeholder
+        $html = str_replace('{{CTA_SECTION}}', '', $html);
+    }
+    
+    return $html;
+}
+add_shortcode('td_cta', 'td_cta_shortcode');
+
 
