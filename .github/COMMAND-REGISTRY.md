@@ -263,6 +263,78 @@ ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u9
 
 ---
 
+## Menu Management
+
+### Get menu item IDs by location
+**Environment:** 🏠 LOCAL | 🌐 PRODUCTION
+
+**Purpose:** Get menu item IDs for use in SQL migrations. Avoids hardcoding environment-specific IDs.
+
+**Local:**
+```powershell
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu"
+```
+
+**Production:**
+```powershell
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Production -MenuLocation "primary-menu"
+```
+
+**Output formats:**
+```powershell
+# Table format (default)
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu"
+
+# CSV format
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu" -OutputFormat CSV
+
+# JSON format
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu" -OutputFormat JSON
+
+# SQL variables (for use in migrations)
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu" -OutputFormat SQL
+```
+
+**SQL Output Example:**
+```sql
+SET @menu_item_about_us = 40;  -- About Us
+SET @menu_item_register = 41;  -- Register
+SET @menu_item_profile = 42;  -- Profile
+SET @menu_item_help = 43;  -- Help
+SET @menu_item_login = 44;  -- Login
+SET @menu_item_logout = 45;  -- Logout
+```
+
+**Use Case:** When creating SQL migrations that update menu items, use this script to get current IDs, then use SQL variables in your migration file. See `infra/shared/db/260311-1500-update-primary-menu-order.sql` for an example.
+
+### Get specific menu item ID by title
+**Environment:** 🏠 LOCAL | 🌐 PRODUCTION
+
+**Local:**
+```powershell
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Local -MenuLocation "primary-menu" -Title "Logout"
+```
+
+**Production:**
+```powershell
+.\infra\shared\scripts\get-menu-ids.ps1 -Environment Production -MenuLocation "primary-menu" -Title "Logout"
+```
+
+### List menu items (wp-cli direct)
+**Environment:** 🏠 LOCAL | 🌐 PRODUCTION
+
+**Local:**
+```powershell
+podman exec wp bash -c "wp menu item list primary-menu --format=csv --fields=db_id,title,menu_order,url --allow-root --skip-plugins"
+```
+
+**Production:**
+```bash
+ssh -p 65002 -i "tmp\hostinger_deploy_key" u909075950@45.84.205.129 "cd /home/u909075950/domains/hireaccord.com/public_html && wp menu item list primary-menu --format=csv --fields=db_id,title,menu_order,url --allow-root --skip-plugins"
+```
+
+---
+
 ## Backup & Restore
 
 ### Backup production (MANDATORY before deployment)

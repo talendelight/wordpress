@@ -140,6 +140,29 @@ This file contains:
    - ❌ **NEVER skip documentation** when creating permanent scripts
    - 📋 **Rationale**: Allow flexible development while capturing repeatable procedures; balance exploration with knowledge preservation
    - 📋 **Example workflow**: investigate-issue.php (tmp, ad-hoc) → evaluate success → ask user → permanent-solution.ps1 (infra/shared/scripts/, documented)
+15. **NEVER mark production deployments as complete without user confirmation** - Production verification is REQUIRED:
+   - ✅ After deployment: Report what was deployed, provide verification URLs, WAIT for user confirmation
+   - ✅ User must verify: Pages render correctly, features work, no errors visible
+   - ✅ Only after user confirms: Update release status to "deployed" or "complete"
+   - ❌ DO NOT assume success from deployment logs
+   - ❌ DO NOT mark tasks complete without user approval
+   - ❌ DO NOT update release files until user verifies
+   - 📋 **Rationale**: Production issues may not be visible in deployment logs (caching, shortcode registration, plugin conflicts, missing files)
+   - 📋 **Example**: "✅ Deployed. Please verify at [URL] - I'll wait for your confirmation before marking complete."
+16. **Check git status before releases and commits** - ALWAYS verify all modified/untracked files before creating releases:
+   - ✅ **Before creating release files**: Run `git status --short` to see ALL changes
+   - ✅ **Review each file**: Determine if it belongs in the release scope
+   - ✅ **Check for untracked files**: New scripts, documentation, assets, SQL migrations
+   - ✅ **Review stashed changes**: If you stashed files earlier, check what's in the stash
+   - ✅ **Use git diff**: `git diff HEAD` shows uncommitted changes in tracked files
+   - ✅ **Document in release JSON**: List ALL modified/stashed/untracked files in `filesModified` section
+   - ✅ **Commit systematically**: Commit all related files together (not just emergency fixes)
+   - ❌ DO NOT commit only "critical" files and leave others behind
+   - ❌ DO NOT assume files are committed just because you created them
+   - ❌ DO NOT stash files and forget to review them later
+   - 📋 **Rationale**: Incomplete commits create confusion about release scope, lose work, and require manual cleanup
+   - 📋 **Example workflow**: Create feature → `git status --short` → Review list → Stage ALL related files → Commit with comprehensive message → Verify with `git status` again
+   - 📋 **Pro tip**: Use `git diff --name-status` to see what changed, `git ls-files --others --exclude-standard` for untracked files
 
 ## Known Issues & Solutions
 
