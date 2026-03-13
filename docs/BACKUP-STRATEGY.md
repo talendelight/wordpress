@@ -24,6 +24,79 @@
 
 ---
 
+## What Can Be Backed Up
+
+### 1. **Database** ✅ CRITICAL
+- **Content**: All posts, pages, users, settings, custom tables
+- **Local**: Daily via `infra/dev/backup-local-db.ps1`
+- **Production**: Weekly via `infra/shared/scripts/backup-prod-db.ps1`
+- **Location**: `tmp/backups/local/` and `tmp/backups/production/`
+- **Retention**: 7 days (local), 28 days (production)
+- **Size**: ~0.5-2 MB (varies with content)
+
+### 2. **Elementor Pages** ✅ CRITICAL  
+- **Content**: Page designs, layouts, widget configurations
+- **Export script**: `infra/shared/scripts/export-elementor-pages.ps1`
+- **Location**: `tmp/backups/pages/$(date)/`
+- **Retention**: 7 days
+- **Size**: ~5-15 KB per page
+- **Note**: Database backup does NOT backup Elementor designs properly - explicit export required
+
+### 3. **Forminator Forms** ✅ IMPORTANT
+- **Content**: Form structures, fields, validation rules, settings
+- **Backup via**: `infra/dev/backup-all-local.ps1` (included)
+- **Location**: `tmp/backups/forms/$(date)/forminator-forms.json`
+- **Retention**: 30 days
+- **Size**: ~10-50 KB per form
+- **Note**: Forms stored as post_meta in database but complex structure needs special export
+
+### 4. **Configuration Files** ⚠️ MOSTLY IN GIT
+- **Content**: wp-config.php, .htaccess, uploads.ini, compose.yml
+- **Backup via**: `infra/dev/backup-all-local.ps1` (included)
+- **Location**: `tmp/backups/config/$(date)/`
+- **Retention**: 30 days
+- **Size**: <100 KB total
+- **Note**: Already in git, backup for quick disaster recovery only
+
+### 5. **Custom Plugins** ⚠️ ALREADY IN GIT
+- **Content**: mu-plugins/, talendelight-roles/, forminator-upload-handler/
+- **Backup via**: `infra/dev/backup-all-local.ps1` (included)
+- **Location**: `tmp/backups/plugins/$(date)/`
+- **Retention**: 30 days
+- **Size**: Variable (few MB typically)
+- **Note**: Already in git, backup before major changes only
+
+### 6. **Media Uploads** ⚠️ NOT IMPLEMENTED YET
+- **Content**: wp-content/uploads/ (images, PDFs, attachments)
+- **Current status**: NOT being backed up automatically
+- **Recommendation**: Implement when uploads become significant
+- **Hostinger**: Includes in automated backups
+- **Local**: Would need separate script
+
+### 7. **Theme Customizations** ✅ IN GIT
+- **Content**: Blocksy theme settings, custom CSS
+- **Storage**: Database (theme_mods) + wp-content/themes/ (if customized)
+- **Backup**: Database backup includes settings
+- **Note**: Theme files in git, database backup covers customizations
+
+### 8. **Plugin Settings** ✅ IN DATABASE
+- **Content**: WooCommerce settings, Elementor settings, etc.
+- **Backup**: Database backup includes all plugin settings
+- **Note**: No separate backup needed
+
+### 9. **User-Generated Content** ✅ IN DATABASE
+- **Content**: Comments, user profiles, WooCommerce orders (future)
+- **Backup**: Database backup includes everything
+- **Note**: Custom tables (td_user_data_change_requests) included in database backup
+
+### 10. **Git Repository** ✅ ALREADY BACKED UP
+- **Content**: All code, docs, configs, scripts
+- **Storage**: GitHub remote repository
+- **Additional**: Local git history
+- **Note**: No backup script needed - push to GitHub regularly
+
+---
+
 ## Prevention Strategy
 
 ### 1. Local Development Database Backups
