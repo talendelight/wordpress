@@ -14,25 +14,46 @@ This release focuses on fixing GitHub Actions deployment automation and conducti
 
 ## Changes
 
-### 1. GitHub Actions Deployment Fix
+### 1. GitHub Actions Deployment Fix (Iterative Testing)
 
 **Problem:**
 - GitHub Actions workflow failing with "You have an error in your yaml syntax"
 - Attempted fixes for emoji characters and quote escaping unsuccessful
 - Production deployments currently require manual SCP uploads
 
-**Planned Actions:**
-- [ ] Validate YAML syntax using yamllint or GitHub's validator
-- [ ] Identify root cause of validation errors (encoding, special characters, indentation)
-- [ ] Test workflow in isolated environment
-- [ ] Document working deployment process
-- [ ] Update TASK-REGISTRY.md with GitHub Actions troubleshooting
+**New Strategy - Incremental Push Testing:**
 
-**Success Criteria:**
-- Workflow validates without errors on GitHub
-- Push to `main` branch triggers automated deployment
-- Code and database changes deploy successfully
-- Post-deployment verification completes
+Instead of fixing the workflow in isolation, we'll use real page content updates to test the deployment automation iteratively:
+
+**1. Make small content changes to one page at a time**
+**2. Push to main branch (triggers GitHub Actions)**
+**3. Monitor workflow execution on GitHub Actions tab**
+**4. If deployment succeeds → Move to next page**
+**5. If deployment fails → Analyze logs, fix issue, retry**
+
+**Test Sequence:**
+1. **Push #1:** Minor Homepage content update (test basic deployment)
+2. **Push #2:** Candidates page update (test page deployment)
+3. **Push #3:** Employers page update (verify consistency)
+4. **Push #4:** Managers page update (continue testing)
+5. **Push #5:** Register Profile page update (test form pages)
+6. **Push #6:** Privacy Policy update (test long content)
+7. **Push #7+:** Additional updates from BA review
+
+**Benefits of This Approach:**
+- ✅ Real production testing (not theoretical)
+- ✅ Small changesets make debugging easier
+- ✅ Isolate failures to specific deployment steps
+- ✅ Build confidence incrementally
+- ✅ Combine debugging with actual content improvements
+- ✅ Each successful push validates the workflow further
+- ✅ Fallback to manual SCP if workflow still broken
+
+**Fallback Plan:**
+If GitHub Actions continues failing after 2-3 attempts, we'll:
+- Document the specific error patterns
+- Continue with manual SCP deployment for v3.7.5
+- Schedule dedicated time to fix workflow in v3.7.6
 
 ---
 
@@ -97,26 +118,77 @@ Review all public-facing pages with business analyst to ensure:
 
 ## Deployment Plan
 
-### Phase 1: GitHub Actions Fix (Week 1)
-1. Debug YAML validation issues
-2. Test workflow locally with act or similar tool
-3. Push fix to `develop` branch
-4. Test automated deployment on staging/test push
-5. Merge to `main` when validated
+### Iterative Push Strategy (Combines Phases 1 & 2)
 
-### Phase 2: Content Review (Week 1-2)
-1. Export all pages to review documents
-2. Schedule BA review sessions
-3. Document feedback and requested changes
-4. Make approved content updates
-5. Review updated pages with BA
-6. Deploy approved content
+**Week 1-2: Incremental Content Updates + Deployment Testing**
 
-### Phase 3: Verification (Week 2)
-1. Verify GitHub Actions workflow works end-to-end
-2. Confirm all pages reflect approved content
-3. Test user flows (registration, login, navigation)
-4. Performance check (load times)
+For each page update:
+
+1. **Prepare Content Update**
+   - Get BA feedback for one page
+   - Make content changes in restore/pages/
+   - Test in local environment
+   - Get BA approval for changes
+
+2. **Deploy & Monitor**
+   - Commit changes to develop
+   - Merge to main
+   - Push to GitHub (triggers Actions workflow)
+   - **Monitor GitHub Actions execution:**
+     - Check Actions tab on GitHub
+     - Review deployment logs
+     - Watch for errors or failures
+
+3. **Evaluate Result**
+   - **If SUCCESS:** 
+     - Verify page content on production
+     - Clear caches if needed
+     - Document success in release notes
+     - Move to next page
+   - **If FAILURE:**
+     - Analyze GitHub Actions logs
+     - Identify specific error (YAML, SSH, deployment step)
+     - Fix issue in workflow or content
+     - Retry push OR fall back to manual SCP
+     - Document error and resolution
+
+4. **Repeat for Each Page**
+   - Homepage
+   - Candidates page
+   - Employers page  
+   - Managers page
+   - Register Profile page
+   - Privacy Policy
+   - Any additional pages from BA review
+
+**Push Sequence Example:**
+
+```
+Push 1: Update Homepage hero section
+  → GitHub Actions runs → Success ✅
+  → Verify on production → OK
+  → Move to next page
+
+Push 2: Update Candidates page content
+  → GitHub Actions runs → Failure ❌
+  → Analyze logs → Fix issue
+  → Retry push → Success ✅
+  → Move to next page
+
+Push 3: Update Employers page
+  → GitHub Actions runs → Success ✅
+  → Verify on production → OK
+  → Move to next page
+
+...and so on
+```
+
+### Phase 3: Final Verification (Week 2)
+1. Review all deployed pages with BA
+2. Verify GitHub Actions workflow reliability
+3. Test complete user flows
+4. Performance check
+5. Document lessons learned for future deployments
 
 ---
 

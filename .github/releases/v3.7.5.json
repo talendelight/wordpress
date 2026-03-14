@@ -17,13 +17,31 @@
   "steps": [
     {
       "type": "debug_github_actions",
-      "description": "Debug and fix GitHub Actions deployment workflow",
-      "tasks": [
-        "Identify root cause of YAML validation errors",
-        "Test workflow syntax with yamllint or GitHub Actions validator",
-        "Fix any remaining syntax or logic issues",
-        "Test deployment workflow end-to-end",
-        "Document GitHub Actions troubleshooting steps"
+      "description": "Debug GitHub Actions workflow via incremental pushes",
+      "strategy": "iterative_page_deployments",
+      "approach": [
+        "Make small page content changes",
+        "Push each change to main branch separately",
+        "Monitor GitHub Actions workflow execution",
+        "Identify specific failure points",
+        "Fix issues incrementally",
+        "Build confidence in deployment automation"
+      ],
+      "test_sequence": [
+        "Push 1: Minor content change to Homepage",
+        "Push 2: Update Candidates page content",
+        "Push 3: Update Employers page content",
+        "Push 4: Update Managers page content",
+        "Push 5: Update Register Profile page",
+        "Push 6: Update Privacy Policy",
+        "Push 7-N: Additional content updates from BA review"
+      ],
+      "benefits": [
+        "Small changesets easier to debug",
+        "Isolate workflow failures to specific steps",
+        "Verify each deployment succeeds before next",
+        "Build deployment confidence incrementally",
+        "Real production testing of automation"
       ]
     },
     {
@@ -40,8 +58,10 @@
       ],
       "tasks": [
         "Schedule BA review sessions",
-        "Document content change requests",
-        "Update page content based on BA feedback",
+        "Document content change requests per page",
+        "Update one page at a time",
+        "Push to main after each page update (triggers deployment)",
+        "Verify deployment success before next page",
         "Review tone, messaging, and value proposition",
         "Ensure brand consistency (HireAccord)",
         "Test updated content in production"
@@ -49,8 +69,9 @@
     },
     {
       "type": "deploy_code",
-      "description": "Deploy updated content and workflow fixes",
-      "method": "manual_scp_until_github_actions_fixed"
+      "description": "Deploy via GitHub Actions (incremental testing)",
+      "method": "github_actions_with_fallback_to_manual",
+      "fallback": "Use manual SCP if GitHub Actions still fails"
     }
   ],
   "dependencies": [],
