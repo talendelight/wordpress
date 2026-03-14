@@ -1,0 +1,79 @@
+{
+  "version": "3.7.5",
+  "release_date": "TBD",
+  "description": "GitHub Actions Deployment Fix + Content Review with Business Analyst",
+  "requires_db_backup": false,
+  "requires_manual_verification": true,
+  "changelog": [
+    "Fix GitHub Actions workflow YAML syntax errors",
+    "Debug and resolve deployment automation issues",
+    "Review and update page content with business analyst",
+    "Content improvements based on BA feedback"
+  ],
+  "features": [
+    "GitHub Actions deployment automation (fixed)",
+    "Refined page content (post-BA review)"
+  ],
+  "steps": [
+    {
+      "type": "debug_github_actions",
+      "description": "Debug and fix GitHub Actions deployment workflow",
+      "tasks": [
+        "Identify root cause of YAML validation errors",
+        "Test workflow syntax with yamllint or GitHub Actions validator",
+        "Fix any remaining syntax or logic issues",
+        "Test deployment workflow end-to-end",
+        "Document GitHub Actions troubleshooting steps"
+      ]
+    },
+    {
+      "type": "content_review",
+      "description": "Business analyst review of all pages",
+      "pages_to_review": [
+        "Homepage (hireaccord.com)",
+        "Candidates page",
+        "Employers page",
+        "Managers page",
+        "Register Profile page",
+        "Privacy Policy",
+        "Terms of Service"
+      ],
+      "tasks": [
+        "Schedule BA review sessions",
+        "Document content change requests",
+        "Update page content based on BA feedback",
+        "Review tone, messaging, and value proposition",
+        "Ensure brand consistency (HireAccord)",
+        "Test updated content in production"
+      ]
+    },
+    {
+      "type": "deploy_code",
+      "description": "Deploy updated content and workflow fixes",
+      "method": "manual_scp_until_github_actions_fixed"
+    }
+  ],
+  "dependencies": [],
+  "rollback_plan": "Restore pages from restore/pages/ backup, revert workflow changes",
+  "verification": {
+    "automated": [
+      "GitHub Actions workflow validates without errors",
+      "Workflow runs successfully on push to main"
+    ],
+    "manual": [
+      "Review all pages with BA - content approved",
+      "Verify HireAccord branding consistency",
+      "Check page load times and responsiveness"
+    ]
+  },
+  "filesModified": [
+    ".github/workflows/deploy.yml (to be fixed)",
+    "Page content files (to be updated post-BA review)"
+  ],
+  "notes": [
+    "GitHub Actions has been blocking due to YAML syntax errors",
+    "Manual deployment via SCP worked successfully for v3.7.4",
+    "Need to resolve automation before next release",
+    "BA review will inform content strategy for public launch"
+  ]
+}
