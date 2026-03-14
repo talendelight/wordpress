@@ -315,6 +315,190 @@ function td_assign_request_ajax() {
 }
 add_action('wp_ajax_td_assign_request', 'td_assign_request_ajax');
 
+/**
+ * AJAX handler for saving a request (creates WordPress user)
+ */
+function td_save_request_ajax() {
+    check_ajax_referer('td_request_action', 'nonce');
+    
+    // Allow managers and operators
+    $user = wp_get_current_user();
+    $allowed_roles = ['administrator', 'td_manager', 'td_operator'];
+    if (!array_intersect($allowed_roles, $user->roles)) {
+        wp_send_json_error(['message' => 'Unauthorized']);
+    }
+    
+    $request_id = intval($_POST['request_id']);
+    global $wpdb;
+    
+    // Get request data
+    $request = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
+        $request_id
+    ));
+    
+    if (!$request) {
+        wp_send_json_error(['message' => 'Request not found']);
+    }
+    
+    // Permission check: Only managers can save Scout users
+    if ($request->role === 'scout' && !in_array('td_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+        wp_send_json_error(['message' => 'Only managers can save Scout users']);
+    }
+    
+    // Check if request is approved
+    if ($request->status !== 'approved') {
+        wp_send_json_error(['message' => 'Can only save approved requests']);
+    }
+    
+    // Check if WordPress user already exists
+    if (email_exists($request->email)) {
+        wp_send_json_error(['message' => 'User with this email already exists']);
+    }
+    
+    // Map request role to WordPress role
+    $role_map = [
+        'candidate' => 'td_candidate',
+        'employer' => 'td_employer',
+        'scout' => 'td_scout',
+        'operator' => 'td_operator',
+        'manager' => 'td_manager'
+    ];
+    
+    $wp_role = isset($role_map[$request->role]) ? $role_map[$request->role] : 'td_candidate';
+    
+    // Generate password
+    $password = wp_generate_password(16, true, true);
+    
+    // Create WordPress user
+    $user_data = [
+        'user_login' => $request->email,
+        'user_email' => $request->email,
+        'user_pass' => $password,
+        'role' => $wp_role,
+        'display_name' => trim($request->first_name . ' ' . $request->last_name),
+        'first_name' => $request->first_name,
+        'last_name' => $request->last_name,
+        'nickname' => $request->first_name
+    ];
+    
+    // Send email notification only in production
+    if (defined('WP_DEBUG') && WP_DEBUG === true) {
+        // Local environment - don't send email
+        add_filter('send_password_change_email', '__return_false');
+        add_filter('send_email_change_email', '__return_false');
+    }
+    
+    $user_id = wp_insert_user($user_data);
+    
+    if (is_wp_error($user_id)) {
+        wp_send_json_error(['message' => 'Failed to create user: ' . $user_id->get_error_message()]);
+    }
+    
+    // Store LinkedIn URL in user meta if provided
+    if (!empty($request->linkedin_url)) {
+        update_user_meta($user_id, 'td_linkedin_url', esc_url($request->linkedin_url));
+    }
+    
+    // Send new user notification only in production
+    if (!defined('WP_DEBUG') || WP_DEBUG === false) {
+        wp_new_user_notification($user_id, null, 'both');
+    }
+    
+    // Update request: set status to 'saved' and store user_id
+    $wpdb->update(
+        $wpdb->prefix . 'td_user_data_change_requests',
+        [
+            'status' => 'saved',
+            'user_id' => $user_id
+        ],
+        ['id' => $request_id],
+        ['%s', '%d'],
+        ['%d']
+    );
+    
+    // Log the action
+    $current_user_name = wp_get_current_user()->display_name;
+    TD_Audit_Logger::log(
+        $wpdb->prefix . 'td_user_data_change_requests',
+        $request_id,
+        'save',
+        $request->status,
+        'saved',
+        'status',
+        "Request saved and WordPress user created (ID: $user_id) by $current_user_name"
+    );
+    
+    wp_send_json_success([
+        'message' => 'User saved successfully',
+        'user_id' => $user_id
+    ]);
+}
+add_action('wp_ajax_td_save_request', 'td_save_request_ajax');
+
+/**
+ * AJAX handler for archiving a request
+ */
+function td_archive_request_ajax() {
+    check_ajax_referer('td_request_action', 'nonce');
+    
+    // Allow managers and operators
+    $user = wp_get_current_user();
+    $allowed_roles = ['administrator', 'td_manager', 'td_operator'];
+    if (!array_intersect($allowed_roles, $user->roles)) {
+        wp_send_json_error(['message' => 'Unauthorized']);
+    }
+    
+    $request_id = intval($_POST['request_id']);
+    global $wpdb;
+    
+    // Get request data
+    $request = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}td_user_data_change_requests WHERE id = %d",
+        $request_id
+    ));
+    
+    if (!$request) {
+        wp_send_json_error(['message' => 'Request not found']);
+    }
+    
+    // Permission check: Only managers can archive Scout users
+    if ($request->role === 'scout' && !in_array('td_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+        wp_send_json_error(['message' => 'Only managers can archive Scout users']);
+    }
+    
+    // Check if request is rejected
+    if ($request->status !== 'rejected') {
+        wp_send_json_error(['message' => 'Can only archive rejected requests']);
+    }
+    
+    // Update request status to 'archived'
+    $wpdb->update(
+        $wpdb->prefix . 'td_user_data_change_requests',
+        ['status' => 'archived'],
+        ['id' => $request_id],
+        ['%s'],
+        ['%d']
+    );
+    
+    // Log the action
+    $current_user_name = wp_get_current_user()->display_name;
+    TD_Audit_Logger::log(
+        $wpdb->prefix . 'td_user_data_change_requests',
+        $request_id,
+        'archive',
+        $request->status,
+        'archived',
+        'status',
+        "Request archived by $current_user_name"
+    );
+    
+    wp_send_json_success([
+        'message' => 'Request archived successfully'
+    ]);
+}
+add_action('wp_ajax_td_archive_request', 'td_archive_request_ajax');
+
 // ============================================================================
 // SHORTCODES - Base (Backward Compatibility)
 // ============================================================================

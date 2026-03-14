@@ -1,36 +1,63 @@
 # Release Notes v3.7.4
 
-**Status:** Planned  
+**Status:** In Progress  
 **Type:** Patch  
 **Release Date:** TBD  
-**Planned Start Date:** TBD
+**Started:** March 13, 2026
 
 ## Overview
 
-[Brief description of what this release will deliver]
+UI improvements for Manager Actions and Operator Actions pages:
+- Fixed button styling (oval → rectangle) for consistency
+- Added Onboard functionality for approved users
+- Added Archive functionality for rejected users
 
 ## Tasks
 
-*No tasks defined yet. Use this format when adding tasks:*
+### UI-001: Fix Action Button Styling
+- **Type:** bug-fix
+- **Status:** completed
+- **Priority:** medium
+- **Estimated:** 0.2 days
+- **Description:** Change action button border-radius from 50% (oval/circular) to 5px (rounded rectangle) for visual consistency with other UI elements
+- **Implementation Notes:** Updated CSS in manager-actions-display.php and operator-actions-display.php
 
-### PENG-XXX: [Task Title]
-- **Type:** [feature|bug-fix|refactoring|page|deployment|testing]
-- **Status:** not-started
-- **Priority:** [critical|high|medium|low]
-- **Estimated:** X.X days
-- **Description:** [Detailed description]
-- **Implementation Notes:** [Technical details]
+### FEAT-001: Add Onboard Button
+- **Type:** feature
+- **Status:** completed (UI only, backend handler needed)
+- **Priority:** high
+- **Estimated:** 0.3 days
+- **Description:** Add "Onboard" button (+) after "Undo Approve" button in Approved tab and for approved records in All tab
+- **Implementation Notes:** 
+  - Added button in Manager Actions and Operator Actions
+  - Blue background (#2196F3)
+  - Located after Undo Approve button with 4px margin
+  - **Backend Handler Required:** JavaScript/AJAX handler needs to be implemented for actual onboarding functionality
+
+### FEAT-002: Add Archive Button
+- **Type:** feature
+- **Status:** completed (UI only, backend handler needed)
+- **Priority:** high
+- **Estimated:** 0.3 days
+- **Description:** Add "Archive" button (↓) after "Undo Rejection" button in Rejected tab and for rejected records in All tab
+- **Implementation Notes:** 
+  - Added button in Manager Actions and Operator Actions
+  - Gray background (#9E9E9E)
+  - Down arrow icon (↓) matching the style of Assign button (➜)
+  - Located after Undo Rejection button with 4px margin
+  - **Backend Handler Required:** JavaScript/AJAX handler needs to be implemented for actual archive functionality
 
 ## Files Modified
 
 ### To Be Committed
-*List files that will be committed in this release*
+- `wp-content/mu-plugins/manager-actions-display.php` - Button styling fix + Onboard button
+- `wp-content/mu-plugins/operator-actions-display.php` - Button styling fix + Onboard button
 
 ### To Be Created
-*List new files that will be created*
+*None yet*
 
 ### To Be Deleted
-*List files that will be removed*
+*None*
 
 ## Deployment Plan
 

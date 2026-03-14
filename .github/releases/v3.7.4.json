@@ -2,27 +2,71 @@
     "version": "3.7.4",
     "type": "patch",
     "releaseDate": "TBD",
-    "plannedStartDate": "TBD",
-    "status": "planned",
-    "description": "[Brief description of what this release will deliver]",
-    "tasks": [],
+    "plannedStartDate": "2026-03-13",
+    "status": "in-progress",
+    "description": "UI improvements for Manager/Operator Actions pages: Fixed button styling (oval to rectangle), added Onboard button for approved users, and added Archive button for rejected users",
+    "tasks": [
+        {
+            "id": "UI-001",
+            "title": "Fix Action Button Styling",
+            "type": "bug-fix",
+            "status": "completed",
+            "priority": "medium",
+            "estimatedDays": 0.2,
+            "description": "Change action button border-radius from 50% (oval/circular) to 5px (rounded rectangle)",
+            "notes": "Updated CSS in both manager-actions-display.php and operator-actions-display.php"
+        },
+        {
+            "id": "FEAT-001",
+            "title": "Add Onboard Button",
+            "type": "feature",
+            "status": "completed",
+            "priority": "high",
+            "estimatedDays": 0.3,
+            "description": "Add Onboard button after Undo Approve button in Approved tab and for approved records in All tab",
+            "notes": "UI implementation complete. Backend handler (JavaScript/AJAX) still needs to be implemented for actual onboarding functionality"
+        },
+        {
+            "id": "FEAT-002",
+            "title": "Add Archive Button",
+            "type": "feature",
+            "status": "completed",
+            "priority": "high",
+            "estimatedDays": 0.3,
+            "description": "Add Archive button after Undo Rejection button in Rejected tab and for rejected records in All tab",
+            "notes": "UI implementation complete with down arrow icon (↓) matching Assign button style. Gray background (#9E9E9E). Backend handler (JavaScript/AJAX) still needs to be implemented for actual archive functionality"
+        }
+    ],
     "filesModified": {
         "committed": [],
         "stashed": [],
-        "untracked": []
+        "untracked": [
+            "wp-content/mu-plugins/manager-actions-display.php",
+            "wp-content/mu-plugins/operator-actions-display.php",
+            ".github/releases/v3.7.4.json",
+            ".github/releases/RELEASE-NOTES-v3.7.4.md"
+        ]
     },
     "summary": {
-        "tasksTotal": 0,
-        "tasksCompleted": 0,
-        "estimatedDays": 0,
+        "tasksTotal": 3,
+        "tasksCompleted": 3,
+        "estimatedDays": 0.8,
         "actualDays": 0
     },
     "verification": {
-        "localTesting": "not-started",
+        "localTesting": "pending",
         "productionDeployment": "not-started",
         "technicalVerification": "not-started",
         "userVisualVerification": "not-started",
-        "notes": ""
+        "notes": "Files modified, ready for local testing"
     },
-    "nextSteps": []
+    "nextSteps": [
+        "Test locally at https://wp.local/manager-actions/ and /operator-actions/",
+        "Verify button styling is rectangular (5px border-radius)",
+        "Verify Onboard button appears in Approved tab and for approved records in All tab",
+        "Verify Archive button appears in Rejected tab and for rejected records in All tab",
+        "Implement backend handler for Onboard button functionality (future task)",
+        "Implement backend handler for Archive button functionality (future task)",
+        "User approval before production deployment"
+    ]
 }

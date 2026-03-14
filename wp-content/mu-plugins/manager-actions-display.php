@@ -94,6 +94,9 @@ function td_manager_actions_table_shortcode($atts) {
         $date_filter = "AND submitted_date >= DATE_SUB(NOW(), INTERVAL {$atts['days']} DAY)";
     }
     
+    // Exclude saved and archived statuses from all queries
+    $where_clause .= " AND status NOT IN ('saved', 'archived')";
+    
     $query = $wpdb->prepare(
         "SELECT * FROM $table 
          WHERE $where_clause $date_filter 
@@ -104,7 +107,7 @@ function td_manager_actions_table_shortcode($atts) {
     
     $requests = $wpdb->get_results($query);
     
-    // Count statistics
+    // Count statistics (exclude saved and archived)
     $stats = $wpdb->get_row("
         SELECT 
             COUNT(*) as total,
@@ -113,7 +116,7 @@ function td_manager_actions_table_shortcode($atts) {
             SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_count,
             SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_count
         FROM $table 
-        WHERE $where_clause $date_filter
+        WHERE $where_clause $date_filter AND status NOT IN ('saved', 'archived')
     ");
     
     $current_user_id = get_current_user_id();
@@ -132,7 +135,7 @@ function td_manager_actions_table_shortcode($atts) {
             height: 32px !important;
             min-width: 32px !important;
             max-width: 32px !important;
-            border-radius: 50% !important;
+            border-radius: 5px !important;
             cursor: pointer !important;
             font-size: 12px !important;
             line-height: 1 !important;
@@ -153,7 +156,9 @@ function td_manager_actions_table_shortcode($atts) {
         .td-action-btn.td-action-assign { background: #063970 !important; }
         .td-action-btn.td-action-approve { background: #4caf50 !important; margin-right: 4px !important; }
         .td-action-btn.td-action-reject { background: #f44336 !important; }
-        .td-action-btn.td-action-undo { background: #ff9800 !important; }
+        .td-action-btn.td-action-undo { background: #ff9800 !important; margin-right: 4px !important; }
+        .td-action-btn.td-action-onboard { background: #2196F3 !important; }
+        .td-action-btn.td-action-archive { background: #9E9E9E !important; }
         
         .ma-table-container {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -267,7 +272,7 @@ function td_manager_actions_table_shortcode($atts) {
                                 <?php if ($atts['status'] === 'new'): ?>
                                     <!-- New Tab: Assign to Me button -->
                                     <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Assign to Me">
-                                        ➜
+                                        ▶
                                     </button>
                                     
                                 <?php elseif ($atts['status'] === 'assigned'): ?>
@@ -281,27 +286,33 @@ function td_manager_actions_table_shortcode($atts) {
                                         </button>
                                     <?php else: ?>
                                         <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Reassign to Me">
-                                            ➜
+                                            ▶
                                         </button>
                                     <?php endif; ?>
                                     
                                 <?php elseif ($atts['status'] === 'approved'): ?>
-                                    <!-- Approved Tab: Undo Approval -->
+                                    <!-- Approved Tab: Undo Approval + Save -->
                                     <button class="td-undo-approve-btn td-action-btn td-action-undo" data-id="<?php echo $request->id; ?>" title="Undo Approval">
                                         ↶
                                     </button>
+                                    <button class="td-onboard-btn td-action-btn td-action-onboard" data-id="<?php echo $request->id; ?>" title="Save">
+                                        +
+                                    </button>
                                     
                                 <?php elseif ($atts['status'] === 'rejected'): ?>
-                                    <!-- Rejected Tab: Undo Rejection -->
+                                    <!-- Rejected Tab: Undo Rejection + Archive -->
                                     <button class="td-undo-reject-btn td-action-btn td-action-undo" data-id="<?php echo $request->id; ?>" title="Undo Rejection">
                                         ↶
+                                    </button>
+                                    <button class="td-archive-btn td-action-btn td-action-archive" data-id="<?php echo $request->id; ?>" title="Archive">
+                                        ▼
                                     </button>
                                     
                                 <?php elseif ($atts['status'] === 'all'): ?>
                                     <!-- All Tab: Show appropriate actions based on status -->
                                     <?php if ($display_status === 'new'): ?>
                                         <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Assign to Me">
-                                            ➜
+                                            ▶
                                         </button>
                                     <?php elseif ($display_status === 'assigned'): ?>
                                         <?php if ($request->assigned_to == $current_user_id): ?>
@@ -313,16 +324,22 @@ function td_manager_actions_table_shortcode($atts) {
                                             </button>
                                         <?php else: ?>
                                             <button class="td-assign-btn td-action-btn td-action-assign" data-id="<?php echo $request->id; ?>" title="Reassign to Me">
-                                                ➜
+                                                ▶
                                             </button>
                                         <?php endif; ?>
                                     <?php elseif ($display_status === 'approved'): ?>
                                         <button class="td-undo-approve-btn td-action-btn td-action-undo" data-id="<?php echo $request->id; ?>" title="Undo Approval">
                                             ↶
                                         </button>
+                                        <button class="td-onboard-btn td-action-btn td-action-onboard" data-id="<?php echo $request->id; ?>" title="Save">
+                                            +
+                                        </button>
                                     <?php elseif ($display_status === 'rejected'): ?>
                                         <button class="td-undo-reject-btn td-action-btn td-action-undo" data-id="<?php echo $request->id; ?>" title="Undo Rejection">
                                             ↶
+                                        </button>
+                                        <button class="td-archive-btn td-action-btn td-action-archive" data-id="<?php echo $request->id; ?>" title="Archive">
+                                            ▼
                                         </button>
                                     <?php endif; ?>
                                 <?php endif; ?>
@@ -513,6 +530,60 @@ function td_manager_actions_table_shortcode($atts) {
                 nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
             }, function(response) {
                 if (response.success) {
+                    btn.closest('tr').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                } else {
+                    tdShowNotification('Error: ' + (response.data ? response.data.message : 'Unknown error'), 'error');
+                    btn.prop('disabled', false).css('opacity', '1');
+                }
+            }).fail(function() {
+                tdShowNotification('Network error', 'error');
+                btn.prop('disabled', false).css('opacity', '1');
+            });
+        });
+        
+        // Save button handler (create WordPress user)
+        $(document).off('click', '.td-onboard-btn').on('click', '.td-onboard-btn', function() {
+            var btn = $(this);
+            var requestId = btn.data('id');
+            
+            btn.prop('disabled', true).css('opacity', '0.5');
+            
+            $.post('<?php echo admin_url('admin-ajax.php'); ?>', {
+                action: 'td_save_request',
+                request_id: requestId,
+                nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
+            }, function(response) {
+                if (response.success) {
+                    tdShowNotification('User saved successfully', 'success');
+                    btn.closest('tr').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                } else {
+                    tdShowNotification('Error: ' + (response.data ? response.data.message : 'Unknown error'), 'error');
+                    btn.prop('disabled', false).css('opacity', '1');
+                }
+            }).fail(function() {
+                tdShowNotification('Network error', 'error');
+                btn.prop('disabled', false).css('opacity', '1');
+            });
+        });
+        
+        // Archive button handler
+        $(document).off('click', '.td-archive-btn').on('click', '.td-archive-btn', function() {
+            var btn = $(this);
+            var requestId = btn.data('id');
+            
+            btn.prop('disabled', true).css('opacity', '0.5');
+            
+            $.post('<?php echo admin_url('admin-ajax.php'); ?>', {
+                action: 'td_archive_request',
+                request_id: requestId,
+                nonce: '<?php echo wp_create_nonce('td_request_action'); ?>'
+            }, function(response) {
+                if (response.success) {
+                    tdShowNotification('Request archived successfully', 'success');
                     btn.closest('tr').fadeOut(300, function() {
                         $(this).remove();
                     });
