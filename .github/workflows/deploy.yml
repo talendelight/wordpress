@@ -17,6 +17,130 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Detect Uncommitted or Missed Changes
+        id: detect_changes
+        run: |
+          echo "=========================================="
+          echo "Checking for uncommitted or missed changes"
+          echo "=========================================="
+          
+          # Get list of modified, added, deleted files
+          CHANGED_FILES=$(git diff --name-status HEAD 2>/dev/null || echo "")
+          UNTRACKED_FILES=$(git ls-files --others --exclude-standard 2>/dev/null || echo "")
+          
+          # Initialize counters and arrays
+          PLUGINS_CHANGED=0
+          THEMES_CHANGED=0
+          MUPLUGINS_CHANGED=0
+          SQL_FILES=0
+          PATTERNS_CHANGED=0
+          ASSETS_CHANGED=0
+          PHP_FILES=0
+          OTHER_FILES=0
+          
+          declare -a IMPORTANT_CHANGES=()
+          declare -a ALL_CHANGES=()
+          
+          # Process changed files
+          if [ -n "$CHANGED_FILES" ]; then
+            echo "Modified/Deleted files detected:"
+            echo "$CHANGED_FILES"
+            echo ""
+            
+            while IFS= read -r line; do
+              [ -z "$line" ] && continue
+              STATUS=$(echo "$line" | awk '{print $1}')
+              FILE=$(echo "$line" | awk '{print $2}')
+              ALL_CHANGES+=("[$STATUS] $FILE")
+              
+              # Categorize by path
+              if [[ "$FILE" == wp-content/plugins/* ]]; then
+                PLUGINS_CHANGED=$((PLUGINS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[$STATUS] $FILE (Plugin)")
+              elif [[ "$FILE" == wp-content/themes/* ]]; then
+                THEMES_CHANGED=$((THEMES_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[$STATUS] $FILE (Theme)")
+              elif [[ "$FILE" == wp-content/mu-plugins/* ]]; then
+                MUPLUGINS_CHANGED=$((MUPLUGINS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[$STATUS] $FILE (MU-Plugin)")
+              elif [[ "$FILE" == infra/shared/db/*.sql ]]; then
+                SQL_FILES=$((SQL_FILES + 1))
+                IMPORTANT_CHANGES+=("[$STATUS] $FILE (Database Migration)")
+              elif [[ "$FILE" == wp-content/themes/*/patterns/* ]]; then
+                PATTERNS_CHANGED=$((PATTERNS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[$STATUS] $FILE (Pattern)")
+              elif [[ "$FILE" == wp-content/themes/*/assets/* ]]; then
+                ASSETS_CHANGED=$((ASSETS_CHANGED + 1))
+              elif [[ "$FILE" == *.php ]]; then
+                PHP_FILES=$((PHP_FILES + 1))
+              else
+                OTHER_FILES=$((OTHER_FILES + 1))
+              fi
+            done <<< "$CHANGED_FILES"
+          fi
+          
+          # Process untracked files
+          if [ -n "$UNTRACKED_FILES" ]; then
+            echo "Untracked files detected:"
+            echo "$UNTRACKED_FILES"
+            echo ""
+            
+            while IFS= read -r FILE; do
+              [ -z "$FILE" ] && continue
+              ALL_CHANGES+=("[NEW] $FILE")
+              
+              if [[ "$FILE" == wp-content/plugins/* ]]; then
+                PLUGINS_CHANGED=$((PLUGINS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[NEW] $FILE (Plugin)")
+              elif [[ "$FILE" == wp-content/themes/* ]]; then
+                THEMES_CHANGED=$((THEMES_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[NEW] $FILE (Theme)")
+              elif [[ "$FILE" == wp-content/mu-plugins/* ]]; then
+                MUPLUGINS_CHANGED=$((MUPLUGINS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[NEW] $FILE (MU-Plugin)")
+              elif [[ "$FILE" == infra/shared/db/*.sql ]]; then
+                SQL_FILES=$((SQL_FILES + 1))
+                IMPORTANT_CHANGES+=("[NEW] $FILE (Database Migration)")
+              elif [[ "$FILE" == wp-content/themes/*/patterns/* ]]; then
+                PATTERNS_CHANGED=$((PATTERNS_CHANGED + 1))
+                IMPORTANT_CHANGES+=("[NEW] $FILE (Pattern)")
+              fi
+            done <<< "$UNTRACKED_FILES"
+          fi
+          
+          # Output summary
+          echo "=========================================="
+          echo "Change Detection Summary:"
+          echo "=========================================="
+          echo "Plugins changed: $PLUGINS_CHANGED"
+          echo "Themes changed: $THEMES_CHANGED"
+          echo "MU-Plugins changed: $MUPLUGINS_CHANGED"
+          echo "SQL migrations: $SQL_FILES"
+          echo "Patterns changed: $PATTERNS_CHANGED"
+          echo "Assets changed: $ASSETS_CHANGED"
+          echo "PHP files changed: $PHP_FILES"
+          echo "Other files: $OTHER_FILES"
+          echo ""
+          
+          # Export to outputs
+          echo "plugins_changed=$PLUGINS_CHANGED" >> $GITHUB_OUTPUT
+          echo "themes_changed=$THEMES_CHANGED" >> $GITHUB_OUTPUT
+          echo "muplugins_changed=$MUPLUGINS_CHANGED" >> $GITHUB_OUTPUT
+          echo "sql_files=$SQL_FILES" >> $GITHUB_OUTPUT
+          echo "patterns_changed=$PATTERNS_CHANGED" >> $GITHUB_OUTPUT
+          
+          # Show important changes
+          if [ ${#IMPORTANT_CHANGES[@]} -gt 0 ]; then
+            echo "[WARNING] Important changes detected that may need deployment:"
+            printf '%s\n' "${IMPORTANT_CHANGES[@]}"
+            echo ""
+            echo "Please verify these are included in release instructions (.github/releases/vX.Y.Z.json)"
+          else
+            echo "[OK] No uncommitted wp-content or database changes detected"
+          fi
+          
+          echo "=========================================="
+
       - name: Find Latest Release Instructions
         id: release
         run: |
@@ -70,6 +194,68 @@ jobs:
           fi
           
           echo "[OK] Release instructions are valid"
+
+      - name: Cross-Reference Changes with Release
+        run: |
+          RELEASE_FILE="${{ steps.release.outputs.release_file }}"
+          
+          echo "=========================================="
+          echo "Verifying detected changes match release scope"
+          echo "=========================================="
+          
+          # Get release deployment steps
+          HAS_CODE_DEPLOY=$(jq '[.steps[] | select(.type == "deploy_code")] | length > 0' "$RELEASE_FILE")
+          HAS_SQL_DEPLOY=$(jq '[.steps[] | select(.type == "deploy_sql")] | length > 0' "$RELEASE_FILE")
+          HAS_PLUGIN_ACTIVATE=$(jq '[.steps[] | select(.type == "activate_plugins")] | length > 0' "$RELEASE_FILE")
+          
+          # Check for mismatches
+          WARNINGS=0
+          
+          # SQL files changed but no SQL deployment step
+          if [ "${{ steps.detect_changes.outputs.sql_files }}" -gt 0 ] && [ "$HAS_SQL_DEPLOY" = "false" ]; then
+            echo "[WARNING] SQL migration files detected but no 'deploy_sql' step in release"
+            echo "          Files: $(git diff --name-only HEAD | grep 'infra/shared/db/.*\.sql' || git ls-files --others --exclude-standard | grep 'infra/shared/db/.*\.sql')"
+            WARNINGS=$((WARNINGS + 1))
+          fi
+          
+          # wp-content changed but no code deployment step
+          TOTAL_WP_CHANGES=$((
+            ${{ steps.detect_changes.outputs.plugins_changed }} + 
+            ${{ steps.detect_changes.outputs.themes_changed }} + 
+            ${{ steps.detect_changes.outputs.muplugins_changed }} + 
+            ${{ steps.detect_changes.outputs.patterns_changed }}
+          ))
+          
+          if [ $TOTAL_WP_CHANGES -gt 0 ] && [ "$HAS_CODE_DEPLOY" = "false" ]; then
+            echo "[WARNING] wp-content changes detected but no 'deploy_code' step in release"
+            echo "          Plugins: ${{ steps.detect_changes.outputs.plugins_changed }}"
+            echo "          Themes: ${{ steps.detect_changes.outputs.themes_changed }}"
+            echo "          MU-Plugins: ${{ steps.detect_changes.outputs.muplugins_changed }}"
+            echo "          Patterns: ${{ steps.detect_changes.outputs.patterns_changed }}"
+            WARNINGS=$((WARNINGS + 1))
+          fi
+          
+          # Plugins changed but no activation step
+          if [ "${{ steps.detect_changes.outputs.plugins_changed }}" -gt 0 ] && [ "$HAS_PLUGIN_ACTIVATE" = "false" ]; then
+            echo "[INFO] Plugin files changed but no 'activate_plugins' step in release"
+            echo "       This may be intentional if plugins are already active"
+          fi
+          
+          if [ $WARNINGS -eq 0 ]; then
+            echo "[OK] Detected changes align with release instructions"
+          else
+            echo ""
+            echo "=========================================="
+            echo "[WARNING] Found $WARNINGS potential mismatches"
+            echo "=========================================="
+            echo "The deployment will continue, but please review the warnings above."
+            echo "If files were missed, consider:"
+            echo "  1. Committing the changes to include them in wp-content deployment"
+            echo "  2. Adding appropriate deployment steps to $RELEASE_FILE"
+            echo "  3. Creating SQL migration files in infra/shared/db/ for database changes"
+          fi
+          
+          echo "=========================================="
 
       - name: Check for Elementor Deployment
         id: check_elementor
