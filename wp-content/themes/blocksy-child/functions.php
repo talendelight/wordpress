@@ -555,4 +555,23 @@ function td_cta_shortcode($atts) {
 }
 add_shortcode('td_cta', 'td_cta_shortcode');
 
-
+/**
+ * Custom page title filter for browser tab (SEO title)
+ * Uses _custom_page_title meta field if set, otherwise uses default post_title
+ * 
+ * This allows pages to have different titles in:
+ * - Navigation menus (uses post_title)
+ * - Browser tab/bookmarks (uses _custom_page_title meta or post_title)
+ */
+add_filter('document_title_parts', function($title_parts) {
+    if (is_singular()) {
+        $post_id = get_the_ID();
+        $custom_title = get_post_meta($post_id, '_custom_page_title', true);
+        
+        if (!empty($custom_title)) {
+            $title_parts['title'] = $custom_title;
+        }
+    }
+    
+    return $title_parts;
+}, 10, 1);
