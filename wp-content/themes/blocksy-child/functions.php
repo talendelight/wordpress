@@ -562,6 +562,8 @@ add_shortcode('td_cta', 'td_cta_shortcode');
  * This allows pages to have different titles in:
  * - Navigation menus (uses post_title)
  * - Browser tab/bookmarks (uses _custom_page_title meta or post_title)
+ * 
+ * Also removes site tagline from page titles for cleaner SEO titles
  */
 add_filter('document_title_parts', function($title_parts) {
     if (is_singular()) {
@@ -571,6 +573,9 @@ add_filter('document_title_parts', function($title_parts) {
         if (!empty($custom_title)) {
             $title_parts['title'] = $custom_title;
         }
+        
+        // Remove tagline from singular pages for cleaner titles
+        unset($title_parts['tagline']);
     }
     
     return $title_parts;
