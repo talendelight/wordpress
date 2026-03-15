@@ -79,8 +79,8 @@ jobs:
           echo "has_elementor=$HAS_ELEMENTOR" >> $GITHUB_OUTPUT
           
           if [ "$HAS_ELEMENTOR" = "true" ]; then
-            echo "âš ï¸  This release includes Elementor page deployment"
-            echo "âš ï¸  Ensure Elementor exports are committed to repository"
+            echo "[WARNING] This release includes Elementor page deployment"
+            echo "[WARNING] Ensure Elementor exports are committed to repository"
           fi
       
       - name: Check for Plugin Activation
@@ -91,7 +91,7 @@ jobs:
           echo "has_plugins=$HAS_PLUGINS" >> $GITHUB_OUTPUT
           
           if [ "$HAS_PLUGINS" = "true" ]; then
-            echo "âš ï¸  This release requires plugin activation"
+            echo "[WARNING] This release requires plugin activation"
             PLUGIN_LIST=$(jq -r '.steps[] | select(.type == "activate_plugins") | .plugins[].slug' "$RELEASE_FILE")
             echo "$PLUGIN_LIST" > plugin_list.txt
             echo "Plugins to activate:"
@@ -241,7 +241,7 @@ jobs:
           fi
           
           # Extract migration files
-          jq -r '.steps[] | select(.type == "deploy_database") | .migrations[]?.file' "$RELEASE_FILE" > migration_files.txt
+          jq -r '.steps[] | select(.type == "deploy_database") | .migrations[].file' "$RELEASE_FILE" > migration_files.txt
           
           # Check if any migrations are specified
           if [ ! -s migration_files.txt ]; then
@@ -302,7 +302,11 @@ jobs:
             for sql_file in ~/db-deploy/*.sql; do
               if [ -f "$sql_file" ]; then
                 echo "Executing: $(basename $sql_file)"
-                wp db query < "$sql_file" && echo "[OK] Success" || echo "[ERROR] Failed: $sql_file"
+                if ! wp db query < "$sql_file" --allow-root; then
+                  echo "[ERROR] Migration failed: $sql_file"
+                  exit 1
+                fi
+                echo "[OK] Success: $(basename $sql_file)"
               fi
             done
             
@@ -349,53 +353,6 @@ jobs:
               exit 1
             fi
 
-      - name: Activate Plugins
-        if: steps.check_plugins.outputs.has_plugins == 'true'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.HOSTINGER_USER }}
-          key: ${{ secrets.HOSTINGER_SSH_KEY }}
-          port: ${{ secrets.HOSTINGER_PORT }}
-          script: |
-            cd ${{ secrets.HOSTINGER_WP_ROOT }}
-            
-            echo "Activating plugins..."
-            
-            # Read plugin slugs from staged file
-            while IFS= read -r plugin; do
-              if [ -z "$plugin" ]; then
-                continue
-              fi
-              
-              echo "Processing plugin: $plugin"
-              
-              # Check if plugin exists
-              if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
-                echo "âš ï¸  Plugin not found: $plugin (may need to be installed first)"
-                continue
-              fi
-              
-              # Check if already active
-              if wp plugin is-active "$plugin" --allow-root 2>/dev/null; then
-                echo "[OK] Plugin already active: $plugin"
-                continue
-              fi
-              
-              # Activate plugin
-              if wp plugin activate "$plugin" --allow-root; then
-                echo "[OK] Plugin activated: $plugin"
-              else
-                echo "âŒ Plugin activation failed: $plugin"
-              fi
-            done < ~/plugin_list.txt
-            
-            echo ""
-            echo "Final plugin status:"
-            wp plugin list --status=active --allow-root
-            
-            echo "Plugin activation complete"
-
       - name: Upload Plugin List for Activation
         if: steps.check_plugins.outputs.has_plugins == 'true'
         uses: appleboy/scp-action@v0.1.7
@@ -433,7 +390,7 @@ jobs:
               echo "Processing plugin: $plugin"
               
               if ! wp plugin is-installed "$plugin" --allow-root 2>/dev/null; then
-                echo "âš ï¸  Plugin not found: $plugin"
+                echo "[WARNING] Plugin not found: $plugin"
                 continue
               fi
               
@@ -445,7 +402,7 @@ jobs:
               if wp plugin activate "$plugin" --allow-root; then
                 echo "[OK] Activated: $plugin"
               else
-                echo "âŒ Failed: $plugin"
+                echo "[ERROR] Failed: $plugin"
               fi
             done < ~/plugin_list.txt
             
@@ -470,7 +427,7 @@ jobs:
             # Create elementor-exports directory if not exists
             mkdir -p ~/elementor-exports
             
-            echo "âš ï¸  ELEMENTOR DEPLOYMENT REQUIRES MANUAL STEPS"
+            echo "[WARNING]ELEMENTOR DEPLOYMENT REQUIRES MANUAL STEPS"
             echo "================================================"
             echo ""
             echo "Elementor pages cannot be fully automated in CI/CD because:"
@@ -518,7 +475,7 @@ jobs:
             if wp elementor flush_css --allow-root 2>/dev/null; then
               echo "[OK] Elementor cache cleared"
             else
-              echo "âš  Elementor cache clear failed or plugin not active"
+              echo "[WARNING]Elementor cache clear failed or plugin not active"
             fi
             
             # Clear LiteSpeed cache (if available)
@@ -552,12 +509,12 @@ jobs:
                 exit 0
               else
                 echo ""
-                echo "âŒ Some health checks failed - review output above"
-                echo "âš ï¸  Deployment may need attention"
+                echo "Some health checks failed - review output above"
+                echo "[WARNING]Deployment may need attention"
                 exit 1
               fi
             else
-              echo "âš ï¸  Health check script not found"
+              echo "[WARNING]Health check script not found"
               echo "Manual verification required"
               exit 0
             fi
@@ -599,7 +556,7 @@ jobs:
           
           if [ "${{ steps.check_elementor.outputs.has_elementor }}" = "true" ]; then
             echo "=========================================="
-            echo "âš ï¸  MANUAL ELEMENTOR DEPLOYMENT REQUIRED"
+            echo "[WARNING]MANUAL ELEMENTOR DEPLOYMENT REQUIRED"
             echo "=========================================="
             echo "See Elementor deployment instructions above"
             echo ""
@@ -607,7 +564,7 @@ jobs:
           
           if [ "${{ steps.health_check_post.outcome }}" = "failure" ]; then
             echo "=========================================="
-            echo "âš ï¸  HEALTH CHECK FAILURES DETECTED"
+            echo "[WARNING]HEALTH CHECK FAILURES DETECTED"
             echo "=========================================="
             echo "Review health check output above for details"
             echo "Some components may not be properly configured"
